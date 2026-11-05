@@ -18,6 +18,8 @@ const TIMER_RUNNING = 4;
 const TIMER_UNHEALTHY = 5;
 
 var page;
+const pageErrors = [];
+const consoleLines = [];
 
 function fail(message) {
   throw new Error(message);
@@ -172,11 +174,28 @@ async function connect() {
   check(true, 'Server knows the timer is connected');
 }
 
+async function printDiagnostics() {
+  const state = await page.evaluate(() => ({
+    portOpen: fastTrackPort.isOpen,
+    closeRejections: fastTrack.closeRejections,
+    probing: g_prober.probe_cycle_underway,
+    timerProxy: !!window.g_timer_proxy,
+    recentCommands: fastTrack.commands.slice(-12),
+  }));
+  console.log('DIAGNOSTICS: ' + JSON.stringify(state));
+  console.log('DIAGNOSTICS page errors: ' + JSON.stringify(pageErrors.slice(-4)));
+  console.log('DIAGNOSTICS console: ' + JSON.stringify(consoleLines.slice(-6)));
+}
+
 async function main() {
   const browser = await puppeteer.launch();
   try {
     page = (await browser.pages())[0];
-    page.on('pageerror', error => console.log('PAGE ERROR: ' + error.message));
+    page.on('pageerror', error => {
+      pageErrors.push(String(error.message || error));
+      console.log('PAGE ERROR: ' + pageErrors[pageErrors.length - 1]);
+    });
+    page.on('console', msg => consoleLines.push(msg.text()));
 
     await page.goto(root + '/login.php');
     await Promise.all([
@@ -247,6 +266,9 @@ async function main() {
     });
 
     console.log('   All timer hardware scenarios passed');
+  } catch (error) {
+    await printDiagnostics();
+    throw error;
   } finally {
     await browser.close();
   }

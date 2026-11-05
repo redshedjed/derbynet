@@ -52,6 +52,7 @@ function install(options) {
     raceTimer = null;
     commands = [];   // Every command received, in order
     sentLines = [];  // Everything the timer has transmitted
+    closeRejections = [];  // Which stream was locked, for each refused port.close()
     port = null;
 
     // ---- What the test does to the "track" ----
@@ -200,6 +201,7 @@ function install(options) {
       // closed out from under it.
       if ((this.readable && this.readable.locked) ||
           (this.writable && this.writable.locked)) {
+        timer.closeRejections.push((this.readable && this.readable.locked) ? 'readable' : 'writable');
         throw new TypeError('Cannot close a port with a locked stream.');
       }
       if (this.readable) {
@@ -259,6 +261,7 @@ function install(options) {
   });
 
   window.fastTrack = timer;
+  window.fastTrackPort = port;
 }
 
 module.exports = {install};
