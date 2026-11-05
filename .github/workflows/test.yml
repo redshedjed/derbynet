@@ -33,12 +33,13 @@ jobs:
     - name: Install tools
       run: sudo apt-get update && sudo apt-get install -y ant jq libxml2-utils
 
-    # These are the parts of "ant generated" the server needs.  The rest builds
-    # PDF documents, which needs LibreOffice.
+    # Building the PDF documents needs LibreOffice, which the tests don't use.
+    # Without it, the build skips them, but still expects this one to exist.
     - name: Generate website files
-      run: >
-        ant -noinput banner generated-version.inc generated-build-date.inc
-        release-series generated-commit-hash.inc webrtc-adapter timer.php
+      run: |
+        mkdir -p docs/dist
+        touch "docs/dist/Quick Reference.pdf"
+        ant -noinput generated timer-in-browser
 
     - name: Build server image
       run: docker build -t derbynet_server -f installer/docker/Dockerfile .
