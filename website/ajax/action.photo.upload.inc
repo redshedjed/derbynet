@@ -81,7 +81,7 @@ if (!have_permission(PHOTO_UPLOAD_PERMISSION)) {
       ++$attempt;
     }
     if ($target_name != $photo_name) {
-      json_out('filename-change', $target);
+      json_out('filename-change', $target_name);
     }
 
     if (move_uploaded_file($photo['tmp_name'], $photo_dir.DIRECTORY_SEPARATOR.$target_name)) {
