@@ -28,7 +28,7 @@ return array(
 .")",
 "CREATE UNIQUE INDEX PrimaryKey ON Voters(voterid)",
 "CREATE INDEX Voters_identifier ON Voters(identifier)",
-, 
+
 "DROP TABLE Votes",
 
 "CREATE TABLE Votes ("
