@@ -115,8 +115,10 @@ async function runHeat(name, {times, expected, maskedLanes = [], beforeStart}) {
   console.log('      round ' + roundid + ', heat ' + heat);
 
   await waitForState('MARK');
-  await waitFor('the timer to be reset for the heat',
-                async () => (await commands()).includes('MG'));
+  // Masks go out one at a time after MG, with a pause between them.  On a 4-lane
+  // track, lane F is always masked, and it's the last one sent.
+  await waitFor('lane masks to be sent to the timer',
+                async () => (await commands()).includes('MF'));
   await waitFor('polling to reach the timer',
                 async () => (await commands()).includes('LR'));
   const sent = await commands();
