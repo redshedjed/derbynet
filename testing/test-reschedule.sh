@@ -400,13 +400,15 @@ run_heat 1 17 101:2.581 - 146:1.692 116:3.143 x
 
 # Racer 41's lone heat in roundid 1 would make it fastest in the round if it
 # were counted in standings.  This is to confirm it's not.
-curl_getj "action.php?query=standings" | \
-    jq -e ".standings | .["'"'"st-r1"'"'"][0][0] == 46 and
-                        .["'"'"st-r1"'"'"][1][0] == 51 and
-                        .["'"'"st-r1"'"'"][2][0] == 6 and
-                        .["'"'"st-r2"'"'"][0][0] == 57 and
-                        .["'"'"st-r2"'"'"][1][0] == 22 and
-                        .["'"'"st-r2"'"'"][2][0] == 17" \
+curl_text "standings.php?debug=1" | \
+    sed -n -e '/<pre>/,/<\/pre>/p' | sed -e '/<pre>/d' -e 's#</pre>##' | \
+    jq -e '.all_standings | map_values(map(map(tonumber))) |
+                        .["st-r1"][0][0] == 46 and
+                        .["st-r1"][1][0] == 51 and
+                        .["st-r1"][2][0] == 6 and
+                        .["st-r2"][0][0] == 57 and
+                        .["st-r2"][1][0] == 22 and
+                        .["st-r2"][2][0] == 17' \
         >/dev/null || test_fails
 
 echo ============= 4 lanes 17 racers roundid 2 ======================
