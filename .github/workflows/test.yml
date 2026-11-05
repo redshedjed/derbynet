@@ -82,6 +82,10 @@ jobs:
         sudo chmod +x /usr/local/bin/md5
         testing/exercise-one-database.sh localhost:8080 ez 2>&1 | tee suite.log
 
+    - name: Run timer hardware test
+      shell: bash
+      run: testing/test-timer-hardware.sh localhost:8080 2>&1 | tee -a suite.log
+
     - name: Summarize test failure
       if: failure()
       run: tail -n 8 suite.log | while read -r line; do echo "::error::$line"; done
