@@ -15,20 +15,20 @@ jobs:
     env:
       TERM: xterm
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0  # The build derives a version number from the commit count
 
     - name: Set up JDK
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v6
       with:
         distribution: temurin
         java-version: 17
 
     - name: Set up Node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
-        node-version: 20
+        node-version: 24
 
     - name: Install tools
       run: sudo apt-get update && sudo apt-get install -y ant jq libxml2-utils
@@ -82,7 +82,7 @@ jobs:
 
     - name: Upload test transcript
       if: failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: test-transcript
         path: testing/*.curl
