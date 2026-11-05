@@ -1,0 +1,81 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      TERM: xterm
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # The build derives a version number from the commit count
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install tools
+      run: sudo apt-get update && sudo apt-get install -y ant jq libxml2-utils
+
+    # These are the parts of "ant generated" the server needs.  The rest builds
+    # PDF documents, which needs LibreOffice.
+    - name: Generate website files
+      run: >
+        ant -noinput banner generated-version.inc generated-build-date.inc
+        release-series generated-commit-hash.inc webrtc-adapter timer.php
+
+    - name: Build server image
+      run: docker build -t derbynet_server -f installer/docker/Dockerfile .
+
+    - name: Start server
+      run: |
+        docker run --detach --name derbynet -p 8080:80 derbynet_server
+        for i in $(seq 1 30); do
+          curl -fsS -o /dev/null http://localhost:8080/about.php && exit 0
+          sleep 2
+        done
+        echo "Server didn't respond"
+        exit 1
+
+    - name: Check PHP syntax
+      run: >
+        docker exec derbynet sh -c
+        "find /var/www/html \( -name '*.php' -o -name '*.inc' \) -print0
+        | xargs -0 -n 1 php84 -l > /dev/null"
+
+    - name: Install browser test dependencies
+      working-directory: testing
+      run: |
+        npm install --no-save puppeteer
+        # Ubuntu 24.04 otherwise blocks the browser's sandbox
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+    - name: Run test suite
+      run: testing/exercise-one-database.sh localhost:8080 ez
+
+    - name: Show server log
+      if: failure()
+      run: docker logs derbynet 2>&1 | tail -n 200
+
+    - name: Upload test transcript
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-transcript
+        path: testing/*.curl

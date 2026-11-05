@@ -1,6 +1,9 @@
 ## docker build -t derbynet_server -f installer/docker/Dockerfile .
 
-FROM alpine
+# Pinned because each Alpine release can change its default PHP version, which
+# this file and alpine-configure-nginx.sh depend on (see below).  Alpine 3.23 is
+# the last release whose default is PHP 8.4; in 3.24 it's PHP 8.5.
+FROM alpine:3.23
 LABEL org.opencontainers.image.authors=jeffpiazza
 LABEL description="DerbyNet is the new standard in race management software for Pinewood Derby events.  \
 Visit http://jeffpiazza.github.io/derbynet/ for more information about DerbyNet."
