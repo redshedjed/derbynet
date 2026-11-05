@@ -157,10 +157,13 @@ async function connect() {
   console.log('   Connecting');
   await waitFor('the timer to be identified', () => page.evaluate(() =>
     window.g_timer_proxy && g_timer_proxy.profile.key == 'FastTrack-K'), 60000);
-  const sent = await commands();
-  check(sent.includes('RV'), 'Interface asked the timer to identify itself');
-  // Setup commands are sent once, right after the timer's been identified.
-  const setup = sent.slice(sent.lastIndexOf('RV') + 1, sent.lastIndexOf('RV') + 5);
+  // Setup commands are sent once, right after the timer's been identified, with
+  // a pause between them.
+  const setupAfterProbe = sent => sent.slice(sent.lastIndexOf('RV') + 1, sent.lastIndexOf('RV') + 5);
+  const setup = await waitFor('setup commands', async () => {
+    const found = setupAfterProbe(await commands());
+    return found.length == 4 ? found : null;
+  });
   check(setup.join(' ') == 'RE N1 N2 RF', 'Setup commands are in order: ' + setup.join(' '));
   await waitFor('the interface to report the timer to the server', async () => {
     const state = (await serverPoll())['timer-state'].state;
