@@ -74,7 +74,16 @@ jobs:
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
     - name: Run test suite
-      run: testing/exercise-one-database.sh localhost:8080 ez
+      shell: bash  # Unlike the default, this includes pipefail
+      run: |
+        # The test scripts use macOS's md5 command
+        printf '#!/bin/sh\nmd5sum | cut -d" " -f1\n' | sudo tee /usr/local/bin/md5 > /dev/null
+        sudo chmod +x /usr/local/bin/md5
+        testing/exercise-one-database.sh localhost:8080 ez 2>&1 | tee suite.log
+
+    - name: Summarize test failure
+      if: failure()
+      run: tail -n 8 suite.log | while read -r line; do echo "::error::$line"; done
 
     - name: Show server log
       if: failure()
