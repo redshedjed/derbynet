@@ -2,6 +2,11 @@
 // $_POST['slide'] copies an image file to slides directory
 // $_POST['subdir']
 
+if (!have_permission(SET_UP_PERMISSION)) {
+  json_not_authorized();
+  return true;  // A falsy result would make action.php report "Unrecognized action"
+}
+
 require_once('inc/path-info.inc');
 
 // Returns true on success; on failure, writes json_failure and returns false.
@@ -18,7 +23,7 @@ function perform_test_setup() {
     if (is_acceptable_subdir($_POST['subdir'])) {
       $slides_dir .= DIRECTORY_SEPARATOR.$_POST['subdir'];
     } else {
-      json_failure('Invalid subdir');
+      json_failure('invalid-subdir', 'Invalid subdir');
       return false;
     }
   }
@@ -30,13 +35,13 @@ function perform_test_setup() {
 
     $slide = $_POST['slide'];
     if (!is_acceptable_subdir($slide)) {
-      json_out('Invalid slide name');
+      json_failure('invalid-slide', 'Invalid slide name');
       return false;
     }
 
     copy(image_file_path('emblem'), $slides_dir.DIRECTORY_SEPARATOR.$slide);
   } else {
-    json_failure('Operation not recognized');
+    json_failure('unrecognized-operation', 'Operation not recognized');
     return false;
   }
 

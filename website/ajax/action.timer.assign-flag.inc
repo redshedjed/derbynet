@@ -2,6 +2,11 @@
 
 // $_POST['flag'], $_POST['value']
 
+if (!have_permission(CONTROL_RACE_PERMISSION)) {
+  json_not_authorized();
+  return true;  // A falsy result would make action.php report "Unrecognized action"
+}
+
 try {
   // The pending flag value will get transmitted to the timer as part of the
   // response to the next timer-message.

@@ -4,11 +4,14 @@
 // $_POST['image_name'] - Base filename of the image
 // $_POST['left'], top, right, bottom, original_height, original_width - cropping parameters, all in pixels
 
-// TODO: Permissions
+if (!have_permission(ASSIGN_RACER_IMAGE_PERMISSION)) {
+  json_not_authorized();
+  return true;  // A falsy result would make action.php report "Unrecognized action"
+}
 
 require_once('inc/photo-config.inc');
 
-$image_name = $_POST['image_name'];
+$image_name = basename($_POST['image_name']);
 
 $photo_repository = photo_repository(isset($_POST['repo']) ? $_POST['repo'] : 'head');
 
@@ -44,14 +47,15 @@ imagedestroy($im);
 
 $cropped->delete_dependents($image_name);
 
-if (take_action_silently('UPDATE RegistrationInfo'
-                         .' SET '.$photo_repository->column_name().' = :photo'
-                         .' WHERE '.$photo_repository->column_name().' = :original',
+$sql = 'UPDATE RegistrationInfo'
+    .' SET '.$photo_repository->column_name().' = :photo'
+    .' WHERE '.$photo_repository->column_name().' = :original';
+if (take_action_silently($sql,
                          array(':photo' => $target_file_path,
                                ':original' => $original->file_path($image_name)))) {
   json_success();
 } else {
-  json_sql_failure($sql);  // TODO Missing sql
+  json_sql_failure($sql);
 }
 
 json_out('cache-breaker', time());

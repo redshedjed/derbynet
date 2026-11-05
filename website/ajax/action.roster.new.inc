@@ -39,6 +39,10 @@
 // (Note that this ignores any racing aggregate rounds that might draw racers
 // from the requested subgroups.)
 
+if (!have_permission(CONTROL_RACE_PERMISSION)) {
+  json_not_authorized();
+  return true;  // A falsy result would make action.php report "Unrecognized action"
+}
 
 require_once('inc/classes.inc');
 require_once('inc/newracer.inc');

@@ -41,6 +41,23 @@ curl_postj action.php "action=heat.select" | check_jfailure
 curl_post action.php "action=timer-message" | check_failure
 curl_postj action.php "action=award.xbs" | check_jfailure
 
+# Actions that used to run without a permission check
+curl_postj action.php "action=roster.new&roundid=1&top=3" | check_jfailure
+curl_postj action.php "action=playlist.start" | check_jfailure
+curl_postj action.php "action=photo.crop&image_name=x.jpg" | check_jfailure
+curl_postj action.php "action=test.setup&slide=x.png" | check_jfailure
+curl_postj action.php "action=timer.test&test-mode=1" | check_jfailure
+curl_postj action.php "action=timer.assign-port&port=x" | check_jfailure
+curl_postj action.php "action=timer.assign-device&device=x" | check_jfailure
+curl_postj action.php "action=timer.assign-flag&flag=x&value=x" | check_jfailure
+
+# An anonymous user can save a check-in preference, but can't grant themselves
+# permissions through session.write.
+curl_postj action.php "action=session.write&session_barcode-action=checkin" | check_jsuccess
+curl_postj action.php "action=session.write&session_barcode-action=x" | check_jfailure
+curl_postj action.php "action=session.write&session_permissions=-1" | check_jfailure
+curl_postj action.php "action=heat.select" | check_jfailure
+
 # Queries don't answer "<success/>" or "<failure/>", so there's really
 # nothing to check other than that they parse as JSON.
 curl_getj "action.php?query=class.list" > /dev/null

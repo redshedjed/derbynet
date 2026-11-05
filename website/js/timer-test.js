@@ -105,6 +105,14 @@ function open_timer_settings_modal(data) {
   show_modal("#timer_settings_modal", function(event) {});
 }
 
+// This page doesn't require a login, but changing timer settings does.  Without
+// this, those changes would silently have no effect for an anonymous user.
+$(document).ajaxSuccess(function(event, xhr, settings, data) {
+  if (data && data.outcome && data.outcome.code == 'notauthorized') {
+    alert("Please log in as the race coordinator to change timer settings.");
+  }
+});
+
 function on_port_change(evt) {
   $.ajax('action.php',
          {type: 'POST',
