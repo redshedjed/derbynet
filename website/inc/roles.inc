@@ -6,6 +6,12 @@ require_once('inc/permissions.inc');
 
 // Define your roles and permissions, and assign passwords, in
 // local/config-roles.inc.
+//
+// A password there may be plain text, or preferably a hash, which you can
+// generate with:
+//     php -r 'echo password_hash($argv[1], PASSWORD_DEFAULT), "\n";' 'new-password'
+// Use single quotes around a hash in config-roles.inc, since it contains $
+// characters.  A role meant to have no password stays an empty string.
 
 // Upon first connection, a role without a password, if any, will be
 // selected from the $roles array, and the contained permissions
