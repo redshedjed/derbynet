@@ -54,10 +54,17 @@ jobs:
         exit 1
 
     - name: Check PHP syntax
-      run: >
-        docker exec derbynet sh -c
-        "find /var/www/html \( -name '*.php' -o -name '*.inc' \) -print0
-        | xargs -0 -n 1 php84 -l > /dev/null"
+      run: |
+        failures=$(docker exec derbynet sh -c '
+          find /var/www/html \( -name "*.php" -o -name "*.inc" \) |
+          while read -r f; do
+            php84 -l "$f" > /tmp/lint.out 2>&1 ||
+              echo "$f: $(grep -m 1 -i error /tmp/lint.out)"
+          done')
+        if [ -n "$failures" ]; then
+          echo "$failures" | while read -r line; do echo "::error::$line"; done
+          exit 1
+        fi
 
     - name: Install browser test dependencies
       working-directory: testing
