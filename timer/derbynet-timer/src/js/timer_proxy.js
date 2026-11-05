@@ -109,7 +109,9 @@ class TimerProxy {
 
       if (this.profile?.gate_watcher && this.sm.gate_state_is_knowable &&
           state != 'RUNNING' && !Flag.no_gate_watcher.value) {
-        this.port_wrapper.checkConnection();
+        // Awaited so a lost connection stops this poll.  Otherwise, the gate poll's
+        // write locks the port while it's closing, and the port can't close.
+        await this.port_wrapper.checkConnection();
         await this.poll_gate_once();
       }
 
