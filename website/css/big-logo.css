@@ -6,7 +6,7 @@
 .logo-frame {
     width: 320px;
     height: 320px;
-    background-color: #023882;
+    background-color: var(--color-brand);
     margin-left: auto;
     margin-right: auto;
 }

@@ -244,7 +244,7 @@ img.checkin-photo {
     right: 1em;
     font-size: large;
     color: white;
-	background-color: #023882;
+	background-color: var(--color-brand);
     padding: 5px;
 }
 

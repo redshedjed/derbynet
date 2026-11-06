@@ -31,7 +31,7 @@ div.mselect-inner select {
 
 
 .control_group {
-  border: 3px solid #023882;
+  border: 3px solid var(--color-brand);
   margin:5px;
   padding: 10px;
   position: relative;  /* Create a positioning context */

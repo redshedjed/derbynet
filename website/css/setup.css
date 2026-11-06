@@ -35,7 +35,7 @@
 
 #offer_fake,
 #remind_fake {
-  border: 4px #023882 solid;
+  border: 4px var(--color-brand) solid;
   width: 275px;
 }
 #offer_fake p,
@@ -50,7 +50,7 @@
   font-size: 18px;
 }
 #prefs-drop {
-  border: 3px solid #023882;
+  border: 3px solid var(--color-brand);
   margin-right: 25px;
   border-radius: 8px;
   height: 30px;
@@ -110,16 +110,7 @@
   margin-top: 0px;
 }
 
-.step_details a {
-  display: inline-block;
-  background: black;
-  color: white;
-  height: 15px;
-  padding: 5px;
-  border-radius: 0.4em;
-  text-decoration: none;
-  line-height: 1.0;
-}
+/* .step_details a: styled with .small-button in components.css */
 
 #purge_operation {
   text-align: center;

@@ -14,7 +14,7 @@
 .curgroup .group_title,
 .curgroup .pre_group_title {
 	/* Cub Scout blue & gold, respectively. */
-  border: 5px solid #023882;
+  border: 5px solid var(--color-brand);
   background-color: #F7D117;
 }
 
@@ -26,7 +26,7 @@ tr {
 }
 .curgroup .d0 th,
 .curgroup .d1 th {
-  background-color: #023882;
+  background-color: var(--color-brand);
   color: #ffffff;
   width: 4vh;
 }

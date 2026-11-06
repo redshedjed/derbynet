@@ -68,10 +68,10 @@ div#variations {
     
 
 .file_target {
-    border: 4px dashed #023882;
+    border: 4px dashed var(--color-brand);
 }
 .file_target.draghover {
-    border: 4px solid #023882;
+    border: 4px solid var(--color-brand);
 }
 
 .fields .target {
@@ -81,16 +81,16 @@ div#variations {
 
 .label_target {
   height: 50px;
-  border: 4px dashed #023882;
+  border: 4px dashed var(--color-brand);
 }
 
 .label_target_hover {
   background-color: #ffffb4;
-  border: 4px solid #023882;
+  border: 4px solid var(--color-brand);
 }
 
 .label_target_filled {
-  border: 4px solid #023882;
+  border: 4px solid var(--color-brand);
 }
 
 .fields .fields_target_hover {
@@ -107,7 +107,7 @@ div#variations {
   padding-right: 10px;
   padding-top: 3px;
   padding-bottom: 3px;
-  border: 10px solid #023882;
+  border: 10px solid var(--color-brand);
   /* margin: 5px; */
   background-color: #F7D117;
   margin-left: auto;
@@ -121,7 +121,7 @@ div#variations {
   padding-right: 15px;
   padding-top: 8px;
   padding-bottom: 8px;
-  border: 5px solid #023882;
+  border: 5px solid var(--color-brand);
 }
 
 .dim, .header_row td {
@@ -145,16 +145,10 @@ input[type='button'], input[type='submit'] {
 	margin-bottom: 20px;
     font-size: x-large;
 
-    background: #2d2d2d; /* Old browsers */
-    background: -moz-linear-gradient(top,  #424242 0%, #2d2d2d 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#424242), color-stop(100%,#2d2d2d)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  #424242 0%,#2d2d2d 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  #424242 0%,#2d2d2d 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  #424242 0%,#2d2d2d 100%); /* IE10+ */
-    background: linear-gradient(top,  #424242 0%,#2d2d2d 100%); /* W3C */
-    border: 1px solid #666666;
+    background: var(--color-brand);  /* shared button look: see .btn in components.css */
+    border: 1px solid var(--color-brand-strong);
     border-right-width: 1px;
-    border-radius: 0.4em 0.4em 0.4em 0.4em;
+    border-radius: var(--radius-lg);
 
     cursor: pointer;
 }

@@ -1,0 +1,254 @@
+/* Shared building blocks.  Use these classes in new markup; pages should not
+   restyle them.  Older class names that do the same job are listed beside the
+   new ones, so every page shares one rule.  When a page's markup gains the new
+   class, its old name can come out of the list (after checking website/js for
+   selectors that use it).
+
+   global.css imports this file after tokens.css. */
+
+/* ---------------- Cards ----------------
+   A white panel on the gray page.  Add .card-accent and an accent class for a
+   colored bar down the left edge that marks what kind of section it is. */
+
+.card,
+.control_group,                /* coordinator.css: Race Dashboard panels */
+.settings_group {              /* settings.css */
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.card {
+  padding: var(--space-4);
+  margin: var(--space-3) 0;
+}
+
+.card-accent {
+  border-left: 6px solid var(--card-accent, var(--color-brand));
+}
+
+/* Accent colors: race stages first, then general meanings */
+.accent-before  { --card-accent: var(--stage-before);  --tile-accent: var(--stage-before); }
+.accent-during  { --card-accent: var(--stage-during);  --tile-accent: var(--stage-during); }
+.accent-after   { --card-accent: var(--stage-after);   --tile-accent: var(--stage-after); }
+.accent-other   { --card-accent: var(--stage-other);   --tile-accent: var(--stage-other); }
+.accent-brand   { --card-accent: var(--color-brand); }
+.accent-success { --card-accent: var(--color-success); }
+.accent-warning { --card-accent: var(--color-warning); }
+.accent-danger  { --card-accent: var(--color-danger); }
+
+.card-title {
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+/* ---------------- Buttons ----------------
+   .btn is the primary (brand blue) button; .btn-secondary, .btn-danger and
+   .btn-ghost change its color, .btn-sm and .btn-lg its size.  The buttons
+   inside .block_buttons (global.css) share this look. */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+  padding: var(--space-2) var(--space-5);
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--color-text-on-brand);
+  background: var(--color-brand);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0));
+  border: 1px solid var(--color-brand-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-button);
+  cursor: pointer;
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+.btn:hover {
+  background-color: var(--color-brand-strong);
+  box-shadow: var(--shadow-button-hover);
+  transform: translateY(-1px);
+}
+.btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+.btn[disabled], .btn.disabled {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  box-shadow: none;
+  transform: none;
+  cursor: auto;
+}
+
+.btn-secondary {
+  color: var(--color-brand);
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+.btn-secondary:hover {
+  background-color: var(--color-surface-sunken);
+  border-color: var(--color-brand);
+  box-shadow: var(--shadow-card);
+}
+
+.btn-danger {
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+  box-shadow: 0 1px 2px rgba(179, 18, 31, 0.3), 0 4px 12px rgba(179, 18, 31, 0.25);
+}
+.btn-danger:hover {
+  background-color: #8F0E19;
+}
+
+.btn-ghost {
+  color: var(--color-brand);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.btn-ghost:hover {
+  background-color: rgba(0, 63, 135, 0.08);
+  box-shadow: none;
+}
+
+.btn-sm,
+a.small-button,                /* settings.php */
+.step_details a,               /* setup.php: links beside each step */
+input.small-button,
+.block_buttons input.small-button {
+  min-height: 0;
+  height: auto;
+  padding: 4px 10px;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  border-radius: var(--radius-md);
+}
+a.small-button,
+.step_details a,
+input.small-button,
+.block_buttons input.small-button {
+  display: inline-block;
+  color: var(--color-text-on-brand);
+  background: var(--color-brand);
+  border: 1px solid var(--color-brand-strong);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.btn-lg {
+  min-height: 56px;
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-xl);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+  .btn:hover { transform: none; }
+}
+
+/* ---------------- Tables ----------------
+   .table: full width, a light header and row lines.  Add .table-striped for
+   alternating row color. */
+
+.table,
+table.main_table {             /* check-in, standings, results, on-deck */
+  width: 100%;
+  background-color: var(--color-surface);
+}
+
+.table th {
+  text-align: left;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: var(--space-3);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.table td {
+  padding: var(--space-3);
+  border: 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.table-striped tr:nth-child(even) td,
+tr.d0 td {                     /* check-in and others mark alternate rows d0 */
+  background-color: var(--color-row-alt);
+}
+
+/* Edge borders create horizontal scroll bars in Chrome */
+.main_table tr td:first-child,
+.main_table tr th:first-child {
+  border-left: 0px;
+}
+.main_table tr td:last-child,
+.main_table tr th:last-child {
+  border-right: 0px;
+}
+
+/* ---------------- Notices ----------------
+   A message in a card with a colored edge: .notice plus .notice-info,
+   .notice-success, .notice-warning or .notice-danger. */
+
+.notice {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-3) 0;
+  border-radius: var(--radius-lg);
+  border-left: 6px solid var(--notice-edge, var(--color-brand));
+  background: var(--notice-bg, #E8EFF8);
+  color: var(--notice-text, var(--color-brand-strong));
+  box-shadow: var(--shadow-sm);
+}
+.notice-info    { --notice-edge: var(--color-brand);   --notice-bg: #E8EFF8;                 --notice-text: var(--color-brand-strong); }
+.notice-success { --notice-edge: var(--color-success); --notice-bg: var(--color-success-bg); --notice-text: var(--color-success); }
+.notice-warning { --notice-edge: var(--color-warning); --notice-bg: var(--color-warning-bg); --notice-text: var(--color-warning); }
+.notice-danger  { --notice-edge: var(--color-danger);  --notice-bg: var(--color-danger-bg);  --notice-text: var(--color-danger); }
+
+/* ---------------- Badges ----------------
+   A small pill for a status or count. */
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  background: var(--gray-200);
+  vertical-align: middle;
+}
+.badge-brand   { color: #FFFFFF; background: var(--color-brand); }
+.badge-success { color: var(--color-success); background: var(--color-success-bg); }
+.badge-warning { color: var(--color-warning); background: var(--color-warning-bg); }
+.badge-danger  { color: #FFFFFF; background: var(--color-danger); }
+
+/* ---------------- Toolbar ----------------
+   A row of controls that wraps on narrow screens. */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+.toolbar-spacer {
+  flex: 1;
+}

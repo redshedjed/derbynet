@@ -36,6 +36,7 @@
   --color-surface: #FFFFFF;
   --color-surface-alt: var(--scouting-tan-light);
   --color-surface-sunken: var(--gray-50);
+  --color-row-alt: #FCF6CF;  /* alternate table rows: the cream DerbyNet has always used */
   --color-border: var(--gray-300);
   --color-border-strong: var(--gray-500);
   --color-disabled-bg: var(--gray-300);

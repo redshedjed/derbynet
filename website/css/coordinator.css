@@ -98,11 +98,8 @@ div.adjustment-needed input.late-arrival-button[disabled] {
   font-size: 18px;
 }
 
+/* Background, border, radius and shadow come from .card in components.css */
 .control_group {
-  background: var(--color-surface);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
   margin: 8px 5px;
   padding: 12px 14px;
  }
@@ -386,7 +383,7 @@ p.last_contact {
     height: 100%;
     float: left;
     border-right: 1px solid #000000;
-    background: #023882;
+    background: var(--color-brand);
 }
 
 .progress .bar2 {

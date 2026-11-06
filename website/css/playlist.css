@@ -13,11 +13,15 @@
   margin-bottom: 30px;
 }
 
+/* Looks like .notice.notice-warning in components.css */
 #racing-scene-psa {
-  background-color: #cc0000;
-  color: white;
   margin: 20px;
-  padding: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  border-left: 6px solid var(--color-warning);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  box-shadow: var(--shadow-sm);
 }
 
 #top-of-queue {
@@ -36,7 +40,11 @@
 }
 
 #queue ul.mlistview > li > div.queued-round {
-  border: 3px black solid;
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-left: 6px solid var(--color-brand);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
   margin: 3px;
   margin-bottom: 0px;
   margin-top: 0px;
@@ -44,12 +52,12 @@
 
 #queue ul.mlistview > li input.queue-remove {
   float: right;
-  background: #ff0000;
+  background: var(--color-danger);
   color: white;
   font-size: 16px;
-  border: 1px solid #666666;
+  border: 1px solid var(--color-danger);
   border-right-width: 1px;
-  border-radius: 0.4em 0.4em 0.4em 0.4em;
+  border-radius: var(--radius-lg);
   margin-right: 8px;
 }
 
@@ -63,14 +71,17 @@ div.queued-round > p {
   font-weight: bold;
 }
 
+/* The round racing now: a red edge, the "during" stage color */
 #queue ul.mlistview div.queued-round.current {
-  border-right-width: 10px;
-  border-right-color: red;
+  border-left-color: var(--stage-during);
+  border-right: 6px solid var(--stage-during);
 }
 
 #queue ul.mlistview div.queued-round.finished {
-  background-color: #dddddd;
-  border: 3px #aaa solid;
+  background-color: var(--gray-100);
+  border-color: var(--gray-200);
+  border-left-color: var(--gray-500);
+  color: var(--color-text-muted);
 }
 
 #queue ul.mlistview div.queued-round.partial {
@@ -116,18 +127,26 @@ p.squeeze {
   width: 300px;
 }
 
+/* Available rounds: dashed for rounds not yet scheduled, solid with a blue
+   edge for scheduled ones */
 #rounds-ul.mlistview > li {
-  border: 3px blue dotted;
-  margin: 3px;
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  margin: 4px 3px;
 }
 
 #rounds-ul.mlistview > li[data-roundid] {
-  border: 3px blue solid;
+  border: 1px solid var(--gray-200);
+  border-left: 6px solid var(--color-brand);
+  box-shadow: var(--shadow-sm);
 }
 
 #rounds-ul.mlistview > li.finished {
-  background-color: #bbb;
-  border: 3px #aaa solid;
+  background-color: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-left: 6px solid var(--gray-500);
+  color: var(--color-text-muted);
 }
 
 #rounds-ul.mlistview > li.partial {
@@ -137,8 +156,7 @@ p.squeeze {
 }
 
 #rounds-div ul.mlistview > li.current {
-  border-right-width: 10px;
-  border-right-color: red;
+  border-right: 6px solid var(--stage-during);
   width: 250px;
 }
 
@@ -150,17 +168,11 @@ p.squeeze {
   top: 5px;
   
   color:#ffffff;
-  background: #2d2d2d; /* Old browsers */
-  background: -moz-linear-gradient(top,  #424242 0%, #2d2d2d 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#424242), color-stop(100%,#2d2d2d)); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top,  #424242 0%,#2d2d2d 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top,  #424242 0%,#2d2d2d 100%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(top,  #424242 0%,#2d2d2d 100%); /* IE10+ */
-  background: linear-gradient(top,  #424242 0%,#2d2d2d 100%); /* W3C */
+  background: var(--color-brand);  /* shared button look: see .btn in components.css */
 
-  border: 1px solid #666666;
+  border: 1px solid var(--color-brand-strong);
   border-right-width: 1px;
-  border-radius: 0.4em 0.4em 0.4em 0.4em;
+  border-radius: var(--radius-lg);
 }
 
 #rounds-ul.mlistview > li {
