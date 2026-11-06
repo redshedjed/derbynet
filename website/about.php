@@ -235,6 +235,19 @@ if (isset($db)) {
     }
   }
 ?>
+<h4 id="image-credits">Image Credits</h4>
+<p>Some of the fake racer and car images used by the
+<a href="fakeroster.php">fake roster</a> came from one or more of these sources:</p>
+<ul>
+  <li><a href="https://www.vecteezy.com/free-vector/artwork">Artwork Vectors by Vecteezy</a></li>
+  <li><a href="https://www.vecteezy.com/free-vector/portrait">Portrait Vectors by Vecteezy</a></li>
+  <li><a href="https://www.vecteezy.com/free-vector/doodle">Doodle Vectors by Vecteezy</a></li>
+  <li><a href="https://www.vecteezy.com/free-vector/family">Family Vectors by Vecteezy</a></li>
+  <li><a href="https://www.vecteezy.com/free-vector/race-car">Race Car Vectors by Vecteezy</a></li>
+  <li><a href="https://www.vecteezy.com/free-vector/car">Car Vectors by Vecteezy</a></li>
+  <li><a href="https://www.vecteezy.com/free-vector/cardboard-box">Cardboard Box Vectors by Vecteezy</a></li>
+</ul>
+
 <h4>PHP Configuration Information</h4>
 </div>
 

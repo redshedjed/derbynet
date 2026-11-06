@@ -80,19 +80,8 @@ fake racers each.
 
 </div>
 
-<div id="attributions" style="position: fixed; bottom: 0;">
-Some fake racer images came from one or more of these sources: <br/>
-  <a href="https://www.vecteezy.com/free-vector/artwork">Artwork Vectors by Vecteezy</a> <br/>
-  <a href="https://www.vecteezy.com/free-vector/portrait">Portrait Vectors by Vecteezy</a> <br/>
-  <a href="https://www.vecteezy.com/free-vector/doodle">Doodle Vectors by Vecteezy</a> <br/>
-  <a href="https://www.vecteezy.com/free-vector/family">Family Vectors by Vecteezy</a> <br/>
-
-<a href="https://www.vecteezy.com/free-vector/race-car">Race Car Vectors by Vecteezy</a> <br/>
-<a href="https://www.vecteezy.com/free-vector/race-car">Race Car Vectors by Vecteezy</a> <br/>
-<a href="https://www.vecteezy.com/free-vector/car">Car Vectors by Vecteezy</a> <br/>
-<a href="https://www.vecteezy.com/free-vector/cardboard-box">Cardboard Box Vectors by Vecteezy</a>
-
-</div>
+<p>Credits for the fake racer and car images are on the
+<a href="about.php#image-credits">About page</a>.</p>
 
 </body>
 </html>
