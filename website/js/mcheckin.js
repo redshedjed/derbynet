@@ -428,6 +428,6 @@ $(function() {
     navigator.mediaDevices.ondevicechange = function(event) {
       build_device_picker($("#device-picker"), /*include_remote*/false, on_device_selection);
     };
-    $(window).resize(on_resize);
+    $(window).on("resize", on_resize);
   }
 });

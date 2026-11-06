@@ -7,6 +7,7 @@ require_once('inc/photo-config.inc');
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>DerbyNet Slideshow</title>
     <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery-migrate.js"></script>
 <?php if (isset($as_kiosk)) require_once('inc/kiosk-poller.inc'); ?>
 <?php require('inc/stylesheet.inc'); ?>
     <link rel="stylesheet" type="text/css" href="css/kiosks.css"/>

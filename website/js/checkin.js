@@ -163,7 +163,7 @@ function show_edit_racer_form(racerid) {
 
   var partitionid = $('#div-' + racerid).attr('data-partitionid');
   $("#edit_partition").val(partitionid).prop('last-selected', partitionid);
-  $("#edit_partition").change();
+  $("#edit_partition").trigger("change");
 
   $("#eligible").prop("checked",
                       parseInt($('#lastname-' + racerid).attr("data-exclude")) == 0);
@@ -181,7 +181,7 @@ function show_new_racer_form() {
   $("#edit_racer").val(-1);
 
   $("#edit_firstname").val("");
-  $("#edit_firstname").focus();
+  $("#edit_firstname").trigger("focus");
 
   $("#edit_lastname").val("");
 
@@ -192,7 +192,7 @@ function show_new_racer_form() {
   $("#edit_note_from").val("");
 
   $("#edit_partition").val(partitionid).prop('last-selected', partitionid);
-  $("#edit_partition").change();
+  $("#edit_partition").trigger("change");
 
   $("#eligible").prop("checked", true);
   $("#eligible").trigger("change", true);
@@ -327,7 +327,7 @@ function on_bulk_numbering_change() {
   if (!$("#number_auto").is(':checked')) {
     $("#numbering_start_div").slideDown(500);
     $("#bulk_numbering_explanation").slideUp(500);
-    $("#bulk_numbering_start").focus();
+    $("#bulk_numbering_start").trigger("focus");
   } else {
     $("#numbering_start_div").slideUp(500);
     $("#bulk_numbering_explanation").slideDown(500);

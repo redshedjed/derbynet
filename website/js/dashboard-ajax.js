@@ -7,7 +7,7 @@ g_action_url = "action.php";
 // showing for any in-flight ajax calls.
 var g_unloading = false;
 
-$(window).bind("beforeunload", function() { g_unloading = true; });
+$(window).on("beforeunload", function() { g_unloading = true; });
 
 // Note that this doesn't run if the $.ajax call has a 'success:' callback that
 // generates an error.

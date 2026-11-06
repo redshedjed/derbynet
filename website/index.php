@@ -52,6 +52,7 @@ function make_spacer_if($cond) {
 <title>Pinewood Derby Race Information</title>
 <?php require('inc/stylesheet.inc'); ?>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/modal.js"></script>
 <style type="text/css">
 div.index_spacer {

@@ -116,6 +116,7 @@
       <copy todir="${electron-dir}/src/js">
           <fileset dir="../website/js">
               <include name="jquery.js"/>
+              <include name="jquery-migrate.js"/>
               <include name="jquery-ui.min.js"/>
               <include name="mobile.js"/>
               <include name="ajax-setup.js"/>

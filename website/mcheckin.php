@@ -20,6 +20,7 @@ session_write_close();
 <link rel="stylesheet" type="text/css" href="css/camera.css"/>
 <link rel="stylesheet" type="text/css" href="css/mcheckin.css"/>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/mobile.js"></script>
 <!-- webrtc adapter: recommended for use with quaggajs -->

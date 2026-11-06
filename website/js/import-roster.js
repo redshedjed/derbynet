@@ -149,7 +149,7 @@ $(function() {
 });
 
 $(function() {
-  $('#import_button').click(function() {
+  $('#import_button').on('click', function() {
     uploadTableRows('racer.import');
   });
 });

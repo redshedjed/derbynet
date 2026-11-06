@@ -2,7 +2,7 @@ $(function() {
   $("body").append('<div id="modal_background"></div>');
   $("body").append('<div id="second_modal_background"></div>');
   $("body").append('<div id="third_modal_background"></div>');
-  $(document).keyup(function(e) {
+  $(document).on("keyup", function(e) {
     if (e.keyCode == 27) {
       do_close_modal(g_modal_dialogs[g_modal_dialogs.length - 1],
                      ['#modal_background',
@@ -56,7 +56,7 @@ function do_show_modal(modal_selector, focus, submit_handler, background_selecto
   });
   modal_div.fadeTo(200, 1);
   if (focus) {
-    setTimeout(function() { $(focus).focus(); }, 210);
+    setTimeout(function() { $(focus).trigger("focus"); }, 210);
   }
 }
 

@@ -363,7 +363,7 @@ function scroll_to_current_heat() {
   if (nextheat.length == 0) {
     nextheat = curheat;
   }
-  if (curheat.size() != 0) {
+  if (curheat.length != 0) {
     $("html, body").animate(
       {'scrollTop':  window.scrollY
        + (curheat[0].getBoundingClientRect().top

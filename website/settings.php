@@ -50,6 +50,7 @@ $schedules_exist = read_single_value('SELECT COUNT(*) FROM RaceChart'
 </style>
 <?php } ?>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/ajax-setup.js"></script>
 <script type="text/javascript" src="js/mobile.js"></script>
 <script type="text/javascript" src="js/modal.js"></script>

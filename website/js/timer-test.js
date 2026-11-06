@@ -383,7 +383,7 @@ $(function() {
     });
 
   on_resize();
-  $(window).resize(on_resize);
+  $(window).on("resize", on_resize);
 
   poll_for_timer_log(0, 50);
   });

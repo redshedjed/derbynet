@@ -17,6 +17,7 @@ require_permission(EDIT_AWARDS_PERMISSION);
 <title>Awards Editor</title>
 <?php require('inc/stylesheet.inc'); ?>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/ajax-setup.js"></script>
 <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>

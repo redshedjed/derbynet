@@ -36,6 +36,7 @@ if ($last === false) {
 $kiosk_url = '//'.substr($url, 0, $last + 1).'kiosk.php';
 ?>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/screenfull.min.js"></script>
 
 <script type="text/javascript">

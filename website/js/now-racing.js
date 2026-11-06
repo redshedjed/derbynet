@@ -361,7 +361,7 @@ function resize_table() {
 
 $(function () {
   resize_table();
-  $(window).resize(function() { resize_table(); });
+  $(window).on("resize", function() { resize_table(); });
 
   // This 1-second delay is to let the initial resizing take effect
   setTimeout(function() { Poller.poll_for_update(0, 0); }, 1000);

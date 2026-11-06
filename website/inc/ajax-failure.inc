@@ -9,7 +9,7 @@
 // showing for any in-flight ajax calls.
 var g_unloading = false;
 
-$(window).bind("beforeunload", function() { g_unloading = true; });
+$(window).on("beforeunload", function() { g_unloading = true; });
 
 
 function ajax_failure(status, statusText, errorThrown) {

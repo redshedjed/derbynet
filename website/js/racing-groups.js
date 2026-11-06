@@ -91,7 +91,7 @@ function on_n_pack_trophies_change(write_setting = true) {
     $("input[name=pack-agg]").val( [0] );
     on_pack_agg_change();
   }
-  $("#pack-no").attr('disabled', ntrophies > 0);
+  $("#pack-no").prop('disabled', ntrophies > 0);
   //$("label[for=pack-no]")
   $("#dimmable-for-pack-no").css('opacity', ntrophies == 0 ? 1 : 0.5);
   $("#why-not-pack-no").toggleClass('hidden', ntrophies == 0);
@@ -146,9 +146,9 @@ function process_polling_data(data) {
     .trigger('change', /*synthetic*/true);
 
   if (data['group-formation-rule'] != $("input[type='radio'][name='form-groups-by']:checked").val()) {
-    $("input[type='radio'][name='form-groups-by']").attr('checked', false);
-    $("input[type='radio'][name='form-groups-by'][value='" + data['group-formation-rule'] + "'")
-      .attr('checked', true)
+    $("input[type='radio'][name='form-groups-by']").prop('checked', false);
+    $("input[type='radio'][name='form-groups-by'][value='" + data['group-formation-rule'] + "']")
+      .prop('checked', true)
       .trigger('change', /*synthetic*/true);
   }
 

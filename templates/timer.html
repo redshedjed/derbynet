@@ -20,6 +20,7 @@ require_permission(SET_UP_PERMISSION);
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
 <link rel="stylesheet" type="text/css" href="css/timer.css"/>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/mobile.js"></script>
 <script type="text/javascript" src="js/ajax-setup.js"></script>
@@ -69,7 +70,7 @@ $(function() {
 <script type="text/javascript">
 
 if (!g_standalone) {
-  $(window).bind("beforeunload", function(event) {
+  $(window).on("beforeunload", function(event) {
     if (g_timer_proxy) {
       // Chrome ignores the prompt and substitutes its own generic message.  Gee, thanks.
       show_modal("#leaving_modal");

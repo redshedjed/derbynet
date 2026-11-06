@@ -17,7 +17,7 @@ function global_keypress(event) {
     // We're invoked on a keypress event; the actual input key will be read as
     // part of handling for the keyup that follows.
     $("#find-racer").removeClass('hidden');
-    $("#find-racer-text").focus();
+    $("#find-racer-text").trigger("focus");
   }
 }
 

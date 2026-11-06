@@ -188,7 +188,7 @@ function show_advanced_database_modal() {
 
   // Merely setting the "checked" attribute doesn't trigger the "change"
   // handler that displays the right extra fields.
-  $('input[name="connection_type"][checked]').click();
+  $('input[name="connection_type"][checked]').trigger('click');
 }
 
 function handle_advanced_database_modal_submit() {

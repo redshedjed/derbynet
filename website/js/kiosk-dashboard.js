@@ -239,7 +239,7 @@ function handle_assign_kiosk_page_change(sel) {
 function on_click_preferred_name(event) {
   console.log(event.target);
   console.log($(event.target).text());
-  $("#kiosk_name_field").val($(event.target).text()).focus();
+  $("#kiosk_name_field").val($(event.target).text()).trigger("focus");
   return false;
 }
 

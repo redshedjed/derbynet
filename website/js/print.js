@@ -65,7 +65,7 @@ function update_print_button() {
 // for that row.
 function on_tr_click(event) {
   if ($(event.target).is(":not(:checkbox)")) {
-    $(this).find("input:checkbox").click();
+    $(this).find("input:checkbox").trigger("click");
   }
 }
 
@@ -277,6 +277,6 @@ $(function() {
   poll();
   g_poll_interval = setInterval(function() { poll(); }, 10000);
   reveal_doc_specific_options();
-  $("input[type=radio][name='doc-class']").change(function() { reveal_doc_specific_options(); });
+  $("input[type=radio][name='doc-class']").on("change", function() { reveal_doc_specific_options(); });
   $("#walkins-count").on('keyup mouseup', on_walkins_count_change);
 });

@@ -483,7 +483,7 @@ $(function() {
   });
 
   if (window.File && window.FileReader) {
-    $('#csv_file').bind('change', onFileSelect);
+    $('#csv_file').on('change', onFileSelect);
   } else {
     $('#meta').html('<h3>Please update your browser</h3>'
                     + '<p>Operation of this page depends on HTML5 features for local file handling' 

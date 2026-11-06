@@ -5,6 +5,7 @@ $track_length = read_raceinfo('track-length', 40);
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript">
 function track_length() { return <?php echo $track_length; ?> }
 

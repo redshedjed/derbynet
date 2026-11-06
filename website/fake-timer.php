@@ -16,6 +16,7 @@ require_permission(CHECK_IN_RACERS_PERMISSION);
 <?php require('inc/stylesheet.inc'); ?>
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/mobile.js"></script>
 <script type="text/javascript" src="js/fake-timer.js"></script>
 <style type="text/css">

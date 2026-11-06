@@ -6,6 +6,9 @@ var FontAdjuster = {
   original_font_size: 0,
 
   start: function() {
+    if ($("#main-table td.photo").length == 0) {
+      return;  // No lanes yet, so there's no table to fit to the screen.
+    }
     this.table_resized();
     setInterval(function () { FontAdjuster.adjust_fonts(); }, 75);
   },
@@ -18,6 +21,9 @@ var FontAdjuster = {
 
   table_resized: function() {
     var cells = $("#main-table td.photo");
+    if (cells.length == 0) {
+      return;  // No lanes yet, so there's nothing to size.
+    }
     var row_height =
         Math.floor(($(window).height() - cells.position().top) / cells.length) -
         this.parse_px(cells.css('border-bottom-width'));

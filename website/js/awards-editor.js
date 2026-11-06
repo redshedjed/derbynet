@@ -126,8 +126,8 @@ function handle_edit_award(list_item) {
   
   $('#award_editor_form').find('input[name="awardid"]').val(awardid);
   $('#award_editor_form').find('input[name="name"]').val(awardname);
-  $('#award_editor_form').find('select[name="awardtypeid"]').val(awardtypeid).change();
-  $('#award_editor_form').find('select[name="class_and_rank"]').val(classid + ',' + rankid).change();
+  $('#award_editor_form').find('select[name="awardtypeid"]').val(awardtypeid).trigger("change");
+  $('#award_editor_form').find('select[name="class_and_rank"]').val(classid + ',' + rankid).trigger("change");
   $('.delete_button').removeClass('hidden');
 
   show_modal('#award_editor_modal', function() {

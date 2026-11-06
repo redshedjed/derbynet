@@ -22,6 +22,7 @@ require_permission(CHECK_IN_RACERS_PERMISSION);
 <title>Race History</title>
 <?php require('inc/stylesheet.inc'); ?>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript">
 $(function() {
     $("#lane-bias").on('click', function() {

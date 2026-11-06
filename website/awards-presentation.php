@@ -24,6 +24,7 @@ $name_style = read_name_style();
 <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/>
 <title>Awards Presentation Dashboard</title><?php require('inc/stylesheet.inc'); ?>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/ajax-setup.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/dashboard-ajax.js"></script>
@@ -42,7 +43,7 @@ $name_style = read_name_style();
 
     if ($nkiosks == 0) {
       echo '<script type="text/javascript">'."\n";
-      echo '$(window).load(function() {'."\n";
+      echo '$(window).on("load", function() {'."\n";
       echo '  setTimeout(function() {'."\n";
       echo '  alert("NOTE: There are NO kiosks ready for award presentation."+'."\n";
       echo '        "  Selections on this dashboard won\'t have any observable effect.");'."\n";
