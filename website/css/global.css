@@ -348,6 +348,66 @@ tbody {
   box-shadow: none;
 }
 
+/* ---------------- Tile buttons ----------------
+   Inside a .tile-buttons container, .block_buttons buttons become white tiles
+   with a colored bar down the left edge, like the home menu.  The bar color
+   is --tile-accent, inherited from an .accent-* class on the container or set
+   by a race-stage class on the button.  btn-danger tiles get a red bar and red
+   text.  Used by the home menu (index.php) and the Set-Up page. */
+
+.tile-buttons .block_buttons a.button_link,
+.tile-buttons .block_buttons input[type='button'],
+.tile-buttons .block_buttons input[type='submit'] {
+  color: var(--color-text);
+  background: var(--color-surface);
+  background-image: none;
+  border: 1px solid var(--gray-200);
+  border-left: 6px solid var(--tile-accent, var(--stage-other));
+  box-shadow: var(--shadow-card);
+  text-align: left;
+  padding-left: var(--space-4);
+}
+.tile-buttons .block_buttons a.button_link:hover,
+.tile-buttons .block_buttons input[type='button']:hover,
+.tile-buttons .block_buttons input[type='submit']:hover {
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-card-hover);
+  color: var(--tile-accent, var(--color-text));
+}
+.tile-buttons .block_buttons .double a.button_link {
+  text-align: center;
+  padding-left: 0;
+}
+
+.tile-buttons .block_buttons input.btn-danger,
+.tile-buttons .block_buttons a.btn-danger {
+  --tile-accent: var(--color-danger);
+  color: var(--color-danger);
+}
+.tile-buttons .block_buttons input.btn-danger:not([disabled]):hover,
+.tile-buttons .block_buttons a.btn-danger:not(.disabled):hover {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.tile-buttons .block_buttons input[disabled][type='button'],
+.tile-buttons .block_buttons input[disabled][type='submit'],
+.tile-buttons .block_buttons a.button_link.disabled {
+  --tile-accent: var(--gray-300);
+  color: var(--color-disabled-text);
+  background: var(--gray-100);
+  box-shadow: none;
+  transform: none;
+  cursor: auto;
+}
+
+/* Race stages, for the home menu's tiles */
+.before_button { --tile-accent: var(--stage-before); }
+.during_button { --tile-accent: var(--stage-during); }
+.after_button  { --tile-accent: var(--stage-after); }
+.other_button  { --tile-accent: var(--stage-other); }
+
 .block_buttons input.mini {
   padding: 5px;
   border-radius: var(--radius-md);

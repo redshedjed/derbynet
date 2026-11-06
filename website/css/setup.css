@@ -1,150 +1,137 @@
-/* Each step is a card.  Its left bar shows the step's status, read from the
-   status icon setup.js sets: green ok, amber needs attention, red trouble. */
-.step_div {
-  clear: left;
-  display: flow-root;      /* contains the floated icon and button; sits beside #right-float */
-  box-sizing: border-box;
-  margin: 12px 16px 0 16px;
-  min-height: 70px;
-  padding: 10px 0;
-  background: var(--color-surface);
-  border: 1px solid var(--gray-200);
-  border-left: 6px solid var(--card-accent, var(--gray-300));
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-}
-.step_div:has(.status_icon img[src$="/ok.png"])            { --card-accent: var(--color-success); }
-.step_div:has(.status_icon img[src$="/unknown.png"])       { --card-accent: var(--color-warning); }
-.step_div:has(.status_icon img[src$="/readonly.png"])      { --card-accent: var(--color-warning); }
-.step_div:has(.status_icon img[src$="/trouble.png"])       { --card-accent: var(--color-danger); }
-.step_div:has(.status_icon img[src$="/not_connected.png"]) { --card-accent: var(--color-danger); }
-#directions_step { --card-accent: var(--stage-other); }
+/* Set-Up page: three section cards (Race Day Setup, Database, Settings), each
+   with its own accent color.  Inside a section, each step is a row: status
+   icon, a tile button (see "Tile buttons" in global.css), and details. */
 
-.step_div .step_button.block_buttons input,
-.step_div .step_button.block_buttons a.button_link {
-  margin-bottom: 8px;
+.setup_sections {
+  max-width: 1100px;
+  margin: var(--space-5) auto;
+  padding: 0 var(--space-4);
+}
+
+.setup_section {
+  padding: var(--space-4) var(--space-5);
+  margin: 0 0 var(--space-5) 0;
+}
+
+.setup_section .card-title {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-2);
+}
+
+.setup_section .step_div {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--gray-200);
 }
 
 .status_icon {
-    margin-left: 10px;
-    width: 60px;
-    float: left;
+  flex: 0 0 48px;
+  width: 48px;
+  min-height: 1px;
+}
+.status_icon img {
+  display: block;
+  width: 44px;
+  height: 44px;
+}
+.status_icon img:not([src]) {
+  visibility: hidden;      /* before setup.js fills in the status */
 }
 
 .step_button {
-    width: 300px;
-    float: left;
+  flex: 0 0 260px;
+  width: 260px;
+}
+
+/* All tiles the same width, whether a link or a button */
+.setup_section .step_button.block_buttons a.button_link,
+.setup_section .step_button.block_buttons input[type='button'] {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  font-size: 1.375rem;
 }
 
 .step_details {
-    /* To have any visible effect, has to account for
-       the floated-left elements, status_icon and step_button. */
-    margin-left: 425px;
+  flex: 1;
+  min-width: 0;
 }
 .step_details p {
-    padding-top: 15px;
+  margin: var(--space-1) 0;
 }
 
-#right-float {
-  float: right;
-  margin-top: 8px;
-  margin-right: 8px;
-  padding-right: 25px;
-  width: 300px;
-}
-
-/* Cards (see .card in components.css) */
-#offer_fake,
-#remind_fake {
-  width: 275px;
-  margin-top: 12px;
-  padding: 4px 8px 8px 8px;
-}
-#offer_fake p,
-#remind_fake p {
-  font-size: 18px;
-  text-align: center;
-}
-
-#prefs-drop-intro {
-  text-align: center;
-  margin-block-end: 3px;
-  font-size: 18px;
-}
-#prefs-drop {
-  /* A drop zone: dashed, like the unscheduled rounds on the playlist */
-  border: 2px dashed var(--color-border-strong);
-  background: var(--color-surface-sunken);
-  color: var(--color-text-muted);
-  margin-right: 25px;
+/* Fake-roster offer and reminder: short notes at the top of Race Day Setup */
+.setup_note {
+  margin: 0 0 var(--space-3) 0;
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
-  height: 30px;
-  min-height: 30px;
-  width: 238px;
-  text-align: center;
-  padding-top: 2px;
-  margin-left: auto;
-  margin-right: auto;
+  background: #E8EFF8;
+  color: var(--color-brand-strong);
+}
+.setup_note_warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.setup_more {
+  margin: var(--space-3) 0 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--gray-200);
+  color: var(--color-text-muted);
+}
+
+/* Import Settings: a dashed tile that takes a dropped file or a click */
+#prefs-drop {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  border: 2px dashed var(--color-border-strong);
+  border-left: 6px solid var(--tile-accent, var(--stage-other));
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+#prefs-drop:hover,
+#prefs-drop.dz-drag-hover {
+  border-color: var(--color-brand);
+  box-shadow: var(--shadow-card-hover);
 }
 #prefs-drop-msg {
-  margin-block-start: 0px;
-  font-size: 16px;
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
 }
 .dz-default.dz-message {
   visibility: hidden;
   display: none;
 }
 
-#schema_step {
-  min-height: 130px;
+/* setup.js labels this button.  "Re-Initialize" wipes an existing database,
+   so it takes the danger tile look (red bar and text, like btn-danger);
+   "Initialize" on a new database is the normal next step. */
+.tile-buttons .block_buttons #schema_button[value='Re-Initialize']:not([disabled]) {
+  --tile-accent: var(--color-danger);
+  color: var(--color-danger);
+}
+.tile-buttons .block_buttons #schema_button[value='Re-Initialize']:not([disabled]):hover {
+  background-color: var(--color-danger-bg);
 }
 
-#schema_step .step_details p,
-#settings_step .step_details p {
-    padding-top: 2px;
-}
-
-#schema_button {
-  margin-bottom: 0px;
-}
-
-/* setup.js labels this button.  "Re-Initialize" wipes an existing database, so
-   it takes the danger color (like .btn-danger); "Initialize" on a new database
-   is the normal next step and stays blue. */
-.block_buttons #schema_button[value='Re-Initialize']:not([disabled]) {
-  background: var(--color-danger);
-  border-color: var(--color-danger);
-  box-shadow: 0 1px 2px rgba(179, 18, 31, 0.3), 0 4px 12px rgba(179, 18, 31, 0.25);
-}
-.block_buttons #schema_button[value='Re-Initialize']:not([disabled]):hover {
-  background-color: #8F0E19;
-}
-
-#schema_step div.status_icon img {
-  margin-top: 32px;
-}
-
-#schema_step .upper {
-  min-height: 42px;
-  height: 56px;
-}
-
-#schema_step .lower {
-  /* #99 For reasons I don't understand, Firefox needs this. */
-  margin-top: 1px;
-}
-
-#schema_step .lower .step_button {
-  /* margin-left: 70px; */
-  margin-top: 5px;
-}
-
-#schema_step .lower .step_button input {
-  margin-top: 0px;
-}
-
-#schema_step .lower .step_details p {
-  margin-top: 0px;
+@media (max-width: 720px) {
+  .setup_section .step_div {
+    flex-wrap: wrap;
+  }
+  .step_details {
+    flex-basis: 100%;
+  }
 }
 
 /* .step_details a: styled with .small-button in components.css */

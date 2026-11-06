@@ -70,115 +70,127 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
 //]]>
 </script>
 
-<div id="right-float">
-  <div id="offer_fake" class="block_buttons card card-accent accent-before">
-    <p>For experimenting, you might want to make a</p>
-    <a class="button_link" href="fakeroster.php">Fake Roster</a>
+<!-- Three sections, each a card with its own accent color.  setup.js finds
+     each step by its id (roster_step, schema_step, ...), so the ids, status
+     icons and step_details divs must stay. -->
+<div class="setup_sections tile-buttons">
+
+<!-- ======================= Race Day Setup ======================= -->
+<section class="setup_section card card-accent accent-before" aria-labelledby="race-day-heading">
+  <h2 id="race-day-heading" class="card-title">Race Day Setup</h2>
+
+  <div id="offer_fake" class="setup_note">
+    For experimenting, you can make a
+    <a href="fakeroster.php">Fake Roster</a> of made-up racers.
+  </div>
+  <div id="remind_fake" class="setup_note setup_note_warning">
+    To remove the fake roster data, re-initialize the database, or click
+    "Purge Data" and delete racers.
   </div>
 
-  <div id="remind_fake" class="block_buttons card card-accent accent-warning">
-  <p>To remove the fake roster data, re-initialize the database, or click "Purge Data" and delete racers.</p>
+  <div id="roster_step" class="step_div">
+    <div class="status_icon"><img/></div>
+    <div class="step_button block_buttons">
+      <a class="button_link" href="import-roster.php">Import Roster</a>
+    </div>
+    <div class="step_details"></div>
   </div>
 
-</div>
-
-<!-- Database -->
-<div id="database_step" class="step_div">
-  <div class="status_icon"><img/></div>
-
-  <div class="step_button block_buttons">
-    <input type="button" value="Choose Database" onclick="show_ezsetup_modal()"/>
+  <div id="groups_step" class="step_div">
+    <div class="status_icon"><img/></div>
+    <div class="step_button block_buttons">
+      <a class="button_link" href="racing-groups.php">Racing Groups</a>
+    </div>
+    <div class="step_details"></div>
   </div>
 
-  <div class="step_details"></div>
-</div>
+  <div id="awards_step" class="step_div">
+    <div class="status_icon"><img/></div>
+    <div class="step_button block_buttons">
+      <a class="button_link" href="import-awards.php">Import Awards</a>
+    </div>
+    <div class="step_details"></div>
+  </div>
 
-<!-- Schema -->
-<div id="schema_step" class="step_div">
-  <div class="status_icon"><img/></div>
+  <p class="setup_more">You may also want to visit
+    the <a href="scenes.php?back=setup.php">Scene Editor</a>
+    or the <a href="playlist.php?back=setup.php">Playlist Editor</a>.</p>
+</section>
 
-  <div class="upper">
+<!-- ======================= Database ======================= -->
+<section class="setup_section card card-accent accent-ink" aria-labelledby="database-heading">
+  <h2 id="database-heading" class="card-title">Database</h2>
+
+  <div id="database_step" class="step_div">
+    <div class="status_icon"><img/></div>
+    <div class="step_button block_buttons">
+      <input type="button" value="Choose Database" onclick="show_ezsetup_modal()"/>
+    </div>
+    <div class="step_details"></div>
+  </div>
+
+  <div id="import_database_step" class="step_div">
+    <div class="status_icon"></div>
+    <div class="step_button block_buttons">
+      <a class="button_link" href="import-snapshot.php">Import Database</a>
+    </div>
+    <div class="step_details">
+      <p>Load a database snapshot you captured earlier.</p>
+    </div>
+  </div>
+
+  <div id="schema_step" class="step_div">
+    <div class="status_icon"><img/></div>
     <div class="step_button block_buttons">
       <input id="schema_button" type="button"/>
     </div>
-
     <div id="schema_details" class="step_details"></div>
   </div>
 
-  <div class="lower">
+  <div id="purge_step" class="step_div">
+    <div class="status_icon"></div>
     <div class="step_button block_buttons">
       <input id="purge_data_button" type="button" class="btn-danger"
              value="Purge Data" onclick="show_purge_modal()"/>
     </div>
-
     <div class="step_details">
       <p>After testing or experimentation, you may wish to delete
       some or all of the data in the database.</p>
     </div>
   </div>
+</section>
 
-</div>
+<!-- ======================= Settings ======================= -->
+<section class="setup_section card card-accent accent-gold" aria-labelledby="settings-heading">
+  <h2 id="settings-heading" class="card-title">Settings</h2>
 
-<!-- Roster -->
-<div id="roster_step" class="step_div">
-  <div class="status_icon"><img/></div>
-
-  <div class="step_button block_buttons">
-    <a class="button_link" href="import-roster.php">Import Roster</a>
+  <!-- Photo directories and lane count -->
+  <div id="settings_step" class="step_div">
+    <div class="status_icon"><img/></div>
+    <div class="step_button block_buttons">
+      <a class="button_link" href="settings.php">Settings</a>
+    </div>
+    <div class="step_details"></div>
   </div>
 
-  <div class="step_details"></div>
-</div>
-
-<!-- Groups -->
-<div id="groups_step" class="step_div">
-  <div class="status_icon"><img/></div>
-
-  <div class="step_button block_buttons">
-    <a class="button_link" href="racing-groups.php">Racing Groups</a>
+  <div id="directions_step" class="step_div">
+    <div class="status_icon"></div>
+    <div class="step_button block_buttons">
+      <form id="prefs-drop" action="action.php" class="dropzone">
+        <p id="prefs-drop-msg" class="dz-message">Import Settings</p>
+        <div class="fallback">
+          <input type="file" name="prefs" value="Upload Files"/>
+        </div>
+        <input type="hidden" name="action" value="preferences.upload"/>
+      </form>
+    </div>
+    <div class="step_details">
+      <p id="prefs-drop-intro">Drop a saved preferences file on the button, or
+        click it to choose one.</p>
+    </div>
   </div>
+</section>
 
-  <div class="step_details"></div>
-</div>
-
-<!-- Awards -->
-<div id="awards_step" class="step_div">
-  <div class="status_icon"><img/></div>
-
-  <div class="step_button block_buttons">
-    <a class="button_link" href="import-awards.php">Import Awards</a>
-  </div>
-
-  <div class="step_details"></div>
-</div>
-
-<!-- Photo directories and lane count -->
-<div id="settings_step" class="step_div">
-  <div class="status_icon"><img/></div>
-
-  <div class="step_button block_buttons">
-    <a class="button_link" href="settings.php">Settings</a>
-  </div>
-  <div class="step_details"></div>
-</div>
-
-<div id="directions_step" class="step_div">
-  <div class="status_icon">&nbsp;</div>
-  <div class="step_button block_buttons">
-    <p id="prefs-drop-intro">If you have a saved prefs file,</p>
-    <form id="prefs-drop" action="action.php" class="dropzone">
-      <p id="prefs-drop-msg" class="dz-message">Drop prefs file here</p>
-      <div class="fallback">
-        <input type="file" name="prefs" value="Upload Files"/>
-      </div>
-      <input type="hidden" name="action" value="preferences.upload"/>
-    </form>
-  </div>
-  <div class="step_details">
-    <p>You may also want to visit
-        the <a class="button_link" href="scenes.php?back=setup.php">Scene Editor</a>
-        or the <a class="button_link" href="playlist.php?back=setup.php">Playlist Editor</a></p>
-  </div>
 </div>
 
 
