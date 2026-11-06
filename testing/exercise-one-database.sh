@@ -63,7 +63,6 @@ run_tests() {
 
     puppeteer_test all-pages-test.js
     puppeteer_test coordinator-test.js
-    puppeteer_test flipswitch-test.js
     puppeteer_test ondeck-columns-test.js
 
     `dirname $0`/test-awards.sh "$BASE_URL" basic
@@ -77,6 +76,9 @@ run_tests() {
     `dirname $0`/test-slide-next.sh "$BASE_URL"
 
     `dirname $0`/test-racer-query.sh "$BASE_URL"
+    # Checks a racer in and out, which changes check-in order; the next script
+    # resets the database.
+    puppeteer_test flipswitch-test.js
 
     # Resets database
     `dirname $0`/test-car-numbers.sh "$BASE_URL"
