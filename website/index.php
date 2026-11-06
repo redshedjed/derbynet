@@ -69,6 +69,15 @@ div.index_column {
   float: left;
 }
 
+/* On a phone, one column of buttons rather than two side by side */
+@media (max-width: 640px) {
+  div.index_column {
+    width: 100%;
+    display: block;
+    float: none;
+  }
+}
+
 .block_buttons a.button_link {
   width: 238px;
   height: 30px;

@@ -174,7 +174,7 @@ function flipswitch_resize_for_text(checkbox) {
 function measure_text(text, font_size) {
   var span = $("<span/>").text(text)
       .css('font-size', font_size + 'px')
-      .css('font-family', 'sans-serif')
+      .css('font-family', $('body').css('font-family'))  // measure in the font the page uses
       .css('position', 'absolute')
       .css('display', 'hidden')
       .appendTo($("body"));

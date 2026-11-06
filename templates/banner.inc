@@ -2,28 +2,39 @@
 
 // Back button is false for no back button, or the name of the "back" page.
 // * back_button must be one of index.php, setup.php.
+//
+// Layout and colors are in css/global.css.  Scripts and kiosk stylesheets rely
+// on the class names banner and banner_title.
 function make_banner($banner_title, $back_button = 'index.php') {
   echo "<div class=\"banner\">\n";
 
-  echo "<div class=\"banner_title\">".htmlspecialchars($banner_title, ENT_QUOTES, 'UTF-8')."</div>\n";
-
   if ($back_button && in_array($back_button, ['index.php', 'setup.php', 'checkin.php',
                                               'kiosk-dashboard.php', 'coordinator.php'])) {
-    echo "<div class=\"back_button\" onclick=\"window.location='".$back_button."'; return false;\">\n";
-    echo "<img src=\"img/back-button.png\"/>\n";
-    echo "</div>\n";
-  }
-
-  if (isset($_SESSION['role']) && $_SESSION['role']) {
-    echo "<a href='quickref.pdf' target='derbynet_help' rel='noreferrer noopener'>";
-    echo "<div class=\"help\">";
-    echo "<img src=\"img/help.png\"/>";
-    echo "<p>@BRANCH@</p>";
-    echo "</div>";
+    echo "<a class=\"back_button\" href=\"".$back_button."\">";
+    echo "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\""
+        ." stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\">"
+        ."<path d=\"M15 5l-7 7 7 7\"/></svg>";
+    echo "<span>Back</span>";
     echo "</a>\n";
   }
 
-  echo "<img class=\"logo\" src=\"img/derbynet.png\"/>\n";
+  echo "<div class=\"banner_title\">".htmlspecialchars($banner_title, ENT_QUOTES, 'UTF-8')."</div>\n";
+
+  echo "<div class=\"banner_tools\">\n";
+  if (isset($_SESSION['role']) && $_SESSION['role']) {
+    echo "<a class=\"help\" href=\"quickref.pdf\" target=\"derbynet_help\" rel=\"noreferrer noopener\""
+        ." title=\"Quick reference\">";
+    echo "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\""
+        ." stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">"
+        ."<circle cx=\"12\" cy=\"12\" r=\"10\"/>"
+        ."<path d=\"M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4.5\"/>"
+        ."<circle cx=\"12\" cy=\"17.5\" r=\"0.6\" fill=\"currentColor\"/></svg>";
+    echo "<span class=\"help_version\">@BRANCH@</span>";
+    echo "</a>\n";
+  }
+  echo "<img class=\"logo\" src=\"img/derbynet.png\" alt=\"DerbyNet\"/>\n";
+  echo "</div>\n";
+
   echo "</div>\n";
 }
 ?>
