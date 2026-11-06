@@ -70,12 +70,28 @@ async function main() {
 
     console.log('   Check-in switch');
     await page.goto(root + '/checkin.php', {waitUntil: 'networkidle2'});
-    // A racer who isn't checked in yet: the server refuses to un-check-in a
-    // racer who has already raced, so a checked-in racer may not toggle back.
-    const boxId = await page.$$eval('input[id^="passed-"]',
-                                    els => (els.find(el => !el.checked) || {}).id);
+    // Use a racer who isn't checked in yet: the server refuses to un-check-in a
+    // racer who has already raced.  If everyone is checked in, add a temporary
+    // racer, and delete it afterwards.
+    const findUnchecked = () => page.$$eval('input[id^="passed-"]',
+                                            els => (els.find(el => !el.checked) || {}).id);
+    let boxId = await findUnchecked();
+    let tempRacerId = null;
     if (!boxId) {
-      fail('No racer left to check in; this test needs one');
+      const added = await page.evaluate(async () => {
+        const r = await fetch('action.php', {method: 'POST', body: new URLSearchParams({
+          action: 'racer.add', firstname: 'Switch', lastname: 'Test', carno: 999, partitionid: 1})});
+        return r.json();
+      });
+      if (added.outcome.summary != 'success') {
+        fail('Could not add a temporary racer: ' + JSON.stringify(added.outcome));
+      }
+      await page.goto(root + '/checkin.php', {waitUntil: 'networkidle2'});
+      boxId = await findUnchecked();
+      tempRacerId = boxId && boxId.substring('passed-'.length);
+    }
+    if (!boxId) {
+      fail('No racer to check in, even after adding one');
     }
     const box = '#' + boxId;
     const passedBefore = await page.$eval(box, el => el.checked);
@@ -86,6 +102,12 @@ async function main() {
     check(await clickSwitch(box, 'racer.pass'), 'racer.pass', 'Check-in switch, set back');
     if ((await page.$eval(box, el => el.checked)) != passedBefore) {
       fail('Check-in switch did not return to its original state');
+    }
+    if (tempRacerId) {
+      await page.evaluate(async id => {
+        await fetch('action.php', {method: 'POST',
+                                   body: new URLSearchParams({action: 'racer.delete', racer: id})});
+      }, tempRacerId);
     }
   } finally {
     await browser.close();
