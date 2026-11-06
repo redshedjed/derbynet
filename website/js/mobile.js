@@ -97,7 +97,13 @@ function flipswitch(checkboxes) {
       .addClass(classes)
       .toggleClass('checked', checkbox.is(':checked'))
       .on('click', function(event) {
-        checkbox.trigger(event);
+        // Clicking the checkbox below sends a click that bubbles back up to
+        // this wrapper.  Ignore that one; under jQuery 3, forwarding it again
+        // makes every click repeat until the stack overflows.
+        if (event.target === checkbox[0]) {
+          return;
+        }
+        checkbox[0].click();
       });
     flipswitch_resize_for_text(checkbox);
   });

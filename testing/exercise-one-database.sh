@@ -63,6 +63,7 @@ run_tests() {
 
     puppeteer_test all-pages-test.js
     puppeteer_test coordinator-test.js
+    puppeteer_test flipswitch-test.js
     puppeteer_test ondeck-columns-test.js
 
     `dirname $0`/test-awards.sh "$BASE_URL" basic
