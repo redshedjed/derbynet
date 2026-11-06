@@ -32,7 +32,7 @@
   --color-text-muted: var(--gray-600);
   --color-text-on-brand: #FFFFFF;
   --color-text-on-brand-muted: var(--scouting-tan);
-  --color-page: #FFFFFF;
+  --color-page: #F3F2EE;  /* warm light gray, so white cards stand out */
   --color-surface: #FFFFFF;
   --color-surface-alt: var(--scouting-tan-light);
   --color-surface-sunken: var(--gray-50);
@@ -79,10 +79,23 @@
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
+  --radius-xl: 16px;
   --radius-pill: 999px;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.12);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.18);
   --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.25);
+  /* Cards: a hairline plus a soft drop, for panels and tiles */
+  --shadow-card: 0 1px 2px rgba(35, 37, 40, 0.06), 0 4px 14px rgba(35, 37, 40, 0.08);
+  --shadow-card-hover: 0 2px 4px rgba(35, 37, 40, 0.08), 0 10px 24px rgba(35, 37, 40, 0.14);
+  /* Primary buttons: a blue-tinted drop */
+  --shadow-button: 0 1px 2px rgba(0, 42, 92, 0.25), 0 4px 12px rgba(0, 63, 135, 0.22);
+  --shadow-button-hover: 0 2px 4px rgba(0, 42, 92, 0.3), 0 8px 20px rgba(0, 63, 135, 0.3);
+
+  /* ---- Race stages: home-menu tiles carry these as an accent ---- */
+  --stage-before: var(--scouting-blue);
+  --stage-during: var(--scouting-red);
+  --stage-after: #A07D2E;  /* gold */
+  --stage-other: var(--gray-500);
 
   /* ---- Layout ---- */
   --banner-height: 64px;  /* setup.css positions a box just under the banner */

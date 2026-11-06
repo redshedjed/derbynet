@@ -78,26 +78,54 @@ div.index_column {
   }
 }
 
+div.index_background {
+  padding-top: var(--space-5);
+}
+
+/* Home menu tiles: white cards, with a color bar for the race stage each
+   belongs to (before, during, after, other). */
 .block_buttons a.button_link {
   width: 238px;
   height: 30px;
 }
 
+.index_background .block_buttons a.button_link,
+.index_background .block_buttons input[type='submit'] {
+  color: var(--color-text);
+  background: var(--color-surface);
+  background-image: none;
+  border: 1px solid var(--gray-200);
+  border-left: 6px solid var(--tile-accent, var(--stage-other));
+  box-shadow: var(--shadow-card);
+  text-align: left;
+  padding-left: var(--space-4);
+}
+.index_background .block_buttons a.button_link:hover,
+.index_background .block_buttons input[type='submit']:hover {
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-card-hover);
+  color: var(--tile-accent, var(--color-text));
+}
+.index_background .block_buttons .double a.button_link {
+  text-align: center;
+  padding-left: 0;
+}
+
 .block_buttons a.button_link.before_button,
 .block_buttons input.before_button[type='submit'] {
-  color: #ffffcc;
+  --tile-accent: var(--stage-before);
 }
 .block_buttons a.button_link.during_button,
 .block_buttons input.during_button[type='submit'] {
-  color: #ddffdd;
+  --tile-accent: var(--stage-during);
 }
 .block_buttons a.button_link.after_button,
 .block_buttons input.after_button[type='submit'] {
-  color: #ddddff;
+  --tile-accent: var(--stage-after);
 }
 .block_buttons a.button_link.other_button,
 .block_buttons input.other_button[type='submit'] {
-  color: #ffddff;
+  --tile-accent: var(--stage-other);
 }
 </style>
 </head>

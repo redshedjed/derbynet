@@ -15,8 +15,10 @@ input[type='text'], input[type='number'] {
 
 .settings_group {
     padding: 1em;
-    border: 2px solid #666666;
-    border-radius: 0.4em 0.4em 0.4em 0.4em;
+    background: var(--color-surface);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
     margin: 1em;
 }
 
@@ -69,7 +71,7 @@ p.photo_dir_status_message {
 
 a.small-button {
   display: inline-block;
-  background: black;
+  background: var(--color-brand);
   color: white;
   font-size: 16px;
   height: 15px;
@@ -81,7 +83,7 @@ a.small-button {
 
 input.small-button,
 .block_buttons input.small-button {
-  background: black;
+  background: var(--color-brand);
   color: white;
   font-size: 16px;
   height: 28px;
