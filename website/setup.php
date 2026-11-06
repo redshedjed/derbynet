@@ -71,12 +71,12 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
 </script>
 
 <div id="right-float">
-  <div id="offer_fake" class="block_buttons">
+  <div id="offer_fake" class="block_buttons card card-accent accent-before">
     <p>For experimenting, you might want to make a</p>
     <a class="button_link" href="fakeroster.php">Fake Roster</a>
   </div>
 
-  <div id="remind_fake" class="block_buttons">
+  <div id="remind_fake" class="block_buttons card card-accent accent-warning">
   <p>To remove the fake roster data, re-initialize the database, or click "Purge Data" and delete racers.</p>
   </div>
 
@@ -107,7 +107,7 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
 
   <div class="lower">
     <div class="step_button block_buttons">
-      <input id="purge_data_button" type="button"
+      <input id="purge_data_button" type="button" class="btn-danger"
              value="Purge Data" onclick="show_purge_modal()"/>
     </div>
 
@@ -273,7 +273,7 @@ if (count($ez_configs) > 0) {
     <p>Initializing the schema will wipe out any existing data in the 
     database, and cannot be undone.  Are you sure that's what you want to do?</p>
 
-    <input type="submit" value="Initialize"/>
+    <input type="submit" class="btn-danger" value="Initialize"/>
     <input type="button" value="Cancel"
       onclick='close_secondary_modal("#initialize_schema_modal");'/>
   </form>
@@ -297,7 +297,7 @@ if (count($ez_configs) > 0) {
 
     <div class="purge_div">
       <div class="purge_button block_buttons">
-        <input type="button" id="delete_race_results" value="Delete Race Results"
+        <input type="button" class="btn-danger" id="delete_race_results" value="Delete Race Results"
                 onclick="confirm_purge('results');"/>
       </div>
       <p id="purge_results_para"><span id="purge_nresults_span"></span> completed heat(s)</p>
@@ -305,7 +305,7 @@ if (count($ez_configs) > 0) {
 
     <div class="purge_div">
       <div class="purge_button block_buttons">
-        <input type="button" id="delete_schedules" value="Delete Schedules"
+        <input type="button" class="btn-danger" id="delete_schedules" value="Delete Schedules"
                 onclick="confirm_purge('schedules');"/>
       </div>
       <p id="purge_schedules_para"><span id="purge_nschedules_span"></span> scheduled heat(s)</p>
@@ -313,7 +313,7 @@ if (count($ez_configs) > 0) {
 
     <div class="purge_div">
       <div class="purge_button block_buttons">
-        <input type="button" id="delete_racers" value="Delete Racers"
+        <input type="button" class="btn-danger" id="delete_racers" value="Delete Racers"
                 onclick="confirm_purge('racers');"/>
       </div>
       <p id="purge_racers_para"><span id="purge_nracers_span"></span> registered racer(s)</p>
@@ -321,7 +321,7 @@ if (count($ez_configs) > 0) {
                                                 <!-- TODO delete classes/ranks? -->
     <div class="purge_div">
       <div class="purge_button block_buttons">
-        <input type="button" id="delete_awards" value="Delete Awards"
+        <input type="button" class="btn-danger" id="delete_awards" value="Delete Awards"
                 onclick="confirm_purge('awards');"/>
       </div>
       <p id="purge_awards_para"><span id="purge_nawards_span"></span> award(s)</p>
@@ -329,7 +329,7 @@ if (count($ez_configs) > 0) {
 
     <div class="purge_div">
       <div class="purge_button block_buttons">
-        <input type="button" value="Re-Initialize"
+        <input type="button" class="btn-danger" value="Re-Initialize"
                onclick="show_initialize_schema_modal();"/>
       </div>
       <p>Delete everything in the database</p>
@@ -349,7 +349,7 @@ if (count($ez_configs) > 0) {
   <p>from the database.  This operation cannot be undone.
      Are you sure that's what you want to do?</p>
 
-    <input type="submit" value="Purge"/>
+    <input type="submit" class="btn-danger" value="Purge"/>
     <input type="button" value="Cancel"
       onclick='close_secondary_modal("#purge_confirmation_modal");'/>
   </form>

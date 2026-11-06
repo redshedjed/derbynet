@@ -304,10 +304,48 @@ tbody {
   cursor: auto;
 }
 
-.block_buttons input.delete_button {
+/* Button roles inside .block_buttons.  Use the same class names as the .btn
+   variants in components.css: btn-danger for actions that delete or can't be
+   undone, btn-secondary for the less important choice.  Cancel buttons are
+   secondary everywhere, so they don't compete with the main action. */
+
+.block_buttons input.delete_button,
+.block_buttons input.btn-danger,
+.block_buttons a.btn-danger {
   background: var(--color-danger);
   border-color: var(--color-danger);
   box-shadow: 0 1px 2px rgba(179, 18, 31, 0.3), 0 4px 12px rgba(179, 18, 31, 0.25);
+}
+.block_buttons input.delete_button:not([disabled]):hover,
+.block_buttons input.btn-danger:not([disabled]):hover,
+.block_buttons a.btn-danger:not(.disabled):hover {
+  background-color: #8F0E19;
+  box-shadow: 0 2px 4px rgba(179, 18, 31, 0.35), 0 8px 20px rgba(179, 18, 31, 0.3);
+}
+
+.block_buttons input.btn-secondary,
+.block_buttons a.btn-secondary,
+.block_buttons input[type='button'][value='Cancel'] {
+  color: var(--color-brand);
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+.block_buttons input.btn-secondary:not([disabled]):hover,
+.block_buttons a.btn-secondary:not(.disabled):hover,
+.block_buttons input[type='button'][value='Cancel']:hover {
+  background-color: var(--color-surface-sunken);
+  border-color: var(--color-brand);
+  box-shadow: var(--shadow-card);
+}
+
+/* Disabled wins over any role */
+.block_buttons input.btn-danger[disabled],
+.block_buttons input.btn-secondary[disabled] {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  box-shadow: none;
 }
 
 .block_buttons input.mini {

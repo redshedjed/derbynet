@@ -1,8 +1,28 @@
+/* Each step is a card.  Its left bar shows the step's status, read from the
+   status icon setup.js sets: green ok, amber needs attention, red trouble. */
 .step_div {
   clear: left;
-    width: 100%;
-    margin-top: 20px;
-    min-height: 70px;
+  display: flow-root;      /* contains the floated icon and button; sits beside #right-float */
+  box-sizing: border-box;
+  margin: 12px 16px 0 16px;
+  min-height: 70px;
+  padding: 10px 0;
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-left: 6px solid var(--card-accent, var(--gray-300));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.step_div:has(.status_icon img[src$="/ok.png"])            { --card-accent: var(--color-success); }
+.step_div:has(.status_icon img[src$="/unknown.png"])       { --card-accent: var(--color-warning); }
+.step_div:has(.status_icon img[src$="/readonly.png"])      { --card-accent: var(--color-warning); }
+.step_div:has(.status_icon img[src$="/trouble.png"])       { --card-accent: var(--color-danger); }
+.step_div:has(.status_icon img[src$="/not_connected.png"]) { --card-accent: var(--color-danger); }
+#directions_step { --card-accent: var(--stage-other); }
+
+.step_div .step_button.block_buttons input,
+.step_div .step_button.block_buttons a.button_link {
+  margin-bottom: 8px;
 }
 
 .status_icon {
@@ -33,14 +53,16 @@
   width: 300px;
 }
 
+/* Cards (see .card in components.css) */
 #offer_fake,
 #remind_fake {
-  border: 4px var(--color-brand) solid;
   width: 275px;
+  margin-top: 12px;
+  padding: 4px 8px 8px 8px;
 }
 #offer_fake p,
 #remind_fake p {
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
 }
 
@@ -50,9 +72,12 @@
   font-size: 18px;
 }
 #prefs-drop {
-  border: 3px solid var(--color-brand);
+  /* A drop zone: dashed, like the unscheduled rounds on the playlist */
+  border: 2px dashed var(--color-border-strong);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-muted);
   margin-right: 25px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   height: 30px;
   min-height: 30px;
   width: 238px;
@@ -81,6 +106,18 @@
 
 #schema_button {
   margin-bottom: 0px;
+}
+
+/* setup.js labels this button.  "Re-Initialize" wipes an existing database, so
+   it takes the danger color (like .btn-danger); "Initialize" on a new database
+   is the normal next step and stays blue. */
+.block_buttons #schema_button[value='Re-Initialize']:not([disabled]) {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  box-shadow: 0 1px 2px rgba(179, 18, 31, 0.3), 0 4px 12px rgba(179, 18, 31, 0.25);
+}
+.block_buttons #schema_button[value='Re-Initialize']:not([disabled]):hover {
+  background-color: #8F0E19;
 }
 
 #schema_step div.status_icon img {
@@ -118,7 +155,7 @@
 }
 
 span.trouble {
-    color: red;
+    color: var(--color-danger);
     font-weight: bold;
     font-size: 16px;
 }
@@ -134,12 +171,16 @@ span.trouble {
     top: 64px;
     left: 50%;
     margin-left: -150px;
-    background: #d0d0d0;
+    background: var(--color-surface);
     text-align: center;
     font-weight: bold;
     font-size: 30px;
 
-    border: 4px solid black;
+    border: 1px solid var(--gray-200);
+    border-top: 6px solid var(--color-brand);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 10;
 }
 
 #reporting_box_content {
@@ -148,19 +189,23 @@ span.trouble {
 }
 
 #reporting_box_dismiss {
-    margin: 4px;
-    border: 8px solid #c00000;
-    background: #f0f0f0;
-    color: #000000;
-
+    margin: 4px auto 12px auto;
+    padding: 6px 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-brand);
+    font-size: 20px;
+    cursor: pointer;
     width: 50%;
-    margin-left: auto;
-    margin-right: auto;
 }
 
+#reporting_box.success {
+    border-top-color: var(--color-success);
+}
 #reporting_box.success,
 #reporting_box.success #reporting_box_content {
-    color: #00a000;
+    color: var(--color-success);
 }
 
 #reporting_box.failure {
@@ -168,9 +213,12 @@ span.trouble {
     margin-left: -300px;
 }
 
+#reporting_box.failure {
+    border-top-color: var(--color-danger);
+}
 #reporting_box.failure,
 #reporting_box.failure #reporting_box_content {
-    color: #a00000;
+    color: var(--color-danger);
 }
 
 .tall_modal {
@@ -194,7 +242,7 @@ span.trouble {
 }
 
 .block_buttons .missing_driver {
-    color: red;
+    color: var(--color-danger);
     font-weight: bold;
     float: right;
     font-size: 16px;
