@@ -70,7 +70,14 @@ async function main() {
 
     console.log('   Check-in switch');
     await page.goto(root + '/checkin.php', {waitUntil: 'networkidle2'});
-    const box = '#' + await page.$eval('input[id^="passed-"]', el => el.id);
+    // A racer who isn't checked in yet: the server refuses to un-check-in a
+    // racer who has already raced, so a checked-in racer may not toggle back.
+    const boxId = await page.$$eval('input[id^="passed-"]',
+                                    els => (els.find(el => !el.checked) || {}).id);
+    if (!boxId) {
+      fail('No racer left to check in; this test needs one');
+    }
+    const box = '#' + boxId;
     const passedBefore = await page.$eval(box, el => el.checked);
     check(await clickSwitch(box, 'racer.pass'), 'racer.pass', 'Check-in switch');
     if ((await page.$eval(box, el => el.checked)) == passedBefore) {
