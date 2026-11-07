@@ -5,15 +5,9 @@ html, body { /* Don't scroll the page, just the table. */
 }
 
 /* ---------------- Toolbar ----------------
-   Barcode and Mobile on the left; Bulk and New Racer on the right. */
+   A .page-toolbar (components.css): Barcode and Mobile on the left; Bulk
+   and New Racer on the right. */
 
-#top-buttons {
-  padding: var(--space-3) var(--space-4);
-}
-#top-buttons .btn {
-  min-height: 44px;
-  font-size: var(--text-base);
-}
 #barcode-button {
   padding: var(--space-1) var(--space-3);
 }

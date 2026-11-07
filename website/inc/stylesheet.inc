@@ -12,6 +12,7 @@ $mobile_ready_pages = array(
   'history.php',
   'import-snapshot.php',
   'index.php',
+  'judging.php',
   'login.php',
   'mcheckin.php',
   'ondeck.php',

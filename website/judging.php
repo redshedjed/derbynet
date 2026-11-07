@@ -30,28 +30,26 @@ $(function() {
   });
 </script>
 </head>
-<body>
+<body class="fill-page">
 <?php
 make_banner('Judging');
 
 require_once('inc/standings.inc');
 require_once('inc/schema_version.inc');
 
-$order = '';
-if (isset($_GET['order']))
-  $order = $_GET['order'];  // Values are: name, class, car
-if (!$order)
-    $order = 'car';
+$order = 'car';
+if (isset($_GET['order']) && in_array($_GET['order'], ['name', 'class', 'car']))
+  $order = $_GET['order'];
 
+// One segment of the Sort control; the current sort is marked and not a link.
 function link_for_ordering($key, $text) {
   global $order;
-  echo "<a ";
+  $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
   if ($order == $key) {
-    echo 'class="current_sort"';
+    echo "<span class='current' aria-current='true'>".$text."</span>";
+  } else {
+    echo "<a href='judging.php?order=".$key."'>".$text."</a>";
   }
-  echo " href='judging.php?order=".$key."'>";
-  echo $text;
-  echo "</a>";
 }
 
 $racers = array();
@@ -84,21 +82,22 @@ foreach ($db->query($sql) as $rs) {
 }
 
 ?>
-<div id="top_matter" class="block_buttons">
-  <div id="ballot-button-div">
-    <input type='button' value='Manage Ballot' onclick='show_modal($("#ballot_modal"));'/>
+<div id="top_matter" class="toolbar page-toolbar">
+  <input type='button' class='btn btn-secondary' value='Manage Ballot'
+         onclick='show_modal($("#ballot_modal"));'/>
+  <a class="btn btn-secondary" href="awards-editor.php">Edit Awards</a>
+  <span class="toolbar-spacer"></span>
+  <div id="sort_controls" class="segmented" role="group" aria-label="Sort racers by">
+    <span class="segmented-label">Sort</span>
+    <?php link_for_ordering('car', "Car #"); ?>
+    <?php link_for_ordering('name', "Name"); ?>
+    <?php link_for_ordering('class', group_label()); ?>
   </div>
-  <div id="sort_controls">
-    Sort racers by:<br/>
-    <?php link_for_ordering('name', "name,"); ?>
-    <?php link_for_ordering('class', group_label_lc().","); ?> or
-    <?php link_for_ordering('car', "car number"); ?>.
-  </div>
-  <a class="button_link" href="awards-editor.php">Edit Awards</a>
 </div>
 
+<div id="judging-panel" class="page-panel">
 <div id="awards">
-  <div id="dd-prompt">Drag awards to racers,<br/>or racers to awards.</div>
+  <div id="dd-prompt">Drag awards to racers, or racers to awards.</div>
   <p id="awards-empty">There are currently no awards defined.</p>
   <ul>
   </ul>
@@ -138,6 +137,7 @@ foreach ($db->query($sql) as $rs) {
   }
 ?>
 </div>
+</div><!-- judging-panel -->
 
 <div id="racer_awards_modal" class="modal_dialog hidden block_buttons">
   <h3>Awards for <span id="racer_awards_recipient_carno"></span> <span id="racer_awards_recipient_name"></span>

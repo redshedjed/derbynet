@@ -1,160 +1,269 @@
-#top_matter {
-    height: 80px;
-}
+/* Judging (judging.php).
 
-.award_superlative {
-    text-align: right;
-    width: 6em;
-}
+   body.fill-page with a .page-toolbar and one .page-panel (components.css).
+   In the panel, the awards list (left) and the racers (right) each scroll.
+   Awards are dragged onto racers, or racers onto awards. */
 
-.award_primary {
-    text-align: left;
-}
-
-.award_racers {
-    float: right;
-    width: 20%;
-}
+/* ---------------- Awards list ---------------- */
 
 #awards {
-    position: absolute;
-    left: 0;
-    width: 300px;
-    top: 140px; 
-    bottom: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
+  position: absolute;
+  left: 0;
+  width: 300px;
+  top: 0;
+  bottom: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: var(--space-3);
+  box-sizing: border-box;
+  background: var(--color-page);
+  border-right: 1px solid var(--gray-200);
+}
+
+#dd-prompt {
+  margin: 0 0 var(--space-3) 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: #E8EFF8;
+  color: var(--color-brand-strong);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  text-align: center;
 }
 
 #awards-empty {
   font-weight: bold;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding: 0 var(--space-4);
   text-align: center;
+  color: var(--color-text-muted);
 }
 
 #awards ul {
-    margin-top: 0px;
-    margin-bottom: 0px;
-    padding-left: 10px;
+  margin: 0;
+  padding: 0;
 }
 
+/* Each award is a small card with a gold edge; drag it onto a racer */
 #awards li {
-    list-style-image: none;
-    list-style-position: outside;
-    list-style-type: none;
-
-    min-height: 100px;
-    border: 1px black solid;
+  list-style: none;
+  display: flow-root;   /* contains the floated recipient */
+  position: relative;
+  min-height: 64px;
+  margin: 0 0 var(--space-2) 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-left: 5px solid var(--stage-after);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+}
+#awards li.ui-draggable-dragging {
+  cursor: grabbing;
+  box-shadow: var(--shadow-card-hover);
 }
 
 #awards ul a {
-    color: black;
-    cursor: pointer;
+  color: var(--color-text);
+  cursor: pointer;
 }
 
 #awards li p {
-    padding-bottom: 0px;
-    margin: 0px;
-    margin-left: 12px;
-    margin-right: 12px;
+  margin: 0;
+  padding: 0;
 }
 
 #awards p.awardname {
-    font-weight: bold;
-    margin-top: 12px;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+  color: var(--color-text);
+}
+#awards li:has(.votes:not(.hidden)) p.awardname {
+  padding-right: 4.5em;   /* room for the Votes pill */
 }
 #awards .awardtype {
-    font-style: italic;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-text-muted);
 }
+#awards .class-and-rank {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* The racer who has the award, at the right; the x removes them.  (With no
+   winner the link holds just a space; a winner always has the x image.) */
 #awards .recipient {
-    float: right;
-}
-#awards .votes {
   float: right;
-  margin-top: 10px;
-  margin-right: 5px;
-  border: 1px solid black;
-  padding: 2px;
+  max-width: 100%;
+  margin-top: 2px;
+  font-weight: var(--weight-semibold);
+  color: var(--color-brand);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+#awards a.recipient:has(img) {
+  box-sizing: border-box;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+#awards .recipient img {
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* Votes from balloting: a small pill at top right */
+#awards .votes {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  padding: 1px 8px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  border-radius: var(--radius-pill);
+  color: #FFFFFF;
+  background: var(--color-brand);
+}
+#awards .votes.hidden {
+  display: none;
+}
+
+/* ---------------- Racers ---------------- */
 
 #racers {
-    position: absolute;
-    left: 300px;
-    right: 0;
-    top: 140px;
-    bottom: 0;
-    overflow-y: auto;
+  position: absolute;
+  left: 300px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: var(--space-3);
+  box-sizing: border-box;
 }
 
-.award_marker {
-    position: absolute;
-    left: 61px;  /* (150px - 27px) / 2 */
-}
-
-.adhoc_marker {
-    position: absolute;
-    left: 90px;
-}
-
+/* Each racer is a tile: car photo, number, name, group */
 .judging_racer {
-    position: relative;
-    display: inline-block;
-    /* Default is vertical-align: baseline, which lines up the bottoms of the images. */
-    vertical-align: top;
-    width: 150px;
-    height: 200px;
-    /* background-image gets set by javascript for speed award winners */
-    /* background-image: url('../img/laurel.png'); */
-    background-image: none;
-    background-repeat: no-repeat;
+  position: relative;
+  display: inline-block;
+  /* Default is vertical-align: baseline, which lines up the bottoms of the images. */
+  vertical-align: top;
+  box-sizing: border-box;
+  width: 150px;
+  height: 200px;
+  margin: 0 var(--space-2) var(--space-2) 0;
+  padding-top: var(--space-2);
+  background-color: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  /* background-image gets set by javascript for speed award winners */
+  /* background-image: url('../img/laurel.png'); */
+  background-image: none;
+  background-repeat: no-repeat;
+  background-position: center 4px;
+  transition: box-shadow 150ms ease, transform 150ms ease;
+}
+.judging_racer:hover {
+  box-shadow: var(--shadow-card-hover);
 }
 .judging_racer img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    max-height: 100px;
-    max-width: 100px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 90px;
+  max-width: 120px;
 }
 
 .judging_racer .carno {
-    text-align: center;
-    width: 100%;
-    font-size: 24px;
-    font-weight: bold;
+  text-align: center;
+  width: 100%;
+  font-size: var(--text-xl);
+  font-weight: bold;
+  color: var(--color-text);
 }
 .judging_racer .racer_name,
 .judging_racer .group_name,
+.judging_racer .subgroup_name,
 .judging_racer .rank_name {
-    text-align: center;
-    width: 100%;
-    font-size: 16px;
+  text-align: center;
+  width: 100%;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+.judging_racer .racer_name {
+  color: var(--color-text);
+}
+.judging_racer .group_name,
+.judging_racer .subgroup_name {
+  color: var(--color-text-muted);
+}
+
+/* Ribbon (has a named award) and star (has an ad hoc award), bottom corners */
+.award_marker,
+.adhoc_marker {
+  position: absolute;
+  bottom: 6px;
+}
+.award_marker {
+  left: 8px;
+}
+.adhoc_marker {
+  right: 8px;
+}
+.judging_racer img.award_marker,
+.judging_racer img.adhoc_marker {
+  max-height: 28px;
+  margin: 0;
+}
+.judging_racer img.award_marker.hidden,
+.judging_racer img.adhoc_marker.hidden {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .judging_racer { transition: none; }
+}
+
+/* ---------------- Drag and drop feedback ---------------- */
 
 #awards li.award-recipient-hover,
 #racers .judging_racer.award-recipient-hover {
-    background-color: #ffffb4;
+  background-color: #E8EFF8;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 2px var(--color-brand);
 }
 
+/* Can't drop here: the award is taken, or it's for a different group */
 #awards li.award-recipient-hover.unacceptable-hover-filled,
 #awards li.award-recipient-hover.unacceptable-hover-wrong-class,
 #racers .judging_racer.unacceptable-hover-wrong-class {
-    background-color: #ffffff;
+  background-color: var(--color-surface);
+  border-color: var(--gray-200);
+  box-shadow: var(--shadow-sm);
 }
 
 #awards li.unacceptable-hover-filled a.recipient {
-    background-color: #ffb4b4;
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger);
 }
 
 #awards li.unacceptable-hover-wrong-class p.class-and-rank,
-#racers div.judging_racer.unacceptable-hover-wrong-class div.subgroup_name, 
+#racers div.judging_racer.unacceptable-hover-wrong-class div.subgroup_name,
 #racers div.judging_racer.unacceptable-hover-wrong-class div.group_name {
-    background-color: #ffb4b4;
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger);
 }
 
+/* ---------------- Modals ---------------- */
 
 #racer_awards_modal span {
-    font-size: inherit;
+  font-size: inherit;
 }
 
 #ballot_modal_awards {
@@ -180,38 +289,25 @@
   margin-bottom: 35px;
 }
 
-#ballot-button-div {
-  position: absolute;
-  left: 25px;
-}
+/* ---------------- Phones ---------------- */
 
-#dd-prompt {
-  margin-left: 10px;
-  background: #ccc;
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-#sort_controls {
-  position: absolute;
-  text-align: center;
-  right: 25px;
-  width: 300px;
-  margin-top: 10px;
-  font-size: 16px;
-  line-height: 20px;
-}
-
-#sort_controls a {
-  display: inline-block;
-  text-align: center;
-  font-size: 20px;
-  font-weight: normal;
-  min-width: 60px;
-}
-
-#sort_controls a.current_sort {
-  color: #000000;
-  text-decoration: none;
+@media (max-width: 720px) {
+  #top_matter .toolbar-spacer {
+    display: none;
+  }
+  #awards {
+    width: 42%;
+    padding: var(--space-2);
+  }
+  #racers {
+    left: 42%;
+    padding: var(--space-2);
+  }
+  .judging_racer {
+    width: 100%;
+    height: auto;
+    min-height: 170px;
+    padding-bottom: 36px;
+    margin: 0 0 var(--space-2) 0;
+  }
 }

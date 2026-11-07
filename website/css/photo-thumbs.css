@@ -4,69 +4,10 @@
    (left) and the unassigned photos (right) each scroll on their own.
    Photos are dragged from the right onto a racer on the left. */
 
-html, body {
-  height: 100%;
-}
-body {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-body > .banner,
-#photo-toolbar {
-  flex: 0 0 auto;
-}
+/* Layout: body.fill-page, .page-toolbar and .page-panel (components.css) */
 
-/* ---------------- Toolbar ---------------- */
-
-#photo-toolbar {
-  padding: var(--space-3) var(--space-4);
-}
-#photo-toolbar .btn {
-  min-height: 44px;
-  font-size: var(--text-base);
-}
-
-/* Sort: a segmented control.  The current choice is filled in. */
-#sort_controls {
-  display: inline-flex;
-  align-items: stretch;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-#sort_controls .sort_label,
-#sort_controls .sort_button {
-  display: inline-flex;
-  align-items: center;
-  min-height: 42px;
-  padding: 0 var(--space-4);
-  font-size: var(--text-base);
-  font-weight: var(--weight-semibold);
-  text-decoration: none;
-}
-#sort_controls .sort_label {
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding-right: var(--space-2);
-}
-#sort_controls .sort_button {
-  color: var(--color-brand);
-  border-left: 1px solid var(--color-border);
-}
-#sort_controls a.sort_button:hover {
-  background: var(--color-surface-sunken);
-}
-#sort_controls .current_sort {
-  color: var(--color-text-on-brand);
-  background: var(--color-brand);
-  border-left-color: var(--color-brand);
-}
+/* ---------------- Toolbar ----------------
+   A .page-toolbar with a .segmented Sort control (components.css). */
 
 /* Upload: a dashed drop tile at the right end of the toolbar */
 #upload_target {
@@ -110,18 +51,6 @@ body > .banner,
 }
 
 /* ---------------- Racer list and photos ---------------- */
-
-.body-wrapper {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
-  margin: 0 var(--space-4) var(--space-4) var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  overflow: hidden;
-}
 
 .thumblist {
   position: absolute;
@@ -311,25 +240,12 @@ img.ui-draggable-dragging {
    The list and the photos split the width; the toolbar wraps. */
 
 @media (max-width: 720px) {
-  #photo-toolbar {
-    padding: var(--space-2) var(--space-3);
-    gap: var(--space-2);
-  }
   #photo-toolbar .toolbar-spacer {
     display: none;
-  }
-  #sort_controls .sort_label {
-    display: none;
-  }
-  #sort_controls .sort_button {
-    padding: 0 var(--space-3);
   }
   #upload_target {
     flex: 1 1 100%;
     min-width: 0;
-  }
-  .body-wrapper {
-    margin: 0 var(--space-2) var(--space-2) var(--space-2);
   }
   .thumblist {
     width: 55%;

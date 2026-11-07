@@ -33,9 +33,9 @@ function link_for_ordering($key, $text) {
   global $order, $photo_repository;
   $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
   if ($order == $key) {
-    echo "<span class='sort_button current_sort' aria-current='true'>".$text."</span>";
+    echo "<span class='current' aria-current='true'>".$text."</span>";
   } else {
-    echo "<a class='sort_button'"
+    echo "<a"
         ." href='photo-thumbs.php?repo=".$photo_repository->name()."&amp;order=".$key.back_param()."'>"
         .$text."</a>";
   }
@@ -103,14 +103,14 @@ var g_photo_repo_name = '<?php echo $photo_repository->name(); ?>';
 <script type="text/javascript" src="js/find-racer.js"></script>
 <script type="text/javascript" src="js/photo-thumbs.js"></script>
 </head>
-<body>
+<body class="fill-page">
 <?php make_banner(($repo == 'head' ? 'Racer' : 'Car').' Photos',
                   isset($_GET['back']) ? $_GET['back'] : 'index.php'); ?>
 
-<div id="photo-toolbar" class="toolbar">
+<div id="photo-toolbar" class="toolbar page-toolbar">
 
-<div id="sort_controls" role="group" aria-label="Sort racers by">
-  <span class="sort_label">Sort</span>
+<div id="sort_controls" class="segmented" role="group" aria-label="Sort racers by">
+  <span class="segmented-label">Sort</span>
 <?php link_for_ordering('name', "Name"); ?>
 <?php link_for_ordering('class', group_label()); ?>
 <?php link_for_ordering('car', "Car #"); ?>
@@ -154,7 +154,7 @@ var g_photo_repo_name = '<?php echo $photo_repository->name(); ?>';
 
 </div>
 
-<div class="body-wrapper">
+<div class="body-wrapper page-panel">
 
 <div class="thumblist">
 <ul class="mlistview has-thumbs">

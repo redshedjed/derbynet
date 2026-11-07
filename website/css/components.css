@@ -256,3 +256,110 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
 .toolbar-spacer {
   flex: 1;
 }
+
+/* .page-toolbar: the row of controls under the banner on a working page
+   (Check-In, Photos, Judging).  Its buttons are a size smaller than the
+   big menu buttons. */
+.page-toolbar {
+  padding: var(--space-3) var(--space-4);
+}
+.page-toolbar .btn {
+  min-height: 44px;
+  font-size: var(--text-base);
+}
+
+/* ---------------- Full-window pages ----------------
+   <body class="fill-page">: the page itself doesn't scroll.  The banner and
+   .page-toolbar keep their height and a .page-panel (a white card) fills
+   the rest; the panel's contents do their own scrolling. */
+
+body.fill-page {
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+body.fill-page > .banner,
+body.fill-page > .page-toolbar {
+  flex: 0 0 auto;
+}
+.page-panel {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0 var(--space-4) var(--space-4) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+@media (max-width: 720px) {
+  .page-panel {
+    margin: 0 var(--space-2) var(--space-2) var(--space-2);
+  }
+}
+
+/* ---------------- Segmented control ----------------
+   A row of joined choices, e.g. Sort: Name | Den | Car #.  Each choice is
+   an <a>; the current one is a <span class="current"> (or <a class="current">)
+   and is filled in. */
+
+.segmented {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.segmented > * {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.segmented > .segmented-label {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-right: var(--space-2);
+}
+.segmented > a,
+.segmented > .current {
+  color: var(--color-brand);
+  border-left: 1px solid var(--color-border);
+}
+.segmented > :first-child {
+  border-left: 0;
+}
+.segmented > a:hover {
+  background: var(--color-surface-sunken);
+}
+.segmented > .current {
+  color: var(--color-text-on-brand);
+  background: var(--color-brand);
+  border-left-color: var(--color-brand);
+}
+
+@media (max-width: 720px) {
+  .page-toolbar {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+  .segmented > .segmented-label {
+    display: none;
+  }
+  .segmented > a,
+  .segmented > .current {
+    padding: 0 var(--space-3);
+  }
+}

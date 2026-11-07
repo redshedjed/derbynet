@@ -103,7 +103,7 @@ $(window).on('resize', set_checkin_table_height);
 make_banner('Racer Check-In');
 ?>
 
-<div id="top-buttons" class="toolbar">
+<div id="top-buttons" class="toolbar page-toolbar">
   <button type="button" id="barcode-button" class="btn btn-secondary"
       title="Barcode scanning" onclick="handle_barcode_button_click()">
     <img src="img/barcode.png" alt="Barcode"/>
