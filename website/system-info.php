@@ -42,36 +42,86 @@ window.onload = function() {
   overflow-x: auto;
 }
 
+/* Addresses for other devices */
+.url_list {
+  list-style: none;
+  margin: var(--space-2) 0 0 0;
+  padding: 0;
+}
+.url_list li {
+  margin: 0 0 var(--space-2) 0;
+}
 .ip_addr {
+  display: inline-block;
+  font-size: var(--text-lg);
   font-weight: var(--weight-semibold);
-  border: 2px solid var(--color-danger);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-brand-strong);
+  background: #E8EFF8;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 2px 6px;
+  padding: 4px 10px;
+  user-select: all;   /* one click selects the whole address to copy */
 }
 
-.downloads a {
-  margin: 0 var(--space-2) var(--space-2) 0;
+/* Export tiles: a row each, tile then explanation, like Set-Up */
+.export_row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--gray-200);
+}
+.export_row .block_buttons {
+  flex: 0 0 260px;
+}
+.export_row .block_buttons a.button_link {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  font-size: 1.25rem;
+}
+.export_row p {
+  flex: 1;
+  margin: 0;
 }
 
-.phpinfo {background-color: #ffffff; color: #000000; overflow-x: auto;}
-.phpinfo, .phpinfo td, .phpinfo th, .phpinfo h1, .phpinfo h2 {font-family: sans-serif;}
-.phpinfo pre {margin: 0px; font-family: monospace;}
-.phpinfo a:link {color: #000099; text-decoration: none; background-color: #ffffff;}
-.phpinfo a:hover {text-decoration: underline;}
-.phpinfo table {border-collapse: collapse;}
-.phpinfo .center {text-align: center;}
-.phpinfo .center table { margin-left: auto; margin-right: auto; text-align: left;}
-.phpinfo .center th { text-align: center !important; }
-.phpinfo td, .phpinfo th { border: 1px solid #000000; font-size: 75%; vertical-align: baseline;}
-.phpinfo h1 {font-size: 150%;}
-.phpinfo h2 {font-size: 125%;}
-.phpinfo .p {text-align: left;}
-.phpinfo .e {background-color: #ccccff; font-weight: bold; color: #000000;}
-.phpinfo .h {background-color: #9999cc; font-weight: bold; color: #000000;}
-.phpinfo .v {background-color: #cccccc; color: #000000;}
-.phpinfo .vr {background-color: #cccccc; text-align: right; color: #000000;}
-.phpinfo img {float: right; border: 0px;}
-.phpinfo hr {width: 600px; background-color: #cccccc; border: 0px; height: 1px; color: #000000;}
+/* Server summary */
+.server_table {
+  border-collapse: collapse;
+  background: transparent;
+}
+.server_table th,
+.server_table td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border: 0;
+  border-top: 1px solid var(--gray-200);
+  font-size: var(--text-base);
+}
+.server_table th {
+  width: 12em;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+}
+.server_table td div {
+  margin: 0 0 var(--space-1) 0;
+}
+.muted {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 720px) {
+  .export_row {
+    flex-wrap: wrap;
+  }
+  .export_row .block_buttons,
+  .export_row p {
+    flex-basis: 100%;
+  }
+}
 </style>
 </head>
 <body>
@@ -81,19 +131,31 @@ window.onload = function() {
 <section class="card card-accent accent-brand">
 <h2 class="card-title">Connecting other devices</h2>
 <?php
+$configured_urls = preferred_urls_from_file();
 $urls = preferred_urls();
-
-if (count($urls) == 0 || empty($urls[0])) {
-  echo "<p>The local IP address for this server can't be determined.</p>\n";
+if ($configured_urls !== false) {
+  // Set by the config-url file; no point checking adapters
+  echo "<p>This server is set up to be reached at:</p>\n";
+} else if (count(active_lan_addresses()) == 0) {
+  echo "<p class='notice notice-warning'><b>No active network connection.</b> "
+      ."Other devices can't reach this server until it's connected to a network. "
+      ."Connect this computer to the race Wi-Fi, then reload this page.</p>\n";
+  $urls = array();
 } else {
-  echo '<p>It looks like you can use ';
-  for ($i = 0; $i < count($urls); ++$i) {
-    if ($i > 0) {
-      echo ' or ';
+  echo "<p>On the same Wi-Fi network, open one of these addresses on the other"
+      ." device (phone, kiosk or timer laptop):</p>\n";
+}
+if (count($urls) > 0 && !empty($urls[0])) {
+  echo "<ul class='url_list'>\n";
+  foreach ($urls as $i => $url) {
+    $url = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+    echo "<li><span class='ip_addr'>".$url."</span>";
+    if ($i == 0 && count($urls) > 1) {
+      echo " <span class='badge badge-success'>Most likely</span>";
     }
-    echo "<span class='ip_addr'>".$urls[$i]."</span>";
+    echo "</li>\n";
   }
-  echo " as the URL for connecting other local devices to this server.</p>\n";
+  echo "</ul>\n";
 }
 ?>
 </section>
@@ -109,15 +171,6 @@ if (count($urls) == 0 || empty($urls[0])) {
     } else {
       echo "<p>This is revision <b>".$version."</b>, built on ".$build_date.".<br/>\n";
       echo "(".$git_hash.")</p>\n";
-    }
-
-    $failed = false;
-    set_error_handler(function() { global $failed; $failed = true; }, E_WARNING);
-    date_default_timezone_get();
-    restore_error_handler();
-    if ($failed) {
-      echo "<p class='notice notice-danger'><b>Time zone not set!</b> "
-          ."You need to set the date.timezone setting in the php.ini file!</p>\n";
     }
 ?>
 <p>Your browser's User Agent string is<br/><span id="useragent"></span></p>
@@ -160,14 +213,28 @@ if (isset($db)) {
     $schema_version = $row === false ? false : $row[0];
     echo '<p>Schema version '.$schema_version.' (expecting version '.expected_schema_version().')</p>'."\n";
 
-    echo "<p class='downloads'>"
-        ."<a class='small-button' download='derbynet-".date('Ymd-His').".xml'"
-        ." href='action.php?query=snapshot.get'>Download Complete Snapshot</a>"
-        ."<a class='small-button' download='derbynet-".date('Ymd-His').".xml'"
-        ." href='action.php?query=snapshot.get&amp;clean'>Download Cleaned Snapshot</a>"
-        ."<a class='small-button' download='derbynet.pref'"
-        ." href='preferences.php'>Download Preferences</a>"
-        ."</p>\n";
+    // Export tiles, laid out like the Database section of Set-Up (where
+    // Import Database and Import Settings load these files back in)
+    $stamp = date('Ymd-His');
+    $exports = array(
+      array('Export Database', "derbynet-$stamp.xml", 'action.php?query=snapshot.get',
+            'A complete backup: racers, results, awards and settings.  Load it again with'
+            .' <a href="import-snapshot.php">Import Database</a> on Set-Up.'),
+      array('Export for Bug Report', "derbynet-$stamp-clean.xml", 'action.php?query=snapshot.get&amp;clean',
+            'The same backup with racer names cut to initials, safe to send with a bug report.'),
+      array('Export Settings', 'derbynet.pref', 'preferences.php',
+            'Just the settings, to set up another race the same way with Import Settings on Set-Up.'),
+    );
+    echo "<div class='export_rows tile-buttons'>\n";
+    foreach ($exports as $e) {
+      echo "<div class='export_row'>"
+          ."<div class='block_buttons'>"
+          ."<a class='button_link' download='".$e[1]."' href='".$e[2]."'>".$e[0]."</a>"
+          ."</div>"
+          ."<p>".$e[3]."</p>"
+          ."</div>\n";
+    }
+    echo "</div>\n";
   } catch (PDOException $p) {
     echo '<p>Can\'t determine schema version (expecting version '.expected_schema_version().')</p>'."\n";
   }
@@ -215,17 +282,62 @@ if (isset($db)) {
 ?>
 
 <section class="card card-accent accent-other">
-<h2 class="card-title">PHP Configuration</h2>
-<div class="phpinfo">
+<h2 class="card-title">Server</h2>
 <?php
-ob_start();
- @phpinfo();
-$buf = ob_get_clean();
-$start = strpos($buf, '<body>') + 6;
-$stop = strpos($buf, '</body>');
-echo substr($buf, $start, $stop - $start);
+// Just what DerbyNet depends on.  (This replaced the full phpinfo() dump,
+// which is mostly about the server, not the race.)
+function bytes_from_ini($v) {
+  $v = trim($v);
+  $n = (float) $v;
+  switch (strtolower(substr($v, -1))) {
+    case 'g': $n *= 1024;
+    case 'm': $n *= 1024;
+    case 'k': $n *= 1024;
+  }
+  return $n;
+}
+$upload_limit = min(bytes_from_ini(ini_get('upload_max_filesize')),
+                    bytes_from_ini(ini_get('post_max_size')));
+
+$tz_failed = false;
+set_error_handler(function() use (&$tz_failed) { $tz_failed = true; }, E_WARNING);
+$tz = date_default_timezone_get();
+restore_error_handler();
+
+// Extension => what DerbyNet uses it for
+$extensions = array(
+  'pdo_sqlite' => 'the race database',
+  'gd' => 'racer and car photos',
+  'fileinfo' => 'photo uploads',
+  'session' => 'logins',
+  'curl' => 'talking to other servers (optional)',
+);
+
+$rows = array(
+  'PHP' => PHP_VERSION.' on '.PHP_OS_FAMILY,
+  'Web server' => isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : 'unknown',
+  'Time zone' => $tz_failed ? false : $tz,
+  'Largest photo upload' => round($upload_limit / (1024 * 1024)).' MB',
+);
+echo "<table class='server_table'>\n";
+foreach ($rows as $label => $value) {
+  echo "<tr><th>".$label."</th><td>";
+  if ($value === false) {
+    echo "<span class='badge badge-danger'>Not set</span> Set date.timezone in php.ini.";
+  } else {
+    echo htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+  }
+  echo "</td></tr>\n";
+}
+echo "<tr><th>Extensions</th><td>";
+foreach ($extensions as $ext => $purpose) {
+  $ok = extension_loaded($ext);
+  echo "<div><span class='badge ".($ok ? 'badge-success' : 'badge-danger')."'>"
+      .($ok ? 'OK' : 'Missing')."</span> ".$ext." <span class='muted'>(for ".$purpose.")</span></div>";
+}
+echo "</td></tr>\n";
+echo "</table>\n";
 ?>
-</div>
 </section>
 
 </div>

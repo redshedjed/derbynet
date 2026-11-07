@@ -20,6 +20,7 @@ $mobile_ready_pages = array(
   'print.php',  // had its own viewport tag before
   'scenes.php',
   'slideshow.php',
+  'system-info.php',
   'vote.php',
 );
 if (in_array(basename($_SERVER['SCRIPT_NAME']), $mobile_ready_pages)) {
