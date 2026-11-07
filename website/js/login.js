@@ -40,8 +40,3 @@ function show_password_form(name) {
 	setTimeout(function() { 
 			document.getElementById('pw_for_password').focus(); }, 100);
 }
-
-
-function show_kiosk_form() {
-    show_modal("#kiosk_modal", function(event) { console.log("No submit expected!"); });
-}

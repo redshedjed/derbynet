@@ -11,9 +11,9 @@ if (!isset($_GET['address']) && !isset($_GET['page'])) {
   exit();
 }
 
-// The award presentation kiosk wants to reset the current award when it starts
-// up.
-@$_SESSION['permissions'] |= PRESENT_AWARDS_PERMISSION;
+// The award presentation kiosk resets the current award when it starts up;
+// action.award.present.inc allows that one request without permission, so a
+// kiosk no longer gains PRESENT_AWARDS_PERMISSION here.
 
 session_write_close();
 

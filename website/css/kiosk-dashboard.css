@@ -145,3 +145,21 @@ p.parameters {
 #classids_div {
   margin-bottom: 20px;
 }
+
+/* "Make this device a display": kiosk and camera launch tiles */
+#start_display {
+  clear: both;
+  max-width: 900px;
+  margin: var(--space-6) 5px var(--space-4) 5px;
+}
+#start_display .block_buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+#start_display .block_buttons input[type='button'] {
+  box-sizing: border-box;
+  width: 200px;
+  min-height: 52px;
+  margin: 0;
+}

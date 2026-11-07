@@ -14,7 +14,13 @@ require_once('inc/photo-config.inc');
 require_once('inc/standings.inc');
 require_once('inc/ordinals.inc');
 
-if (have_permission(PRESENT_AWARDS_PERMISSION)) {
+// The award presentation kiosk clears the current award when it starts up
+// (key '', reveal 0).  Kiosks don't log in, so that one request is allowed
+// without permission; choosing or revealing an award still needs it.
+$clear_only = isset($_POST['key']) && $_POST['key'] === ''
+    && (!isset($_POST['reveal']) || !$_POST['reveal']);
+
+if (have_permission(PRESENT_AWARDS_PERMISSION) || $clear_only) {
   $successful = false;
   if (isset($_POST['key'])) {
     $key = $_POST['key'];

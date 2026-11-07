@@ -158,6 +158,10 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
       some or all of the data in the database.</p>
     </div>
   </div>
+
+  <p class="setup_more">To save a snapshot of the database, or to see the
+  connection URLs, revision and configuration details, open
+  <a href="system-info.php">System Info</a>.</p>
 </section>
 
 <!-- ======================= Settings ======================= -->

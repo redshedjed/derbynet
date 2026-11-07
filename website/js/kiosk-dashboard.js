@@ -5,6 +5,18 @@ function on_new_kiosk_window_button() {
 }
 $(function() { $("#new_kiosk_window_button").on('click', on_new_kiosk_window_button); });
 
+// "Make this device a display": log this device out (displays run without a
+// login), then go to the kiosk or camera page.
+function on_start_display_button(event) {
+  var href = $(event.currentTarget).attr('data-href');
+  $.ajax('action.php',
+         {type: 'POST',
+          data: {action: 'role.login', name: '', password: ''},
+          complete: function() { window.location.href = href; }
+         });
+}
+$(function() { $("#start_display input[data-href]").on('click', on_start_display_button); });
+
 
 //////////////////////////////////////////////////////////////////////////
 // Polling for kiosk dashboard

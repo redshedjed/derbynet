@@ -75,6 +75,18 @@ var g_standings_choices = <?php
 <div class="block_buttons" style="width: 300px;">
   <input id="new_kiosk_window_button" type="button" value="New Kiosk Window"/>
 </div>
+
+<section id="start_display" class="card card-accent accent-other tile-buttons">
+  <h2 class="card-title">Make this device a display</h2>
+  <p>This logs this device out, then turns it into a kiosk or a camera.
+     Displays don't need a login; you'll need to log in again here to make changes.</p>
+  <div class="block_buttons">
+    <input type="button" value="Be a Kiosk" data-href="kiosk.php"/>
+    <input type="button" value="Fullscreen Kiosk" data-href="fullscreen.php"/>
+    <input type="button" value="Replay Kiosk" data-href="replay.php"/>
+    <input type="button" value="Be a Camera" data-href="camera.php"/>
+  </div>
+</section>
 <?php require_once('inc/ajax-failure.inc'); ?>
 
 <div id='kiosk_modal' class="modal_dialog hidden block_buttons">

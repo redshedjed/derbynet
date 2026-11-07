@@ -28,8 +28,9 @@ require_once('inc/locked.inc');
 }
 
 /* Role choices look like the home menu: white tiles with a colored bar (the
-   shared "Tile buttons" in global.css).  Roles get the brand blue; kiosk,
-   camera and log out get gray, like the home menu's "other" buttons. */
+   shared "Tile buttons" in global.css).  Roles get the brand blue; log out
+   gets gray, like the home menu's "other" buttons.  Kiosks and cameras are
+   started from the Kiosk Dashboard. */
 div.index_background {
   padding-top: var(--space-5);
 }
@@ -52,7 +53,7 @@ div.index_background {
   margin-bottom: var(--space-4);
 }
 
-#login-kiosk {
+#login-logout {
   margin-top: var(--space-6);
   padding-top: var(--space-5);
   border-top: 1px solid var(--gray-200);
@@ -91,17 +92,15 @@ foreach ($roles as $name => $details) {
 ?>
 </div>
 
-<div id="login-kiosk" class="accent-other">
-<input type="button" id="kiosk_button" value="Be a Kiosk" onclick="show_kiosk_form();"/>
-<a class="button_link" id="camera_button" href="camera.php">Be a Camera</a>
 <?php
 if (@$_SESSION['role']) {
 ?>
+<div id="login-logout" class="accent-other">
 <input type="button" value="Log out" onclick='handle_logout();'/>
+</div>
 <?php
 }
 ?>
-</div>
 
 </div>
 </div>
@@ -119,16 +118,6 @@ if (@$_SESSION['role']) {
   <input type="button" value="Cancel"
       onclick='close_modal("#password_modal");'/>
 </form>
-</div>
-
-<div id='kiosk_modal' class="modal_dialog hidden block_buttons">
-
-<input type="button" value="Be a Kiosk" onclick="window.location='kiosk.php'"/>
-<input type="button" value="Fullscreen Kiosk" onclick="window.location='fullscreen.php'"/>
-<input type="button" value="Replay Kiosk" onclick="window.location='replay.php'"/>
-<br/>
-<input type="button" value="Cancel" onclick='close_modal("#kiosk_modal");'/>
-
 </div>
 
 </body>
