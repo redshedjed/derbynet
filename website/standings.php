@@ -43,7 +43,6 @@ $(function () {
 <title>Standings</title>
 <?php require('inc/stylesheet.inc'); ?>
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
-<link rel="stylesheet" type="text/css" href="css/main-table.css"/>
 <style type="text/css">
 
 .center-select {

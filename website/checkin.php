@@ -60,7 +60,6 @@ function column_header($text, $o) {
 <link rel="stylesheet" type="text/css" href="css/dropzone.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
 <?php require('inc/stylesheet.inc'); ?>
-<link rel="stylesheet" type="text/css" href="css/main-table.css"/>
 <link rel="stylesheet" type="text/css" href="css/checkin.css"/>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery-migrate.js"></script>

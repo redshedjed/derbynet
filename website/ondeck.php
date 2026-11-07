@@ -48,7 +48,6 @@ require_once('inc/schema_version.inc');
 <title>Racers On Deck</title>
 <?php require('inc/stylesheet.inc'); ?>
 <link rel="stylesheet" type="text/css" href="css/kiosks.css"/>
-<link rel="stylesheet" type="text/css" href="css/main-table.css"/>
 <link rel="stylesheet" type="text/css" href="css/lane-colors.css"/>
 <link rel="stylesheet" type="text/css" href="css/ondeck.css"/>
 </head>

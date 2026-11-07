@@ -54,7 +54,6 @@ if (isset($as_kiosk)) {
     } ?></title>
 <?php require('inc/stylesheet.inc'); ?>
 <link rel="stylesheet" type="text/css" href="css/kiosks.css"/>
-<link rel="stylesheet" type="text/css" href="css/main-table.css"/>
 <link rel="stylesheet" type="text/css" href="css/racer-results.css"/>
 </head>
 <body>
