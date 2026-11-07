@@ -27,29 +27,6 @@ $schedules_exist = read_single_value('SELECT COUNT(*) FROM RaceChart'
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
 <link rel="stylesheet" type="text/css" href="css/chooser.css"/>
 <link rel="stylesheet" type="text/css" href="css/settings.css"/>
-<?php if ($schedules_exist) { ?>
-<style type="text/css">
- .track-settings {
-    border-left: 30px solid red;
-    padding-left: 30px;
-    border-top: 5px solid red;
-    border-bottom: 5px solid red;
- }
-
-.settings_group .track-settings .warning {
-   display: block;
-   visibility: visible;
-   width: 100px;
-   padding: 11px;
-   /* margin-top: 0px; */
-   margin-right: 0px;
-   float: right;
-   font-size: 18px;
-   font-weight: bold;
-   background-color: red;
-}
-</style>
-<?php } ?>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/ajax-setup.js"></script>
@@ -110,13 +87,10 @@ if (read_raceinfo('max-runs-per-car', 0) != 0) {
 }
 ?>
 
-<div class="block_buttons">
+<div class="page-content settings_page">
 <form id="settings_form">
-  <div class="settings_group">
-    <div class="settings_group_image">
-      <img src="img/settings-timer.png"/>
-    </div>
-
+  <section class="settings_group card card-accent accent-during">
+    <h2 class="card-title">Track and Timer</h2>
     <div class="settings_group_settings">
       <p>
         <input id="warn-no-timer" name="warn-no-timer" class="not-mobile"
@@ -124,8 +98,9 @@ if (read_raceinfo('max-runs-per-car', 0) != 0) {
         <label title="Enable this if you plan to enter times manually or use with GPRM. It will remove the warning from the 'now racing' dashboard regarding the timer not being connected.">
                Warn when timer not connected</label>
       </p>
-      <div class="track-settings">
-        <p class="warning hidden">Racing schedules already exist.</p>
+      <div class="track-settings<?php if ($schedules_exist) echo ' schedules-exist'; ?>">
+        <p class="warning<?php if (!$schedules_exist) echo ' hidden'; ?>">Racing schedules
+           already exist, so the lanes can't be changed.  Remove unraced schedules first.</p>
         <p>
           <input id="n-lanes" name="n-lanes" type="number" min="0" max="20"
                  class="not-mobile" <?php if ($schedules_exist) echo 'disabled="disabled"'; ?>
@@ -145,7 +120,7 @@ if (read_raceinfo('max-runs-per-car', 0) != 0) {
         <input id="reverse-lanes" name="reverse-lanes" class="not-mobile"
                type="checkbox"<?php if (read_raceinfo_boolean('reverse-lanes')) echo ' checked="checked"';?>/>
         <label for="reverse-lanes">Number lanes in reverse</label>
-        <a href="#" class="small-button" style="margin-left: 20px;"
+        <a href="#" class="small-button"
              onclick="on_set_lane_colors_click(); return false;">Set Lane Colors</a>
         <input type="hidden" id="lane-colors" name="lane-colors"
            value="<?php echo read_raceinfo('lane-colors', ''); ?>"/>
@@ -172,15 +147,13 @@ if (read_raceinfo('max-runs-per-car', 0) != 0) {
            value="<?php echo read_raceinfo('now-racing-linger-ms', 10000); ?>"/>
          <input type="number" id="now-racing-linger-sec" name="now-racing-linger-sec"
                 value="<?php echo sprintf("%0.1f", read_raceinfo('now-racing-linger-ms', 10000) / 1000); ?>"
-           step="0.1" class="do-not-post not-mobile" style="width: 100px;"/>
+           step="0.1" class="do-not-post not-mobile"/>
       </p>
     </div>
-  </div>
+  </section>
 
-  <div class="settings_group">
-    <div class="settings_group_image">
-      <img src="img/settings-groups.png"/>
-    </div>
+  <section class="settings_group card card-accent accent-before">
+    <h2 class="card-title">Roster and Names</h2>
     <div class="settings_group_settings">
       <p>
         <label for="supergroup-label">The full roster is a (or the)</label>
@@ -224,13 +197,10 @@ if (read_raceinfo('max-runs-per-car', 0) != 0) {
           </label>
       </p>
     </div>
-  </div>
+  </section>
 
-  <div class="settings_group">
-    <div class="settings_group_image">
-      <img src="img/settings-gold-medal.png"/>
-    </div>
-
+  <section class="settings_group card card-accent accent-gold">
+    <h2 class="card-title">Awards</h2>
     <div class="settings_group_settings">
       <p>
         <input id="n-pack" name="n-pack-trophies" type="number" min="0" max="20" class="not-mobile"
@@ -265,35 +235,30 @@ if (read_raceinfo('max-runs-per-car', 0) != 0) {
         <label for="xbs-award">"Exclusively By Scout" award name (if used)</label>
       </p>
     </div>
-  </div>
+  </section>
 
 <?php
 function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
     if (!locked_settings()) {
-      echo "<p>\n";
-      echo '<label for="'.$photo_dir_id.'">Directory for '.$purpose.':</label>'."\n";
+      // Label; then the folder, its status light and Browse on one row; then
+      // any problem with the folder.
+      echo '<p class="dir-label"><label for="'.$photo_dir_id.'">Folder for '.$purpose.'</label></p>'."\n";
+      echo '<div class="dir-row">';
       echo '<input id="'.$photo_dir_id.'" name="'.$photo_dir_id.'" type="text" class="not-mobile"'
-           .' size="50"'
 		   .' value="'.htmlspecialchars($photo_dir_value, ENT_QUOTES, 'UTF-8').'"/>'."\n";
       echo '<span id="'.$photo_dir_id.'_icon" class="status_icon"></span>'."\n";
-      echo '</p>';
-      echo '<p class="photo_dir_status_message" id="'.$photo_dir_id.'_message"></p>';
-      echo '<p>';
       echo '<span class="photo_dir_choose"><input type="button" value="Browse"'
-          .' class="not-mobile"'
+          .' class="not-mobile small-button"'
           .' onclick="browse_for_photo_directory(\'#'.$photo_dir_id.'\')"/>'
           .'</span>'."\n";
-      echo "</p>\n";
+      echo "</div>\n";
+      echo '<p class="photo_dir_status_message" id="'.$photo_dir_id.'_message"></p>';
     }
 }
 ?>
 
-  <div class="settings_group">
-    <div class="settings_group_image">
-      <img src="img/settings-photos.png"/>
-    </div>
-
-
+  <section class="settings_group card card-accent accent-brand">
+    <h2 class="card-title">Photos and Video</h2>
     <div class="settings_group_settings">
       <p id='images-dir-p'>
         <label for='images-dir'>Image set:</label>
@@ -337,12 +302,10 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
       </p>
       <?php photo_settings('videos', 'video-dir', read_raceinfo('video-directory')); ?>
     </div>
-  </div>
+  </section>
 
-  <div class="settings_group">
-    <div class="settings_group_image">
-      <img src="img/settings-rulebook.png"/>
-    </div>
+  <section class="settings_group card card-accent accent-ink">
+    <h2 class="card-title">Racing and Scoring</h2>
     <div class="settings_group_settings">
       <p>
         <input id="use-master-sched" name="use-master-sched" class="not-mobile" type="checkbox"<?php
@@ -367,21 +330,19 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
         <label for='scoring_avg'>Take single fastest heat</label>
 
       <p>
-        <a href="#" class="small-button" style="width: 200px;"
+        <a href="#" class="small-button"
              onclick="on_scheduling_method_click(); return false;">Change Scheduling Method</a>
       </p>
 
     </div>
-  </div>
+  </section>
 
   <!-- The "Our Pack" card on the About page (inc/about-pack.inc).  Saved in
        the database like every setting here. -->
-  <div class="settings_group" id="about-pack-group">
-    <div class="settings_group_image">
-      <img src="img/settings-groups.png"/>
-    </div>
+  <section class="settings_group card card-accent accent-other" id="about-pack-group">
+    <h2 class="card-title">About Page</h2>
     <div class="settings_group_settings">
-      <p><label for="about-pack-html"><b>About page: Our Pack</b></label></p>
+      <p><label for="about-pack-html"><b>Our Pack</b></label></p>
       <p class="settings-hint">HTML for the first card on the <a href="about.php">About</a>
          page, which anyone can see.  Leave it empty to hide the card.</p>
       <textarea id="about-pack-html" name="about-pack-html" rows="6" class="not-mobile"
@@ -393,7 +354,7 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
            onclick="on_about_pack_default_click(); return false;">Use the Default Text</a>
       </p>
     </div>
-  </div>
+  </section>
 </form>
 </div>
 
