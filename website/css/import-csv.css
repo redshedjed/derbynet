@@ -1,228 +1,193 @@
-/* Undoing stuff from ondeck.css: */
-th, tbody tr:first-child th {
-    padding-right: 12px;
-    padding-top: 0px;
+/* Import Roster, Import Awards and Import Results (inc/import-csv.inc).
+
+   Layout: what's already in the database (#state-of-play), encoding and
+   worksheet choices (#variations), the Import button (#controls), the file
+   drop area (.file_target, shared in components.css), then, once a file is
+   read: the field labels to drag (.fields) and the file's rows
+   (#csv_content). */
+
+div.import_csv {
+  max-width: 1200px;
+  margin: var(--space-5) auto;
+  padding: 0 var(--space-4);
 }
 
+/* "There are already 32 racers and 6 dens in the database." */
+div#state-of-play {
+  padding: var(--space-3) var(--space-4);
+  margin: 0 0 var(--space-3) 0;
+  border-left: 6px solid var(--color-brand);
+  border-radius: var(--radius-lg);
+  background: #E8EFF8;
+  color: var(--color-brand-strong);
+  box-shadow: var(--shadow-sm);
+}
+#state-of-play label {
+  font-weight: var(--weight-semibold);
+}
+#state-of-play input[type='text'] {
+  width: 10em;
+}
+
+/* Encoding, and which worksheet of a spreadsheet */
 div#variations {
-  height: 51px;
-    background-color: #ffffff;
-    margin-right: 10px;
-    margin-left: 10px;
-   margin-top: 5px;
-   margin-bottom: 5px;
-
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
+  margin: 0 0 var(--space-3) 0;
+}
+#variations:empty {
+  display: none;
 }
 
-#variations #encoding {
-  font-size: 20px;
-  float: right;
-  display: inline-block;
+#controls {
+  min-height: 0;
+  text-align: center;
 }
-#variations #sheet {
-  float: right;
-  display: inline-block;
-  padding-right: 10px;
+#import_button_div {
+  margin: 0 0 var(--space-3) 0;
+}
+#import_button_div input[type='button'] {
+  width: auto;
+  min-width: 240px;
 }
 
 #assign_label_message {
-    clear: right;
-    margin-bottom: 30px;
-    text-align: center;
-    font-size: x-large;
-    font-weight: bold;
+  margin: 0 0 var(--space-3) 0;
+  text-align: center;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
 }
-
 .upload_complete_message {
-  color: #008000;
+  color: var(--color-success);
 }
 .upload_failure_message {
-  color: #800000;
+  color: var(--color-danger);
 }
 
-.file_target input {
-    height: 300px;
-    width: 100%;
-    opacity: 0;
-    z-index: 2;
-    position: absolute;
-    cursor: pointer;
-}
-.file_target label {
-    height: 300px;
-    width: 100%;
-    cursor: pointer;
-}
-#please_select_message {
-    margin-top: 30px;
-    text-align: center;
-    font-size: x-large;
-    font-weight: bold;
-}
-#drop_img {
-    margin-top: 100px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100px;
-}
-    
+/* ---------------- Field labels ----------------
+   Chips to drag onto the file's columns.  Required fields are filled in;
+   optional ones are outlined. */
 
-.file_target {
-    border: 4px dashed var(--color-brand);
+.fields {
+  margin: var(--space-4) 0 var(--space-3) 0;
 }
-.file_target.draghover {
-    border: 4px solid var(--color-brand);
+.fields h3 {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
 }
-
 .fields .target {
-    background-color: #e0e0e0;
-    margin-left: 100px;
+  display: inline-block;
+  padding: var(--space-2);
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-lg);
 }
-
-.label_target {
-  height: 50px;
-  border: 4px dashed var(--color-brand);
+.fields table {
+  border: none;
+  background: transparent;
 }
-
-.label_target_hover {
-  background-color: #ffffb4;
-  border: 4px solid var(--color-brand);
-}
-
-.label_target_filled {
-  border: 4px solid var(--color-brand);
-}
-
-.fields .fields_target_hover {
-  background-color: #ffffb4;
-}
-
-.fields_target_hover {
-  background-color: #ffffb4;
+.fields td {
+  padding: 2px;
+  border: none;
 }
 
 .field {
   display: inline-block;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  border: 10px solid var(--color-brand);
-  /* margin: 5px; */
-  background-color: #F7D117;
-  margin-left: auto;
-  margin-right: auto;
+  padding: 6px 14px;
+  font-weight: var(--weight-semibold);
+  border-radius: var(--radius-pill);
+  cursor: grab;
+  user-select: none;
+  box-shadow: var(--shadow-sm);
 }
-
+.field.required {
+  color: var(--color-text-on-brand);
+  background: var(--color-brand);
+  border: 2px solid var(--color-brand-strong);
+}
 .field.optional {
-  /* border is now 5px instead of 10px, 
-     make up the difference in the padding */
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  border: 5px solid var(--color-brand);
+  color: var(--color-brand);
+  background: var(--color-surface);
+  border: 2px solid var(--color-brand);
+}
+.field.ui-draggable-dragging {
+  cursor: grabbing;
+  box-shadow: var(--shadow-card-hover);
 }
 
-.dim, .header_row td {
-    background-color: #dddddd;
-    color: #999999;
+/* Drop spots for labels, one per column of the file */
+.label_target {
+  height: 50px;
+  border: 2px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+.label_target p {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: normal;
+  color: var(--color-text-muted);
+}
+.label_target_filled {
+  border: 2px solid var(--color-brand);
+}
+.label_target_hover,
+.fields .fields_target_hover,
+.fields_target_hover {
+  background-color: #E8EFF8;
+  border-color: var(--color-brand);
 }
 
-.fields .target {
-    float: left;
-}
+/* ---------------- The file's rows ---------------- */
 
-#meta {
-    display: inline-block;
-}
-
-input[type='button'], input[type='submit'] {
-    color:#ffffff;
-	width: 240px;
-    padding:10px 15px;
-    margin-top:3px;
-	margin-bottom: 20px;
-    font-size: x-large;
-
-    background: var(--color-brand);  /* shared button look: see .btn in components.css */
-    border: 1px solid var(--color-brand-strong);
-    border-right-width: 1px;
-    border-radius: var(--radius-lg);
-
-    cursor: pointer;
-}
-
-.fields {
-    margin-bottom: 13px;
-}
-
-.fields table {
-    border: none;
-}
-
-.fields td {
-    padding-top: 1px;
-    padding-bottom: 1px;
-    border: none;
-}
-
-div#state-of-play {
-    margin-top: 15px;
-    font-size: 20px;
-    width: 100%;
-    background-color: #e0eaf9;
-}
-
-.footer {
-  position: fixed;
-  bottom: 20px;
-  width: 100%;
-  clear: right;
-  text-align: center;
-}
-
-#controls {
-    height: 104px;
-}
-
-/* Sometimes all the outcome cells are empty, but we don't want the table to shift */
-.outcome {
-    width: 5em;
-}
 #csv_content {
-    clear: left;
+  clear: left;
+  margin-top: var(--space-2);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+}
+#csv_content th,
+#csv_content td {
+  padding: var(--space-1) var(--space-3);
+  text-align: left;
 }
 #csv_content tr th {
-    font-size: 16px;
+  font-size: var(--text-sm);
 }
-
 #csv_content tr th.label_target {
-    font-size: 18px;
-    /* TODO color: #808080; But we don't want this to apply to a .field within the label_target */
-    line-height: 1.1;
+  font-size: var(--text-base);
+  line-height: 1.1;
+}
+/* Columns no label is assigned to yet, and the header row */
+.dim,
+.header_row td {
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text-muted);
+}
+/* Sometimes all the outcome cells are empty, but we don't want the table to shift */
+.outcome {
+  width: 5em;
 }
 #csv_content tr th .ok_outcome {
-    font-size: 24px;
-    color: green;
+  font-weight: var(--weight-semibold);
+  color: var(--color-success);
 }
 #csv_content tr th .failed_outcome {
-    font-size: 24px;
-    color: red;
+  font-weight: var(--weight-semibold);
+  color: var(--color-danger);
+}
+#csv_content tr th .warning {
+  display: block;
+  font-weight: normal;
+  color: var(--color-warning);
 }
 
-/* These try to restore the look of the page after jquery.mobile has manipulated it.
-  TODO Since all we really want out of this is the cool-looking flipswitch elements, find a way just to take that,
-  without all the weird page-loading behaviors. */
-
-.ui-page-theme-a { background-color: #ffffff; }
-div.import_csv {
-    margin-left: 50px;
-    margin-right: 50px;
+/* "Or instead: Import results exported from another race..." */
+.footer {
+  margin: var(--space-5) 0;
+  text-align: center;
+  color: var(--color-text-muted);
 }
-
-th .ui-flipswitch {
-    font-size: 16px;
-}
-
-.ui-mobile .ui-page-active { overflow-x: auto; }

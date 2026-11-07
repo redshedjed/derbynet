@@ -224,6 +224,60 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
 .notice-warning { --notice-edge: var(--color-warning); --notice-bg: var(--color-warning-bg); --notice-text: var(--color-warning); }
 .notice-danger  { --notice-edge: var(--color-danger);  --notice-bg: var(--color-danger-bg);  --notice-text: var(--color-danger); }
 
+/* ---------------- File drop area ----------------
+   .file_target holds an invisible <input type="file"> stretched over the
+   whole area (click anywhere, or drop a file on it) and a <label> with the
+   prompt.  .draghover is added while a file is dragged over it, or once one
+   is chosen.  Used by the Import pages. */
+
+.file_target {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: var(--space-5);
+  text-align: center;
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+.file_target:hover,
+.file_target.draghover {
+  border-color: var(--color-brand);
+  background-color: #F5F8FC;
+  box-shadow: var(--shadow-card-hover);
+}
+.file_target input[type='file'] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+.file_target label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+.file_target #drop_img img {
+  display: block;
+  width: 56px;
+  opacity: 0.75;
+}
+.file_target #please_select_message {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
 /* ---------------- Badges ----------------
    A small pill for a status or count. */
 
