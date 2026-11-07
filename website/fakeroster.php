@@ -49,39 +49,37 @@ div input {
 <body>
 <?php make_banner('Build Fake Roster', 'setup.php'); ?>
 
-<p>This page allows you to manufacture a roster of made-up racers.</p>
+<div class="page-content narrow">
+<section class="card card-accent accent-before tile-buttons">
+<h2 class="card-title">Make a fake roster</h2>
+<p>A roster of made-up racers lets you try out DerbyNet without gathering
+   your real racers first.  It's random, arranged by
+   <?php echo htmlspecialchars(group_label_lc(), ENT_QUOTES, 'UTF-8'); ?> like a
+   typical race, and includes racer and car pictures.</p>
 
-<p>A fake roster lets you experiment with the software without having to gather a list of your real racers.</p>
-
-<p>The fake roster is randomly generated and reflects a typical race-by-den structure.  It includes fake racer and car images.</p>
-
-<p>You can purge the fake roster data by <b>returning to the Set-Up page</b>.</p>
-
-<div style="margin-left: 20px; font-size: 24px;">
-
-Generate
-<input id="ngroups" type="number" min="1" max="10" class="not-mobile" value="6"/>
-<?php echo plural(group_label()); ?>
-<br/>
-of approximately
-<input id="racers_per_group" type="number" min="2" max="20" class="not-mobile" value="5"/>
-fake racers each.
-<br/>
-
-<p>
-<input id="check_in_all" type="checkbox" checked="checked"/>
-<label for="check_in_all">Fake racers have passed inspection</label>
-</p>
-<br/>
-
-<div class="block_buttons" style="width: 350px;">
-<input id="do_it" type="button" value="Make Fake Racers"/>
+<div class="form-row">
+  <label for="ngroups">Make</label>
+  <input id="ngroups" type="number" min="1" max="10" class="not-mobile" value="6"/>
+  <span><?php echo htmlspecialchars(plural(group_label()), ENT_QUOTES, 'UTF-8'); ?>
+    of about</span>
+  <input id="racers_per_group" type="number" min="2" max="20" class="not-mobile" value="5"/>
+  <label for="racers_per_group">racers each.</label>
 </div>
 
+<div class="form-row">
+  <input id="check_in_all" type="checkbox" checked="checked"/>
+  <label for="check_in_all">The fake racers have passed inspection</label>
 </div>
 
-<p>Credits for the fake racer and car images are on the
-<a href="about.php#image-credits">About page</a>.</p>
+<div class="block_buttons tile-grid">
+  <input id="do_it" type="button" value="Make Fake Racers"/>
+</div>
+
+<p class="text-muted">To remove the fake racers later, use Purge on the
+   <a href="setup.php">Set-Up page</a>.  Picture credits are on the
+   <a href="about.php#image-credits">About page</a>.</p>
+</section>
+</div>
 
 </body>
 </html>

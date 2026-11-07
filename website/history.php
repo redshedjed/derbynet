@@ -40,51 +40,50 @@ $(function() {
   });
 </script>
 <style type="text/css">
-div.content {
-  margin-left: 50px;
-}
-
+/* Events timeline: each event is two rows, a small line with the heat and
+   time (event-identifier), then what happened (event-explanation). */
 table.event-history {
+  width: 100%;
+  border-collapse: collapse;
 }
-
-table.event-history tr.event td {
-  padding-top: 6px;
-  padding-bottom: 6px;
-}
-
-table.event-history tr.event-identifier td {
-  border-top-width: 2px;
-}
-
-table.event-history tr.event-explanation td {
-  border-bottom-width: 2px;
-}
-
-table.event-history tr.event.irregular td {
-  background: #ffdddd;
-}
-
-table.event-history tr.event-explanation.discarded-event td {
+table.event-history td {
+  border: 0;
   text-align: left;
+  padding: 2px var(--space-3);
 }
-table.event-history tr.event-explanation.first td {
-  border-bottom-width: 0px;
+table.event-history tr.event-identifier td {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--gray-200);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
+table.event-history tr.event-explanation td {
+  padding-bottom: var(--space-2);
+}
+table.event-history tr.event-explanation.first td,
 table.event-history tr.event-explanation.follow-on td {
-  border-top-width: 0px;
+  border: 0;
 }
-/* first, follow-on */
-
-table.event-history tr.event td:first-child {
-  border-left-width: 2px;
+table.event-history tr.event.irregular td {
+  background: var(--color-danger-bg);
 }
 
-table.event-history tr.event td:last-child {
-  border-right-width: 2px;
+#lane-bias {
+  cursor: pointer;
 }
-
+#lane-bias-triangle {
+  vertical-align: middle;
+  margin-right: var(--space-2);
+}
 #lane-bias-details {
   display: none;
+}
+#lane-bias-details table td {
+  text-align: right;
+  padding: 2px var(--space-3);
+}
+.lane-bias-warning {
+  color: var(--color-danger);
 }
 </style>
 </head>
@@ -93,9 +92,10 @@ table.event-history tr.event td:last-child {
 make_banner('Retrospective');
 $bias = lane_bias_analysis();
 ?>
-<div class="content">
+<div class="content page-content">
 
-<h3>Lane Bias Analysis</h3>
+<section class="card card-accent accent-after">
+<h2 class="card-title">Lane bias</h2>
 
   <div id="lane-bias">
 <?php
@@ -108,7 +108,7 @@ $bias = lane_bias_analysis();
     &nbsp;
 <?php
     if ($bias['biased']) {
-      echo "<b style='color: red;'>The track lanes appear to be biased, with 90% confidence.</b>";
+      echo "<b class='lane-bias-warning'>The track lanes appear to be biased, with 90% confidence.</b>";
     } else {
       echo "There is no evidence of significant lane bias.";
     }
@@ -126,9 +126,10 @@ $bias = lane_bias_analysis();
 </div>
 <?php } ?>
 </div>
+</section>
 
-<p>&nbsp;</p>
-<h3>Events Timeline</h3>
+<section class="card card-accent accent-ink">
+<h2 class="card-title">Events timeline</h2>
 
 <table class="event-history">
 <?php
@@ -158,6 +159,7 @@ $bias = lane_bias_analysis();
   }
 ?>
 </table>
+</section>
 
 </div> <!-- content -->
 </body>

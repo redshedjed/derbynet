@@ -9,6 +9,7 @@ $mobile_ready_pages = array(
   'awards-presentation.php',
   'camera.php',
   'export.php',
+  'fakeroster.php',
   'history.php',
   'import-snapshot.php',
   'index.php',
@@ -21,6 +22,7 @@ $mobile_ready_pages = array(
   'print.php',  // had its own viewport tag before
   'scenes.php',
   'slideshow.php',
+  'standings.php',
   'system-info.php',
   'vote.php',
 );

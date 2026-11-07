@@ -64,20 +64,20 @@ var g_standings_choices = <?php echo json_encode($oracle->standings_choices_for_
 <body>
 <?php make_banner('Scenes', isset($_GET['back']) ? $_GET['back'] : 'kiosk-dashboard.php'); ?>
 
-<div id="select-wrap" class="block_buttons">
- <!-- block_buttons for  .block_buttons option  css rule -->
-  <select id="scenes-select">
-  </select>
+<div id="scenes-toolbar" class="toolbar page-toolbar">
+  <label for="scenes-select" class="scenes_label">Scene</label>
+  <div id="select-wrap">
+    <select id="scenes-select">
+    </select>
+  </div>
+  <span class="toolbar-spacer"></span>
+  <input type="button" id="add_kiosk_button" class="btn btn-secondary" value="Add Kiosk Name"
+         onclick='on_add_kiosk()'/>
+  <input type="button" id="delete_scene_button" class="btn btn-danger" value="Delete Scene"
+         onclick='on_delete_scene()'/>
 </div>
 
 <div id="previews">
-</div>
-
-<div class="block_buttons">
-  <input type="button" id="add_kiosk_button" value="Add Kiosk Name"
-         onclick='on_add_kiosk()'/>
-  <input type="button" id="delete_scene_button" class="delete_button" value="Delete Scene"
-         onclick='on_delete_scene()'/>
 </div>
 
 <?php require('inc/kiosk-parameters.inc'); ?>

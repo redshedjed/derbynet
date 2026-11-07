@@ -44,31 +44,38 @@ $(function () {
 <?php require('inc/stylesheet.inc'); ?>
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
 <style type="text/css">
-
-.center-select {
-  width: 400px;
-  margin-left: auto;
-  margin-right: auto;
+/* Toolbar: how standings are scored, and which standings to show */
+.standings_toolbar {
+  padding: 0;
+  margin: 0 0 var(--space-3) 0;
 }
-.center-select h3 {
-  text-align: center;
+.standings_toolbar .center-select {
+  width: 320px;
+  max-width: 100%;
+}
+.standings_card {
+  padding: 0;
+  overflow-x: auto;
+}
+.standings_card table.main_table {
+  margin: 0;
 }
 </style>
 </head>
 <body>
 <?php make_banner('Race Standings'); ?>
-<div class="block_buttons">
+<div class="page-content">
+<div class="toolbar standings_toolbar">
 
-<div class="center-select">
-<h3><?php
+<span class="badge badge-brand scoring_method"><?php
 $scoring = read_raceinfo('scoring', 0);
 if (read_raceinfo_boolean('use-points')) {
   if ($scoring == 0) {
     echo "Scoring by points";
   } else if ($scoring == 1) {
-    echo "Scoring by points,<br/>dropping each racer's worst heat";
+    echo "Scoring by points, dropping each racer's worst heat";
   } else {
-    echo "Scoring by points,<br/>best heat";
+    echo "Scoring by points, best heat";
   }
 } else {
   if ($scoring == 0) {
@@ -79,8 +86,8 @@ if (read_raceinfo_boolean('use-points')) {
     echo "Selecting best heat";
   }
 }
-?></h3>
-</div>
+?></span>
+<span class="toolbar-spacer"></span>
 
 <?php
 
@@ -107,10 +114,13 @@ foreach ($standings->standings_catalog() as $entry) {
 </div>
 </div>
 
-<table class="main_table">
+<div class="card standings_card">
+<table class="main_table table">
 <?php
 $standings->write_standings_table();
 ?>
 </table>
+</div>
+</div>
 </body>
 </html>

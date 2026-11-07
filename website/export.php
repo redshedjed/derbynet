@@ -22,7 +22,6 @@ $workbook = export_all();
 <?php require('inc/stylesheet.inc'); ?>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery-migrate.js"></script>
-<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
 <script type="text/javascript" src="js/dashboard-ajax.js"></script>
 <script type="text/javascript" src="js/xlsx.full.min.js"></script>
 <script type="text/javascript" src="js/modal.js"></script>
@@ -67,15 +66,28 @@ function workbook_json() {
 
 <body>
 <?php make_banner('Export Results'); ?>
-<div class="block_buttons" style="margin-top: 20px;">
-<input type="button" value="Everything As .xlsx" onclick="write_workbook('xlsx');"/>
-<input type="button" value="Everything As .ods" onclick="write_workbook('ods');"/>
-<input type="button" value="Everything As .xls" onclick="write_workbook('xls');"/>
-                                                       <div>&nbsp;</div>
-<input type="button" value="Roster As .csv" onclick="write_sheet_csv('Roster');"/>
-<input type="button" value="Results As .csv" onclick="write_sheet_csv('Results');"/>
-<input type="button" value="Standings As .csv" onclick="write_sheet_csv('Standings');"/>
-<input type="button" value="Awards As .csv" onclick="write_sheet_csv('Awards');"/>
+<div class="page-content narrow tile-buttons">
+
+<section class="card card-accent accent-after">
+<h2 class="card-title">Everything, as one spreadsheet</h2>
+<p class="text-muted">Roster, results, standings and awards, each on its own sheet.</p>
+<div class="block_buttons tile-grid">
+<input type="button" value="Excel (.xlsx)" onclick="write_workbook('xlsx');"/>
+<input type="button" value="OpenDocument (.ods)" onclick="write_workbook('ods');"/>
+<input type="button" value="Older Excel (.xls)" onclick="write_workbook('xls');"/>
+</div>
+</section>
+
+<section class="card card-accent accent-after">
+<h2 class="card-title">One list at a time (.csv)</h2>
+<div class="block_buttons tile-grid">
+<input type="button" value="Roster" onclick="write_sheet_csv('Roster');"/>
+<input type="button" value="Results" onclick="write_sheet_csv('Results');"/>
+<input type="button" value="Standings" onclick="write_sheet_csv('Standings');"/>
+<input type="button" value="Awards" onclick="write_sheet_csv('Awards');"/>
+</div>
+</section>
+
 </div>
 </body>
 </html>

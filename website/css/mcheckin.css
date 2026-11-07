@@ -25,7 +25,8 @@
   font-weight: bold;
 }  
 #greetings img {
-  border: 1px solid blue;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 #greetings input {
   margin-top: 50px;
@@ -40,7 +41,7 @@
   font-size: 3vh;
   z-index: 100;
 
-  background: red;
+  background: var(--color-danger);
   color: white;
   text-align: center;
 }
@@ -89,8 +90,8 @@ video#preview {
   opacity: 20%;
 }
 #preview-overlay-content {
-  border: red solid 2px;
-  color: red;
+  border: var(--color-danger) solid 2px;
+  color: var(--color-danger);
   padding-top: 14px;
   text-align: center;
   font-weight: bold;
@@ -144,7 +145,7 @@ div#flash-overlay {
   left: 0;
   width: 100%;
   height: 0px; /* initially */
-  background: #3789fb;
+  background: var(--color-brand);
 }
 
 #slide-in-inner {
@@ -231,10 +232,10 @@ div#flash-overlay {
 .checked-in-status {
   font-size: 24px;
   font-weight: bold;
-  color: red;
+  color: var(--color-danger);
 }
 .passed .checked-in-status {
-  color: green;
+  color: var(--color-success);
 }
 
 .escutcheon div.thumbnail-carrier {  /* portrait */
@@ -268,7 +269,7 @@ div#racer-list {
 
 #racer-list li {
   min-height: 10vh;
-  border:  1px solid blue;
+  border-color: var(--gray-200);
   font-size: 4vh;
   white-space: normal;  /* Cancel the nowrap from mobile.css */
 }
@@ -279,11 +280,14 @@ div#racer-list {
   left: 0px;
   right: 0px;
   height: 10vh;
-  font-size: 6vh;
-  line-height: 1.5;
-  background: #4444ff;
-  color: white;
+  font-size: 5vh;
+  font-weight: var(--weight-semibold);
+  line-height: 10vh;
+  background: var(--color-brand);
+  color: var(--color-text-on-brand);
   text-align: center;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
 }
 
 /* TODO @media (min-aspect-ratio: 8/5) { ... } */

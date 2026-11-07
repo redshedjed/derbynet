@@ -1,39 +1,82 @@
-div#select-wrap {
-  width: 300px;
+/* Scenes (scenes.php).  A .page-toolbar with the scene picker and its
+   actions, then a card per kiosk name (built by js/scenes.js): the name,
+   the page it shows in this scene and that page's settings, with a live
+   preview on the right. */
+
+#scenes-toolbar,
+#previews {
+  max-width: 1100px;
   margin-left: auto;
   margin-right: auto;
-  font-size: 24px;
 }
+#previews {
+  padding: 0 var(--space-4) var(--space-5) var(--space-4);
+}
+
+.scenes_label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+div#select-wrap {
+  width: 280px;
+}
+
+/* ---------------- One card per kiosk name ---------------- */
+
 div.kiosk {
-  clear: right;
-  background-color: #ffffd0;
-  height: 245px;
-  position: relative;
-  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name    preview"
+                       "page    preview"
+                       "params  preview";
+  grid-template-rows: auto auto 1fr;
+  gap: var(--space-2) var(--space-5);
+  margin: 0 0 var(--space-3) 0;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-left: 6px solid var(--stage-during);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 div.kiosk h3 {
-  margin-left: 50px;
+  grid-area: name;
+  margin: 0;
+  font-size: var(--text-lg);
 }
 div.page-div {
-  width: 200px;
+  grid-area: page;
+  max-width: 320px;
 }
-div.page-div select {
-  font-size: 16px;
+div.page-div div.mselect {
+  font-size: var(--text-base);
 }
+div.kiosk > .block_buttons {
+  grid-area: params;
+}
+
+/* Preview: the kiosk page at 1920x1080, scaled to fit.  The wrapper is
+   the scaled size and clips the iframe, whose layout box stays full size
+   (without the clip the page was 1500px too wide). */
 div.wrap {
-  width: 384px;
-  height: 245px;
-  position: absolute;
-  top: 10px;
-  right: 15px;
+  grid-area: preview;
+  width: 346px;    /* 1920 x 0.18 */
+  height: 195px;   /* 1080 x 0.18 */
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: #FFFFFF;
+  box-shadow: var(--shadow-sm);
 }
-iframe {
-   width: 1920px;
-   height: 1080px;
-   transform: scale(.20);
-   transform-origin: top left;
-  border: 12px solid black;
-  margin-bottom: 0px;
+div.wrap iframe {
+  width: 1920px;
+  height: 1080px;
+  border: 0;
+  transform: scale(0.18);
+  transform-origin: top left;
   background-color: white;
 }
 
@@ -41,4 +84,21 @@ iframe {
 #new_kiosk_name {
   margin-left: 13px;
   margin-bottom: 15px;
+}
+
+@media (max-width: 720px) {
+  #scenes-toolbar .toolbar-spacer {
+    display: none;
+  }
+  #previews {
+    padding: 0 var(--space-2) var(--space-4) var(--space-2);
+  }
+  div.kiosk {
+    grid-template-columns: 1fr;
+    grid-template-areas: "name" "page" "params" "preview";
+  }
+  div.wrap {
+    width: 100%;
+    max-width: 346px;
+  }
 }
