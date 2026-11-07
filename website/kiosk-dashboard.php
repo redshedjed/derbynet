@@ -57,6 +57,7 @@ var g_standings_choices = <?php
 <?php make_banner('Kiosks'); ?>
 
 <div class="block_buttons" style="float: right; width: 300px;">
+<a class="button_link" href="awards-presentation.php">Present Awards</a>
 <a class="button_link" href="scenes.php">Scene Editor</a>
 </div>
 

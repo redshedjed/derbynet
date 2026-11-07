@@ -55,7 +55,7 @@ $name_style = read_name_style();
 <link rel="stylesheet" type="text/css" href="css/awards-presentation.css"/>
 </head>
 <body>
-<?php make_banner('Awards Presentation');
+<?php make_banner('Awards Presentation', 'kiosk-dashboard.php');
 
 $use_subgroups = use_subgroups();
 

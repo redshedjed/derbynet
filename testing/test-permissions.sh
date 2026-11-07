@@ -76,7 +76,6 @@ cat >coordinator.index.tmp <<EOF
           <a class="button_link during_button" href="judging.php">Judging</a>
           <a class="button_link during_button" href="ondeck.php">Racers On Deck</a>
           <a class="button_link during_button" href="racer-results.php">Results By Racer</a>
-          <a class="button_link after_button" href="awards-presentation.php">Present Awards</a>
           <a class="button_link after_button" href="standings.php">Standings</a>
           <a class="button_link after_button" href="export.php">Export Results</a>
           <a class="button_link after_button" href="history.php">Retrospective</a>

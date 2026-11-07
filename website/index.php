@@ -150,8 +150,8 @@ if ($two_columns) {
 }
 
 // *********** After ***************
-$need_spacer = make_link_button('Present Awards', 'awards-presentation.php', PRESENT_AWARDS_PERMISSION, 'after_button');
-$need_spacer = make_link_button('Standings', 'standings.php', VIEW_AWARDS_PERMISSION, 'after_button') || $need_spacer;
+// Present Awards is on the Kiosk Dashboard, since it drives the awards kiosk.
+$need_spacer = make_link_button('Standings', 'standings.php', VIEW_AWARDS_PERMISSION, 'after_button');
 // Anyone can view results, but the anonymous home menu stays short for
 // visitors: exporting is offered once someone has logged in.
 if (@$_SESSION['role']) {
