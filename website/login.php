@@ -27,25 +27,38 @@ require_once('inc/locked.inc');
     cursor: default;
 }
 
-#login-kiosk {
-  position: fixed;
-  bottom: 20px;
-/*  left: 1em;
-  padding: 1em; */
-  width: 25em;
-  left: 50%;
-  margin-left: -12.5em;
+/* Role choices look like the home menu: white tiles with a colored bar (the
+   shared "Tile buttons" in global.css).  Roles get the brand blue; kiosk,
+   camera and log out get gray, like the home menu's "other" buttons. */
+div.index_background {
+  padding-top: var(--space-5);
 }
 
-#camera_button {
-  padding-bottom: 15px;
-  padding-top: 5px;
-  font-size: 22px;
-  height: 20px;
-  width: 150px;
+.login_heading {
+  display: block;
+  margin: 0 auto var(--space-4) auto;
+  text-align: center;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
 }
-#kiosk_button {
-  margin-bottom: 6px;
+
+.tile-buttons .block_buttons input[type='button'],
+.tile-buttons .block_buttons a.button_link {
+  box-sizing: border-box;
+  width: 270px;
+  min-height: 52px;
+  height: auto;
+  margin-bottom: var(--space-4);
+}
+
+#login-kiosk {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--gray-200);
+  width: 270px;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>
 <script type="text/javascript" src="js/jquery.js"></script>
@@ -60,10 +73,11 @@ require_once('inc/locked.inc');
   <?php make_banner(''); ?>
 </a>
 
-<div class="index_background">
+<div class="index_background tile-buttons">
 <div class="block_buttons">
-<legend>Please choose a role:</legend>
+<h2 class="login_heading">Please choose a role</h2>
 
+<div class="accent-brand">
 <?php
 foreach ($roles as $name => $details) {
   if (empty($name)) {
@@ -75,20 +89,19 @@ foreach ($roles as $name => $details) {
   }
 }
 ?>
-
-<div id="login-kiosk">
-<input type="button" id="kiosk_button" value="Be a Kiosk" onclick="show_kiosk_form();"/>
-<a class="button_link" id="camera_button" href="camera.php">Be a Camera</a>
 </div>
 
+<div id="login-kiosk" class="accent-other">
+<input type="button" id="kiosk_button" value="Be a Kiosk" onclick="show_kiosk_form();"/>
+<a class="button_link" id="camera_button" href="camera.php">Be a Camera</a>
 <?php
 if (@$_SESSION['role']) {
 ?>
-<br/>
 <input type="button" value="Log out" onclick='handle_logout();'/>
 <?php
 }
 ?>
+</div>
 
 </div>
 </div>
