@@ -218,7 +218,8 @@ function all_kiosks() {
                         'page' => $row['page'],
                         'reload' => $row['reload'],
                         'age' => time() - $row['last_contact'],
-                        'parameters' => $row['params']);
+                        // parse_kiosk_params() put the JSON string here
+                        'parameters' => $row['parameters']);
     }
   } catch (PDOException $p) {
     // Most likely: no kiosks table.

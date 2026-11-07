@@ -110,7 +110,10 @@ function process_polled_data(data) {
 function generate_kiosk_control_group(pages, kiosks) {
   $("#kiosk_control_group").empty();
   if (kiosks.length == 0) {
-    $("#kiosk_control_group").append("<h3>No kiosks are presently registered.</h3>");
+    $("#kiosk_control_group").append(
+      "<p class='notice notice-info'><b>No kiosks yet.</b>  On a TV or display, open"
+        + " DerbyNet and use <b>Make this device a display</b> below, or open a"
+        + " <b>New Kiosk Window</b> here.</p>");
   } else {
     for (var i = 0; i < kiosks.length; ++i) {
       generate_kiosk_control(i, kiosks[i], pages);
@@ -136,38 +139,42 @@ function update_kiosk_names(kiosks) {
 // kiosk describes the kiosk's state: {name:, address:, madlib:, last_contact:, age:, page:, parameters:}
 // pages is an array of {path:, brief:} objects, as produced by parse_kiosk_pages.
 function generate_kiosk_control(index, kiosk, pages) {
-  var kiosk_control = $("<div class=\"block_buttons control_group kiosk_control\"/>");
+  // A card per kiosk (css/kiosk-dashboard.css lays out the three parts):
+  // who it is, what it's showing, and Reload.
+  var kiosk_control = $("<div class='card card-accent accent-during kiosk_control'/>");
 
+  // Who: the assigned name, or the made-up two-word name until one is assigned
   var kiosk_ident = $("<div class='kiosk-ident'/>");
-  kiosk_ident.append("<p><span class=\"kiosk_control_name\"></span>"
-                     + " <span class=\"kiosk_control_address\"></span>"
-                     + "</p>");
+  kiosk_ident.append("<p class='kiosk_names'><span class='kiosk_control_name'></span>"
+                     + " <span class='kiosk_control_address'></span></p>");
   kiosk_ident.find(".kiosk_control_name").text(kiosk.name);
   kiosk_ident.find(".kiosk_control_address")
     .text(kiosk.madlib).toggleClass("de-emphasize", kiosk.name.length > 0);
-  kiosk_ident.append('<input type="button"'
-                     + ' onclick="show_kiosk_naming_modal(\''
-                     + (kiosk.address
-                        ? kiosk.address.toString().replace(/"/g, '&quot;').replace(/'/, "\\'")
-                        : '')
-                     + '\', \'' + kiosk.name.replace(/"/g, '&quot;').replace(/'/, "\\'")
-                     + '\')"'
-                     + ' value="Assign Name"/>');
+  if (kiosk.name.length == 0) {
+    kiosk_ident.find(".kiosk_names").append(" <span class='badge'>No name</span>");
+  }
   if (kiosk.age > 5) {
     kiosk_ident.append(
-      $("<p class=\"last_contact\"/>").text("Last contact: " + kiosk.age + "s ago"));
+      $("<p class='last_contact'/>")
+        .append($("<span class='badge badge-warning'/>").text("No contact for " + kiosk.age + "s")));
   }
+  $("<input type='button' class='btn btn-secondary btn-sm' value='Assign Name'/>")
+    .on('click', function() {
+      show_kiosk_naming_modal(kiosk.address ? kiosk.address.toString() : '', kiosk.name);
+    })
+    .appendTo(kiosk_ident);
   kiosk_ident.appendTo(kiosk_control);
 
   kiosk_control.append($("<div/>").addClass('reload')
-                       .append($("<input type='button' value='Reload' onclick='reload_kiosk(this)'/>")
+                       .append($("<input type='button' class='btn btn-secondary btn-sm'"
+                                 + " value='Reload' onclick='reload_kiosk(this)'/>")
                                .attr('kiosk-address', kiosk.address))
-                       .append($("<p class='reloading'>Reloading</p>")
+                       .append($("<p class='reloading'>Reloading&hellip;</p>")
                                .toggleClass('hidden', !kiosk.reload)));
 
   var kiosk_select = $("<div class='kiosk-select'/>");
-  kiosk_select.append("<label for=\"kiosk-page-" + index + "\">Displaying:</label>");
-  var sel = $("<select name=\"kiosk-page-" + index + "\"" 
+  kiosk_select.append("<label for=\"kiosk-page-" + index + "\">Displaying</label>");
+  var sel = $("<select id=\"kiosk-page-" + index + "\" name=\"kiosk-page-" + index + "\""
               + " data-kiosk-address=\"" + kiosk.address + "\"" 
               + " onchange=\"handle_assign_kiosk_page_change(this)\""
               + "/>");
@@ -205,7 +212,7 @@ function setup_scenes_select_control() {
   $("#scenes-select").empty();
   $("#scenes-select").append($("<option/>")
                              .attr('value', -1)
-                             .html("&nbsp;"));
+                             .text("(No scene)"));
   for (var i = 0; i < g_all_scenes.length; ++i) {
     var scene = g_all_scenes[i];
     $("#scenes-select").append($("<option/>")

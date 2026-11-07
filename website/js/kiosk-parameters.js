@@ -75,7 +75,7 @@ function compute_classids() {
 //////////////////////////////////////////////////////////////////////////
 
 function decorate_please_check_in(kiosk_div, parameters, callback) {
-  $('<input type="button" value="Configure"/>')
+  $('<input type="button" class="btn btn-secondary btn-sm" value="Configure"/>')
     .on("click", /* selector */null, /* data: */{parameters: parameters, callback: callback},
         /* handler */ show_config_please_check_in)
     .appendTo(kiosk_div);
@@ -105,7 +105,7 @@ g_kiosk_page_handlers['kiosks/please-check-in.kiosk'] = {
 //////////////////////////////////////////////////////////////////////////
 // Configuration function for parameters of {title:, classids: [...]}
 function decorate_slideshow(kiosk_div, parameters, callback) {
-  $('<input type="button" value="Configure"/>')
+  $('<input type="button" class="btn btn-secondary btn-sm" value="Configure"/>')
     .on("click", /* selector */null, /* data: */{parameters: parameters, callback: callback},
         /* handler */ show_config_slideshow_modal)
     .appendTo(kiosk_div);
@@ -163,13 +163,12 @@ function is_current_standings_choice(choice, parameters) {
 g_kiosk_page_handlers['kiosks/standings.kiosk'] = {
   decorate: function(kiosk_div, parameters, callback) {
     var select_id = "standings-select-" + Math.floor(Math.random() * 1000);
-    kiosk_div.append("<label for='" + select_id+ "' style='float: left;'>Show standings for:</label>");
+    var div = $("<div class='kiosk-param-row'/>").appendTo(kiosk_div);
+    div.append("<label for='" + select_id + "'>Standings for</label>");
     var select = $("<select id='" + select_id + "'/>")
         .on("change",
             /* data: */{parameters: parameters, callback: callback},
             /* handler */ handle_standings_change);
-    var div = $("<div style='width: 400px; margin-left: auto; margin-right: auto;'/>");
-    div.appendTo(kiosk_div)
     select.appendTo(div);
     var value = -1;
     // parameters = {catalog_entry: {name:, key:, presentation: } }
@@ -198,16 +197,19 @@ g_kiosk_page_handlers['kiosks/award-presentations.kiosk'] = {
     if (!parameters.hasOwnProperty('confetti')) {
       parameters.confetti = true;
     }
-    $("<input type='checkbox' class='flipswitch'/>")
+    var row = $("<div class='kiosk-param-row'/>").appendTo(kiosk_div);
+    $('<label for="' + k_id + '">Confetti</label>').appendTo(row);
+    var checkbox = $("<input type='checkbox' class='flipswitch'/>")
       .attr('id', k_id)
       .prop('checked',  parameters.confetti)
       .on("change", /*selector*/null, /*data*/{parameters: parameters, callback: callback},
           /*handler*/function (ev) {
-            var checked = $(event.target).is(':checked');
-            event.data.callback({confetti: checked});
+            var checked = $(ev.target).is(':checked');
+            ev.data.callback({confetti: checked});
           })
-        .appendTo(kiosk_div);
-      $('<label for="' + k_id + '">Confetti</label>').appendTo(kiosk_div);
+      .appendTo(row);
+    // Controls added after page load have to be turned into switches here
+    flipswitch(checkbox);
     }
 };
 
@@ -237,7 +239,7 @@ function show_config_qrcode_modal(event) {
 g_kiosk_page_handlers['kiosks/qrcode.kiosk'] = {
     // Parameters: { title: (string) content: (url) }
   decorate: function(kiosk_div, parameters, callback) {
-    $('<input type="button" value="Configure"/>')
+    $('<input type="button" class="btn btn-secondary btn-sm" value="Configure"/>')
       .on("click", /* selector */null, /* data: */{parameters: parameters, callback: callback},
           /* handler */ show_config_qrcode_modal)
       .appendTo(kiosk_div);

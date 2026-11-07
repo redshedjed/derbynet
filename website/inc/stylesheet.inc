@@ -13,6 +13,7 @@ $mobile_ready_pages = array(
   'import-snapshot.php',
   'index.php',
   'judging.php',
+  'kiosk-dashboard.php',
   'login.php',
   'mcheckin.php',
   'ondeck.php',

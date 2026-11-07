@@ -56,25 +56,22 @@ var g_standings_choices = <?php
 <body>
 <?php make_banner('Kiosks'); ?>
 
-<div class="block_buttons" style="float: right; width: 300px;">
-<a class="button_link" href="awards-presentation.php">Present Awards</a>
-<a class="button_link" href="scenes.php">Scene Editor</a>
-</div>
-
-<div id="scenes-control">
-  <label for="scenes-select">Current scene:</label>
-  <div id="select-wrap">
-    <select id="scenes-select"></select>
+<div id="kiosk-toolbar" class="toolbar page-toolbar">
+  <div id="scenes-control">
+    <label for="scenes-select">Scene</label>
+    <div id="select-wrap">
+      <select id="scenes-select"></select>
+    </div>
+    <div id="scenes-status-message"></div>
   </div>
-  <div id="scenes-status-message"></div>
+  <span class="toolbar-spacer"></span>
+  <input id="new_kiosk_window_button" type="button" class="btn btn-secondary" value="New Kiosk Window"/>
+  <a class="btn btn-secondary" href="awards-presentation.php">Present Awards</a>
+  <a class="btn btn-secondary" href="scenes.php">Scene Editor</a>
 </div>
 
-
+<div class="kiosk_page">
 <div id="kiosk_control_group" class="kiosk_control_group">
-</div>
-
-<div class="block_buttons" style="width: 300px;">
-  <input id="new_kiosk_window_button" type="button" value="New Kiosk Window"/>
 </div>
 
 <section id="start_display" class="card card-accent accent-other tile-buttons">
@@ -88,6 +85,7 @@ var g_standings_choices = <?php
     <input type="button" value="Be a Camera" data-href="camera.php"/>
   </div>
 </section>
+</div>
 <?php require_once('inc/ajax-failure.inc'); ?>
 
 <div id='kiosk_modal' class="modal_dialog hidden block_buttons">
