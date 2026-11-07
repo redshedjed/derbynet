@@ -634,7 +634,7 @@ function make_table_row(racer, xbs) {
       .toggleClass('den_scheduled', racer.denscheduled)
       .toggleClass('exclude', racer.exclude);
   tr.append($('<td>')
-            .append('<input type="button" class="white-button" value="Change"' +
+            .append('<input type="button" class="btn btn-secondary btn-sm" value="Change"' +
                     ' onclick="show_edit_racer_form(' + racer.racerid + ')"/>'));
 
   tr.append($('<td>')

@@ -4,156 +4,136 @@ html, body { /* Don't scroll the page, just the table. */
   overflow: hidden;
 }
 
+/* ---------------- Toolbar ----------------
+   Barcode and Mobile on the left; Bulk and New Racer on the right. */
+
+#top-buttons {
+  padding: var(--space-3) var(--space-4);
+}
+#top-buttons .btn {
+  min-height: 44px;
+  font-size: var(--text-base);
+}
+#barcode-button {
+  padding: var(--space-1) var(--space-3);
+}
+#barcode-button img {
+  display: block;
+  height: 28px;
+}
+
+/* ---------------- Racer table ----------------
+   A white card that scrolls under a sticky header.  checkin.php sets its
+   height to fill the window. */
+
 #main-checkin-table-div {
   overflow-y: auto;
+  margin: 0 var(--space-4) var(--space-4) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
-        
+
 #main-checkin-table-div thead th {
   position: sticky;
   top: 0;
-  background: white;
+  background: var(--color-surface);
+  /* A sticky cell's own border doesn't stick, so draw the rule with a shadow */
+  border-bottom: 0;
+  box-shadow: inset 0 -2px 0 var(--color-border);
   /* Some mobile controls use small non-zero z-index */
   z-index: 4;
+  white-space: nowrap;
+}
+
+#main-checkin-table td {
+  text-align: left;
+  vertical-align: middle;
+  padding: var(--space-2) var(--space-3);
+}
+#main-checkin-table td:first-child,
+#main-checkin-table th:first-child {
+  padding-left: var(--space-4);
+  width: 1%;
+}
+#main-checkin-table td.sort-car-number {
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-lg);
+}
+#main-checkin-table td.sort-lastname,
+#main-checkin-table td.sort-firstname {
+  font-size: var(--text-lg);
+}
+
+/* Sortable column headers: the current sort is plain text with an arrow,
+   the others are links. */
+#main-checkin-table th a {
+  color: inherit;
+  text-decoration: none;
+}
+#main-checkin-table th a[href] {
+  color: var(--color-brand);
+}
+#main-checkin-table th a[href]:hover {
+  text-decoration: underline;
+}
+#main-checkin-table th a:not([href])::after {
+  content: " \25BE";
 }
 
 #main-checkin-table tr.d0 td {
-  background-color: #fcf6cf;
+  background-color: var(--color-row-alt);
 }
 
+#main-checkin-table tbody tr:hover td {
+  background-color: #EEF3FA;
+}
+
+/* The row flashes when a barcode scan or search finds it */
 #main-checkin-table tr.highlight td {
-  background-color: #ff8080;
+  background-color: #F5BCC2;
+}
+
+/* Passed? column: the switch, then any status ("Racing!", "Late!") */
+td.checkin-status {
+  white-space: nowrap;
+}
+td.checkin-status br {
+  display: none;
 }
 
 div.carname {
   font-style: italic;
 }
 
+img.checkin-photo {
+  max-height: 56px;
+  max-width: 56px;
+  vertical-align: middle;
+}
+
+tr.exclude td.checkin-status {
+  background-image: url('../img/no-trophy.png');
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+}
+
+/* ---------------- Edit racer modal ---------------- */
+
 #edit_racer_modal {
-    width: 600px;
+  width: 600px;
+  top: 0px;
 }
 
 #rank_missing img {
-    float: left;
-}
-
-#photo_modal {
-    top: 0px;
-    margin-top: 10px;
-    width: 720px;
-}
-
-#photo_modal #left-photo {
-  display: inline-block;
-  vertical-align: top;
-  width: 328px; 
-}
-#photo_modal #right-photo {
-  display: inline-block;
-  vertical-align: top;
-  width: 328px;
-  margin-left: 15px;
-}
-
-#thumb-link {
-  /* Don't know why this is necessary, but: */
-  height: 53px;
-}
-
-#preview {
-    width:640px;
-    height:480px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#captured {
-    width:640px;
-    height:480px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.block_buttons input.bulk_button {
-  position: absolute;
-  right: 90px;
-  width: 120px;
-  margin-top: 0px;
-}
-
-.centered_flipswitch {
-    width: 143px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 30px;
-    font-size: x-large;
-}
-
-.centered_flipswitch * {
-    /* Normally the default, but overridden by Dropzone */
-    box-sizing: content-box;
-}
-
-/* In jquery-mobile, button gets surrounded by div.ui-btn.ui-input-btn.ui-corner-all.ui-shadow */
-input.white-button {
-/* 732 */
-	font-size: 1em;
-	line-height: 1.3;
-	font-family: sans-serif /*{global-font-family}*/;
-/* 787 */
-	font-weight: bold;
-	border-width: 1px;
-	border-style: solid;
-/* 802 */
-	-webkit-border-radius: 				.3125em /*{global-radii-blocks}*/;
-	border-radius: 						.3125em /*{global-radii-blocks}*/;
-/* 825 */
-	-webkit-background-clip: padding;
-	background-clip: padding-box;
-/* 839 */
-	-webkit-box-shadow: 0 1px 3px /*{global-box-shadow-size}*/ 		rgba(0,0,0,.15) /*{global-box-shadow-color}*/;
-	-moz-box-shadow: 0 1px 3px /*{global-box-shadow-size}*/ 		rgba(0,0,0,.15) /*{global-box-shadow-color}*/;
-	box-shadow: 0 1px 3px /*{global-box-shadow-size}*/ 				rgba(0,0,0,.15) /*{global-box-shadow-color}*/;
-/* 1507 */
-	font-size: 16px;
-	margin: .5em 0;
-	padding: .7em 1em;
-	display: block;
-	position: relative;
-	text-align: center;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
-	cursor: pointer;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-/* 807 */
-	-webkit-border-radius: 				.3125em /*{global-radii-buttons}*/;
-	border-radius: 						.3125em /*{global-radii-buttons}*/;
-/* 998 */
-	background-color: 			#f6f6f6 /*{a-bup-background-color}*/;
-	border-color:	 		#ddd /*{a-bup-border}*/;
-	color: 					#333 /*{a-bup-color}*/;
-	text-shadow: 0 /*{a-bup-shadow-x}*/ 1px /*{a-bup-shadow-y}*/ 0 /*{a-bup-shadow-radius}*/ #f3f3f3 /*{a-bup-shadow-color}*/;
-}
-
-
-#autocrop-label {
-    width: 100%;
-    text-align: center;
-    font-size: large;
-    font-weight: bold;
-}
-
-#edit_racer_modal {
-  top: 0px;
+  float: left;
 }
 
 #edit_racer_modal #left-edit {
   display: inline-block;
   vertical-align: top;
-  width: 290px; 
+  width: 290px;
 }
 #edit_racer_modal #right-edit {
   display: inline-block;
@@ -191,6 +171,66 @@ input.white-button {
   padding-top: 30px;
 }
 
+/* ---------------- Photo modal ---------------- */
+
+#photo_modal {
+  top: 0px;
+  margin-top: 10px;
+  width: 720px;
+}
+
+#photo_modal #left-photo {
+  display: inline-block;
+  vertical-align: top;
+  width: 328px;
+}
+#photo_modal #right-photo {
+  display: inline-block;
+  vertical-align: top;
+  width: 328px;
+  margin-left: 15px;
+}
+
+#thumb-link {
+  /* Don't know why this is necessary, but: */
+  height: 53px;
+}
+
+#preview {
+  width: 640px;
+  height: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#captured {
+  width: 640px;
+  height: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.centered_flipswitch {
+  width: 143px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30px;
+  font-size: x-large;
+}
+
+.centered_flipswitch * {
+  /* Normally the default, but overridden by Dropzone */
+  box-sizing: content-box;
+}
+
+#autocrop-label {
+  width: 100%;
+  text-align: center;
+  font-size: large;
+  font-weight: bold;
+}
+
+/* ---------------- Bulk modal ---------------- */
 
 #bulk_details_modal .eligible-flip {
   font-size: 24px;
@@ -206,46 +246,25 @@ input.white-button {
   margin-top: 30px;
 }
 
-tr.exclude td.checkin-status {
-  background-image: url('../img/no-trophy.png');
-  background-repeat: no-repeat;
-}
-
-img.checkin-photo {
-    max-height: 60px;
-    max-width: 60px;
-}
-
-#barcode-button {
-  position: absolute;
-  left: 16px;
-  top: 80px;
-}
-
-#mobile-button {
-  position: absolute;
-  left: 100px;
-  top: 75px;
-  width: 100px;
-  height: 37px;
-  font-size: large;
-  line-height: 1.0;
-}
 #mcheckin-link {
   margin-top: 50px;
 }
 
-/* -------------------------- */
+/* ---------------- Find racer ----------------
+   The search bar that appears at the bottom right when typing. */
+
 #find-racer {
-    position: fixed;
-    bottom: 0px;
-    width: 27em;
-    height: 40px;
-    right: 1em;
-    font-size: large;
-    color: white;
-	background-color: var(--color-brand);
-    padding: 5px;
+  position: fixed;
+  bottom: 0px;
+  width: 27em;
+  height: 40px;
+  right: 1em;
+  font-size: large;
+  color: white;
+  background-color: var(--color-brand);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-card);
+  padding: 5px;
 }
 
 #find-racer-form {
@@ -257,18 +276,18 @@ img.checkin-photo {
 }
 
 #find-racer img {
-    float: right;
-    margin-top: 8px;
+  float: right;
+  margin-top: 8px;
 }
 
 #find-racer-text {
   background-color: #ffffff;
   font-size: 18px;
-  font-family: sans-serif;
+  font-family: var(--font-sans);
 }
 
 .notfound #find-racer-text {
-  background-color: #fc828c;
+  background-color: var(--color-danger-bg);
 }
 
 #find-racer-message {
@@ -276,28 +295,30 @@ img.checkin-photo {
   visibility: hidden;  /* but still takes up space */
 }
 
+/* Matching text while searching */
 .found-racer {
-    background-color: #80ff80;
+  background-color: #A8E0B5;
+  border-radius: 3px;
 }
 
 p.warning,
 p.warning a,
 p.warning a.ui-link {
-    text-align: center;
-    color: red;
-    font-weight: bold;
-    font-size: 16px;
+  text-align: center;
+  color: var(--color-danger);
+  font-weight: bold;
+  font-size: 16px;
 }
 
+/* ---------------- Partitions modal ---------------- */
 
-/* partitions-modal dialog */
 .mlistview > li > p {
   font-size: 17px;
 }
 .mlistview > li > p span.count {
-    font-size: 16px;
-    font-weight: bold;
-    float: right;
+  font-size: 16px;
+  font-weight: bold;
+  float: right;
 }
 div.delete-extension {
   margin-top: 40px;

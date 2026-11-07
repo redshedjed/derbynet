@@ -76,9 +76,13 @@ var g_action_on_barcode = "<?php
 var g_preferred_urls = <?php echo json_encode(preferred_urls(/*use_https=*/true),
                                               JSON_HEX_TAG | JSON_HEX_AMP | JSON_PRETTY_PRINT); ?>;
 
+// The page doesn't scroll; the table does, filling what's left below the
+// banner and toolbar (less the table card's bottom margin).
 function set_checkin_table_height() {
-  $("#main-checkin-table-div").height(
-      $(window).height() - $(".banner").height() - $("#top-buttons").height());
+  var div = $("#main-checkin-table-div");
+  div.outerHeight(
+      $(window).height() - $(".banner").outerHeight(true) - $("#top-buttons").outerHeight(true)
+      - (div.outerHeight(true) - div.outerHeight()));
 }
 $(function() { set_checkin_table_height(); });
 $(window).on('resize', set_checkin_table_height);
@@ -99,25 +103,25 @@ $(window).on('resize', set_checkin_table_height);
 make_banner('Racer Check-In');
 ?>
 
-<div id="top-buttons" class="block_buttons">
-  <img id="barcode-button" src="img/barcode.png"
-      onclick="handle_barcode_button_click()"/>
-  <input id="mobile-button" type="button" value="Mobile"
-      onclick="handle_qrcode_button_click()"/>
-
-  <input class="bulk_button"
+<div id="top-buttons" class="toolbar">
+  <button type="button" id="barcode-button" class="btn btn-secondary"
+      title="Barcode scanning" onclick="handle_barcode_button_click()">
+    <img src="img/barcode.png" alt="Barcode"/>
+  </button>
+  <input id="mobile-button" type="button" class="btn btn-secondary" value="Mobile"
+      title="Check in from a phone" onclick="handle_qrcode_button_click()"/>
+  <span class="toolbar-spacer"></span>
+  <input class="bulk_button btn btn-secondary"
         type="button" value="Bulk"
         onclick='show_bulk_form();'/>
 <?php if (have_permission(REGISTER_NEW_RACER_PERMISSION)) { ?>
-      <input type="button" value="New Racer"
+  <input type="button" class="btn" value="New Racer"
         onclick='show_new_racer_form();'/>
-<?php } else { ?>
-          <div style='padding: 10px 15px; font-size: x-large; line-height: 1.3; margin-bottom: 20px; margin-top: 3px; '>&nbsp;</div>
 <?php } ?>
 </div>
 
 <div id="main-checkin-table-div">
-<table id="main-checkin-table" class="main_table">
+<table id="main-checkin-table" class="main_table table">
 <thead>
   <tr>
     <th/>
