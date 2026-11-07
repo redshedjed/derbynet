@@ -23,7 +23,7 @@ require_permission(SET_UP_PERMISSION);
 <?php make_banner('Import Database Snapshot', 'setup.php'); ?>
 
 <div class="import_snapshot">
-<p class="notice notice-danger"><b>Warning:</b> importing a database snapshot
+<p class="notice notice-danger"><b>This replaces everything:</b> importing a database snapshot
    <b>deletes</b> all the data that's currently in the database.</p>
 
 <form id="upload-form">
