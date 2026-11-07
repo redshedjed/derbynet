@@ -48,9 +48,9 @@ require_once('inc/banner.inc');
 <p><b>DerbyNet</b> is the free, open-source, multi-screen race management
 system for Pinewood Derby-style racing, used by packs and other groups all
 around the country and around the globe.</p>
-<p>Created by <b>Jeff Piazza</b> &mdash;
+<p>Created by <b>Jeff Piazza</b> —
 <a href="https://jeffpiazza.github.io/derbynet/" target="_blank">derbynet on GitHub</a>.</p>
-<p>Updated by <b>redshedjed</b> &mdash;
+<p>Updated by <b>redshedjed</b> —
 <a href="https://github.com/redshedjed/derbynet" target="_blank">github.com/redshedjed/derbynet</a>.</p>
 <?php if (have_permission(SET_UP_PERMISSION)) { ?>
 <p><a class="small-button" href="system-info.php">System Info</a></p>

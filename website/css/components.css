@@ -53,6 +53,8 @@
    inside .block_buttons (global.css) share this look. */
 
 .btn {
+  /* Links and inputs size the same way */
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;

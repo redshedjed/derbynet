@@ -1,92 +1,248 @@
-/* CSS adapted from
-http://blog.stevensanderson.com/2011/10/05/full-height-app-layouts-a-css-trick-to-make-it-easier/
-*/
+/* Racer Photos and Car Photos (photo-thumbs.php).
 
-.dz-browser-not-supported .dz-message {
-    height: 0;
-    overflow: hidden;
+   The page doesn't scroll: under the banner and toolbar, the racer list
+   (left) and the unassigned photos (right) each scroll on their own.
+   Photos are dragged from the right onto a racer on the left. */
+
+html, body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+body > .banner,
+#photo-toolbar {
+  flex: 0 0 auto;
 }
 
-body { margin: 0; }
+/* ---------------- Toolbar ---------------- */
 
-.body-wrapper { /* body row */
- position: absolute;
- top: 128px;
- bottom: 0;
- left: 0;
- right: 0;
- overflow: hidden;
+#photo-toolbar {
+  padding: var(--space-3) var(--space-4);
+}
+#photo-toolbar .btn {
+  min-height: 44px;
+  font-size: var(--text-base);
+}
+
+/* Sort: a segmented control.  The current choice is filled in. */
+#sort_controls {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+#sort_controls .sort_label,
+#sort_controls .sort_button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}
+#sort_controls .sort_label {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-right: var(--space-2);
+}
+#sort_controls .sort_button {
+  color: var(--color-brand);
+  border-left: 1px solid var(--color-border);
+}
+#sort_controls a.sort_button:hover {
+  background: var(--color-surface-sunken);
+}
+#sort_controls .current_sort {
+  color: var(--color-text-on-brand);
+  background: var(--color-brand);
+  border-left-color: var(--color-brand);
+}
+
+/* Upload: a dashed drop tile at the right end of the toolbar */
+#upload_target {
+  box-sizing: border-box;
+  position: relative;
+  min-width: 300px;
+  min-height: 44px;
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+#upload_target:hover,
+#upload_target.dz-drag-hover {
+  border-color: var(--color-brand);
+  box-shadow: var(--shadow-card-hover);
+}
+#upload_target * {
+  box-sizing: border-box;
+}
+#upload_target .dz-message {
+  margin: 0;
+  text-align: center;
+}
+#upload_target .dz-message span {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+.dz-browser-not-supported .dz-message {
+  height: 0;
+  overflow: hidden;
+}
+
+/* ---------------- Racer list and photos ---------------- */
+
+.body-wrapper {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0 var(--space-4) var(--space-4) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
 }
 
 .thumblist {
- position: absolute;
- top: 0;
- bottom: 0;
- left: 0;
- width: 300px;
- overflow-x: hidden;
- overflow-y: auto;
- z-index: 1;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-right: 1px solid var(--gray-200);
+  z-index: 1;
 }
 
-.thumblist li { z-index: 2; }
-
-.thumblist li.highlight {
-  background-color: #ff8080;
+.thumblist li {
+  z-index: 2;
+  border-color: var(--gray-200);
+}
+.thumblist .mlistview > li:first-child {
+  border-top-width: 0;
+}
+.thumblist li .racer-name {
+  font-size: var(--text-lg);
+}
+.thumblist li p {
+  color: var(--color-text-muted);
+}
+.thumblist li.without-photo {
+  background-color: var(--color-row-alt);
 }
 
-.thumbnail {
-  display: inline-block;
-  width: 150px;
-  height: 150px;
+span.car-number {
+  font-weight: bold;
+  color: var(--color-text);
 }
-.thumbnail img {
-  max-width: 150px;
-  max-height: 150px;
-}
-img.unassigned-photo,
-img.ui-draggable-dragging {
-  max-width: 150px;
-  max-height: 150px;
-}
-
-.thumbnail.hidden {
-   display: none;
-}
-
-
-.thumbnail a img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
- }
 
 .lost_photo {
   font-style: italic;
 }
 
-span.car-number {
-  font-weight: bold;
+/* The racer flashes when a search finds it */
+.thumblist li.highlight {
+  background-color: #F5BCC2;
 }
 
 .photothumbs {
- position: absolute;
- top: 0;
- bottom: 0;
- left: 300px;
- right: 0;
-   overflow-x: visible;
- overflow-y: auto;
- z-index: 1;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 300px;
+  right: 0;
+  padding: var(--space-3);
+  overflow-x: visible;
+  overflow-y: auto;
+  z-index: 1;
+  background: var(--color-page);
 }
 
-.droppableHover {
-  background-color: #ffffb4;
+/* Each unassigned photo is a small white tile */
+.thumbnail {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 150px;
+  margin: 0 var(--space-3) var(--space-3) 0;
+  vertical-align: top;
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
+.thumbnail img {
+  max-width: 140px;
+  max-height: 140px;
+  cursor: grab;
+}
+img.unassigned-photo,
+img.ui-draggable-dragging {
+  max-width: 140px;
+  max-height: 140px;
+}
+img.ui-draggable-dragging {
+  cursor: grabbing;
+  box-shadow: var(--shadow-card-hover);
+}
+
+.thumbnail.hidden {
+  display: none;
+}
+
+.thumbnail a img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* A drop target under a dragged photo */
+.droppableHover,
+.thumblist li.droppableHover {
+  background-color: #E8EFF8;
+  box-shadow: inset 4px 0 0 var(--color-brand);
+}
+
+.trouble {
+  border-left: 6px solid var(--color-danger);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-lg);
+}
+.trouble img {
+  vertical-align: middle;
+}
+
+/* ---------------- Crop modal ---------------- */
 
 #photo_crop_modal {
-    top: 0px;
-    width: 650px;
+  top: 0px;
+  width: 650px;
 }
 #photo_basename,
 #crop_instructions {
@@ -98,111 +254,23 @@ span.car-number {
   margin-bottom: 5px;
 }
 
-.trouble {
-    border: 5px solid #ff6666;
-}
-.trouble img {
-    vertical-align: middle;
-}
+/* ---------------- Find racer ----------------
+   The search bar that appears at the bottom right when typing. */
 
-#sort_controls {
-  position: absolute;
-  left: 2px; 
-  font-size: 16px;
-}
-
-#sort_controls .sort_div {
-  display: inline-block;
-  width: 100px;
-  height: 30px;
-}
-
-#sort_controls .sort_button {
-  position: absolute;
-  top: 0px;
-  width: 60px;
-  height: 30px;
-}
-
-#sort_controls a {
-  display: inline-block;
-  text-align: center;
-  font-size: 20px;
-  min-width: 60px;
-  top: 0px;
-}
-
-#sort_controls a.current_sort {
-  color: #dddd88;
-  text-decoration: none;
-}
-
-#center_buttons {
-  width: 250px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#center_buttons a {
-  width: 88px;
-  height: 30px;
-  font-size: 20px;
-}
-
-#center_buttons #refresh-button {
-  float: left;
-  font-size: 20px;
-  margin-left: 0px;
-  margin-top: 0px;
-}
-
-#center_buttons #other-button {
-  width: 88px;
-  font-size: 20px;
-  margin-left: 130px;
-}
-
-#upload_target {
-  position: absolute;
-  right: 2px;
-  height: 53px;
-  min-height: 50px;
-
-  padding-top: 10px;
-  padding-bottom: 0px;
-  min-width: 350px;
-  border: 5px solid var(--color-brand);
-  border-radius: 0.4em 0.4em 0.4em 0.4em;
-}
-
-#upload_target .dz-message {
-  text-align: center;
-/* TODO margin 2em 0; */
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-#upload_target .dz-message span {
-  line-height: 20px;
-  font-size: 16px;
-}
-#upload_target,
-#upload_target * {
-  box-sizing: border-box;
-}
-
-/* -------------------------- */
 #find-racer {
-    position: fixed;
-    bottom: 0px;
-    width: 27em;
-    height: 40px;
-    right: 1em;
-    font-size: large;
-    color: white;
-	background-color: var(--color-brand);
-    padding: 5px;
-    /* z-index 2 to prevent being covered over by .thumblist */
-    z-index: 2;
+  position: fixed;
+  bottom: 0px;
+  width: 27em;
+  height: 40px;
+  right: 1em;
+  font-size: large;
+  color: white;
+  background-color: var(--color-brand);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-card);
+  padding: 5px;
+  /* z-index 2 to prevent being covered over by .thumblist */
+  z-index: 2;
 }
 
 #find-racer-form {
@@ -214,18 +282,18 @@ span.car-number {
 }
 
 #find-racer img {
-    float: right;
-    margin-top: 8px;
+  float: right;
+  margin-top: 8px;
 }
 
 #find-racer-text {
   background-color: #ffffff;
   font-size: 18px;
-  font-family: sans-serif;
+  font-family: var(--font-sans);
 }
 
 .notfound #find-racer-text {
-  background-color: #fc828c;
+  background-color: var(--color-danger-bg);
 }
 
 #find-racer-message {
@@ -233,6 +301,62 @@ span.car-number {
   visibility: hidden;  /* but still takes up space */
 }
 
+/* Matching text while searching */
 .found-racer {
-    background-color: #80ff80;
+  background-color: #A8E0B5;
+  border-radius: 3px;
+}
+
+/* ---------------- Phones ----------------
+   The list and the photos split the width; the toolbar wraps. */
+
+@media (max-width: 720px) {
+  #photo-toolbar {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+  #photo-toolbar .toolbar-spacer {
+    display: none;
+  }
+  #sort_controls .sort_label {
+    display: none;
+  }
+  #sort_controls .sort_button {
+    padding: 0 var(--space-3);
+  }
+  #upload_target {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .body-wrapper {
+    margin: 0 var(--space-2) var(--space-2) var(--space-2);
+  }
+  .thumblist {
+    width: 55%;
+  }
+  .photothumbs {
+    left: 55%;
+    padding: var(--space-2);
+  }
+  .thumbnail {
+    width: 100%;
+    height: 110px;
+    margin: 0 0 var(--space-2) 0;
+  }
+  .thumbnail img,
+  img.unassigned-photo {
+    max-width: 100px;
+    max-height: 100px;
+  }
+  .thumblist .mlistview.has-thumbs > li {
+    padding-left: 4.5em;
+    padding-right: var(--space-2);
+  }
+  .thumblist .mlistview.has-thumbs > li > img:first-child {
+    max-width: 4em;
+    max-height: 4em;
+  }
+  .thumblist li .racer-name {
+    font-size: var(--text-base);
+  }
 }

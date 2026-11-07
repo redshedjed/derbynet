@@ -21,19 +21,24 @@ if (isset($_GET['order']) && in_array($_GET['order'], ['name', 'class', 'car']))
 if (!$order)
     $order = 'name';
 
+// The "back" parameter, if any, carried along by the sort and Racers/Cars links
+function back_param() {
+  return isset($_GET['back'])
+      ? '&amp;back='.htmlspecialchars(urlencode($_GET['back']), ENT_QUOTES, 'UTF-8')
+      : '';
+}
+
+// One segment of the Sort control; the current sort is marked and not a link.
 function link_for_ordering($key, $text) {
   global $order, $photo_repository;
-  echo "<div class='sort_div'>";
-  echo "<a class='sort_button button_link";
+  $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
   if ($order == $key) {
-    echo ' current_sort';
+    echo "<span class='sort_button current_sort' aria-current='true'>".$text."</span>";
+  } else {
+    echo "<a class='sort_button'"
+        ." href='photo-thumbs.php?repo=".$photo_repository->name()."&amp;order=".$key.back_param()."'>"
+        .$text."</a>";
   }
-  echo "' href='photo-thumbs.php?repo=".$photo_repository->name()."&amp;order=".$key."'>";
-  //echo "<span class='sort_by'>Sort by</span>";
-  //echo "<br/>";
-  echo $text;
-  echo "</a>";
-  echo "</div>";
 }
 
 function scan_directory($directory, $pattern) {
@@ -102,14 +107,29 @@ var g_photo_repo_name = '<?php echo $photo_repository->name(); ?>';
 <?php make_banner(($repo == 'head' ? 'Racer' : 'Car').' Photos',
                   isset($_GET['back']) ? $_GET['back'] : 'index.php'); ?>
 
-<div class="block_buttons">
+<div id="photo-toolbar" class="toolbar">
 
-<div id="sort_controls">
+<div id="sort_controls" role="group" aria-label="Sort racers by">
+  <span class="sort_label">Sort</span>
 <?php link_for_ordering('name', "Name"); ?>
 <?php link_for_ordering('class', group_label()); ?>
-<?php link_for_ordering('car', "Car#"); ?>.
-
+<?php link_for_ordering('car', "Car #"); ?>
 </div>
+
+<?php
+    echo "<a class='btn btn-secondary' id='refresh-button' href='#'"
+        ." onclick='window.location.reload(); return false;'>Refresh</a>\n";
+    $url = "photo-thumbs.php?repo=$other_repo&amp;order=$order";
+    if (isset($_GET['racerid']) && is_numeric($_GET['racerid'])) {
+      $url .= "&amp;racerid=$_GET[racerid]";
+    }
+    $url .= back_param();
+    echo "<a id='other-button' class='btn btn-secondary' href='$url'>";
+    echo   $other_repo == 'head' ? 'Racer Photos' : 'Car Photos';
+    echo "</a>\n";
+?>
+
+<span class="toolbar-spacer"></span>
 
 <?php if (!is_writable($photo_repository->directory())) { ?>
 
@@ -132,22 +152,7 @@ var g_photo_repo_name = '<?php echo $photo_repository->name(); ?>';
 
 <?php } ?>
 
-   <div id="center_buttons">
-    <?php
-        echo "<a class='button_link' id='refresh-button' onclick='window.location.reload();'>Refresh</a>";
-        $url = "photo-thumbs.php?repo=$other_repo&amp;order=$order";
-        if (isset($_GET['racerid']) && is_numeric($_GET['racerid'])) {
-          $url .= "&amp;racerid=$_GET[racerid]";
-        }
-        if (isset($_GET['back'])) {
-          $url .= "&amp;back=$_GET[back]";
-        }
-        echo "<a id='other-button' class='button_link' href='$url'>";
-        echo   $other_repo == 'head' ? 'Racers' : 'Cars';
-        echo "</a>";
-    ?>
-    </div>
-  </div>
+</div>
 
 <div class="body-wrapper">
 
