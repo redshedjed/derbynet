@@ -268,10 +268,10 @@ $(function() {
     "#number-by-segment, label[for='number-by-segment']")
     .on("keyup mouseup", on_car_numbering_change);
 
-  $('#settings_form input, #settings_form select').on('change', function(e) {
+  $('#settings_form input, #settings_form select, #settings_form textarea').on('change', function(e) {
     PostSettingChange($(this));
   });
-  $('#settings_form input[type!="checkbox"]').on('input', function(e) {
+  $('#settings_form input[type!="checkbox"], #settings_form textarea').on('input', function(e) {
     PostSettingChange($(this));
   });
 
@@ -291,3 +291,10 @@ $(function() {
     .on("keyup mouseup", on_schedule_method_change);
 
 });
+
+// About page: put the default "Our Pack" HTML back in the box, and save it.
+function on_about_pack_default_click() {
+  var box = $("#about-pack-html");
+  box.val(box.attr('data-default'));
+  PostSettingChange(box);
+}

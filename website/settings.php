@@ -12,6 +12,7 @@ require_once('inc/name-mangler.inc');
 require_once('inc/photos-on-now-racing.inc');
 require_once('inc/pick_image_set.inc');
 require_once('inc/xbs.inc');
+require_once('inc/about-pack.inc');
 
 require_permission(SET_UP_PERMISSION);
 
@@ -370,6 +371,27 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
              onclick="on_scheduling_method_click(); return false;">Change Scheduling Method</a>
       </p>
 
+    </div>
+  </div>
+
+  <!-- The "Our Pack" card on the About page (inc/about-pack.inc).  Saved in
+       the database like every setting here. -->
+  <div class="settings_group" id="about-pack-group">
+    <div class="settings_group_image">
+      <img src="img/settings-groups.png"/>
+    </div>
+    <div class="settings_group_settings">
+      <p><label for="about-pack-html"><b>About page: Our Pack</b></label></p>
+      <p class="settings-hint">HTML for the first card on the <a href="about.php">About</a>
+         page, which anyone can see.  Leave it empty to hide the card.</p>
+      <textarea id="about-pack-html" name="about-pack-html" rows="6" class="not-mobile"
+                spellcheck="false"
+                data-default="<?php echo htmlspecialchars(about_pack_default_html(), ENT_QUOTES, 'UTF-8'); ?>"
+      ><?php echo htmlspecialchars(about_pack_html($db), ENT_QUOTES, 'UTF-8'); ?></textarea>
+      <p>
+        <a href="#" class="small-button"
+           onclick="on_about_pack_default_click(); return false;">Use the Default Text</a>
+      </p>
     </div>
   </div>
 </form>

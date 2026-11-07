@@ -43,6 +43,7 @@ if (have_permission(SET_UP_PERMISSION)) {
   }
 
   $all_settings = array(
+    'about-pack-html' => array('setting' => 'about-pack-html'),
     'ballot_password' => array('setting' => 'ballot_password'),
     'car-numbering' => array('setting' => 'car-numbering'),
     'car-photo-dir' => array('setting' => 'car-photo-directory'),
