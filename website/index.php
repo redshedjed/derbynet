@@ -115,7 +115,7 @@ div.index_background {
   display: flow-root;
 }
 
-/* Home menu tiles: the tile look and the stage colors (before_button, ...)
+/* Home menu tiles: the tile look and the colors (tile_blue, ...)
    are shared, in global.css under "Tile buttons". */
 .block_buttons a.button_link {
   width: 238px;
@@ -164,36 +164,34 @@ echo "<div class='index_background tile-buttons'>\n";
 if ($show_voting_button && !have_permission(SET_UP_PERMISSION | CONTROL_RACE_PERMISSION)
     && have_permission(VIEW_RACE_RESULTS_PERMISSION)) {
   echo "<div class='vote_feature block_buttons'>\n";
-  echo "<a class='button_link after_button vote_button' href='vote.php'>Vote!</a>\n";
+  echo "<a class='button_link tile_gold vote_button' href='vote.php'>Vote!</a>\n";
   echo "</div>\n";
 }
 
+// The menu, in color groups:
+//   blue:   the everyday pages -- check-in, photos, printables, and what
+//           everyone follows during the race
+//   red:    running the race (the dashboards) and its standings
+//   gold:   the back end -- export, retrospective, set-up
+//   silver: about, and logging in or out
+// With two columns (for those who run the race), blue is on the left and the
+// rest on the right.
 if ($two_columns) {
   echo "<div class='index_column'>\n";
 }
 
 echo "<div class='block_buttons'>\n";
 
-// *********** Before ***************
+// *********** Blue ***************
 begin_tile_group();
-make_link_button('Set-Up', 'setup.php', SET_UP_PERMISSION, 'before_button');
-make_link_button('Race Check-In', 'checkin.php', CHECK_IN_RACERS_PERMISSION, 'before_button');
+make_link_button('Race Check-In', 'checkin.php', CHECK_IN_RACERS_PERMISSION, 'tile_blue');
 // Racer and car photos are one page, with a Racer / Car switch
-make_link_button('Photos', 'photo-thumbs.php', ASSIGN_RACER_IMAGE_PERMISSION, 'before_button');
+make_link_button('Photos', 'photo-thumbs.php', ASSIGN_RACER_IMAGE_PERMISSION, 'tile_blue');
+make_link_button('Printables', 'print.php', ASSIGN_RACER_IMAGE_PERMISSION, 'tile_blue');
+make_link_button('Race Schedule', 'ondeck.php', -1, 'tile_blue');
+make_link_button('Judging', 'judging.php', JUDGING_PERMISSION, 'tile_blue');
+make_link_button('Results By Racer', 'racer-results.php', VIEW_RACE_RESULTS_PERMISSION, 'tile_blue');
 end_tile_group();
-
-// *********** During ***************
-// (Vote! is shown above the list, by itself; see the top of the page.)
-begin_tile_group();
-make_link_button('Race Dashboard', 'coordinator.php', CONTROL_RACE_PERMISSION, 'during_button');
-make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', CONTROL_RACE_PERMISSION, 'during_button');
-make_link_button('Judging', 'judging.php', JUDGING_PERMISSION, 'during_button');
-make_link_button('Race Schedule', 'ondeck.php', -1, 'during_button');
-make_link_button('Results By Racer', 'racer-results.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button');
-// (The slideshow runs only on kiosks, set from the Kiosk Dashboard.)
-end_tile_group();
-
-// end first column default set-up
 
 if ($two_columns) {
   echo "</div>\n";  // block_buttons
@@ -203,23 +201,30 @@ if ($two_columns) {
   echo "<div class='block_buttons'>\n";
 }
 
-// *********** After ***************
-// Present Awards is on the Kiosk Dashboard, since it drives the awards kiosk.
+// *********** Red ***************
+// Present Awards is on the Kiosk Dashboard, since it drives the awards kiosk;
+// the slideshow runs only on kiosks, also set from there.
 begin_tile_group();
-make_link_button('Standings', 'standings.php', VIEW_AWARDS_PERMISSION, 'after_button');
-// Exporting and the retrospective are back-end work, for the Administrator
-make_link_button('Export Results', 'export.php', SET_UP_PERMISSION, 'after_button');
-make_link_button('Retrospective', 'history.php', SET_UP_PERMISSION, 'after_button');
+make_link_button('Race Dashboard', 'coordinator.php', CONTROL_RACE_PERMISSION, 'tile_red');
+make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', CONTROL_RACE_PERMISSION, 'tile_red');
+make_link_button('Standings', 'standings.php', VIEW_AWARDS_PERMISSION, 'tile_red');
 end_tile_group();
 
-// *********** Other ***************
+// *********** Gold ***************
+// The back end, for the Administrator
 begin_tile_group();
-make_link_button('Printables', 'print.php', ASSIGN_RACER_IMAGE_PERMISSION, 'other_button');
-make_link_button('About', 'about.php', -1, 'other_button');
+make_link_button('Export Results', 'export.php', SET_UP_PERMISSION, 'tile_gold');
+make_link_button('Retrospective', 'history.php', SET_UP_PERMISSION, 'tile_gold');
+make_link_button('Set-Up', 'setup.php', SET_UP_PERMISSION, 'tile_gold');
+end_tile_group();
+
+// *********** Silver ***************
+begin_tile_group();
+make_link_button('About', 'about.php', -1, 'tile_silver');
 if (@$_SESSION['role']) {
-  make_link_button('Log out', 'login.php?logout', -1, 'other_button');
+  make_link_button('Log out', 'login.php?logout', -1, 'tile_silver');
 } else {
-  make_link_button('Log in', 'login.php', -1, 'other_button');
+  make_link_button('Log in', 'login.php', -1, 'tile_silver');
 }
 end_tile_group();
 

@@ -368,11 +368,11 @@ tbody {
   cursor: auto;
 }
 
-/* Race stages, for the home menu's tiles */
-.before_button { --tile-accent: var(--stage-before); }
-.during_button { --tile-accent: var(--stage-during); }
-.after_button  { --tile-accent: var(--stage-after); }
-.other_button  { --tile-accent: var(--stage-other); }
+/* The home menu's color groups */
+.tile_blue   { --tile-accent: var(--stage-before); }
+.tile_red    { --tile-accent: var(--stage-during); }
+.tile_gold   { --tile-accent: var(--stage-after); }
+.tile_silver { --tile-accent: var(--stage-other); }
 
 .block_buttons input.mini {
   padding: 5px;

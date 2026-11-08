@@ -3,10 +3,10 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 cat >anonymous.index.tmp <<EOF
-        <a class="button_link during_button" href="ondeck.php">Race Schedule</a>
-        <a class="button_link during_button" href="racer-results.php">Results By Racer</a>
-        <a class="button_link other_button" href="about.php">About</a>
-        <a class="button_link other_button" href="login.php">Log in</a>
+          <a class="button_link tile_blue" href="ondeck.php">Race Schedule</a>
+          <a class="button_link tile_blue" href="racer-results.php">Results By Racer</a>
+          <a class="button_link tile_silver" href="about.php">About</a>
+          <a class="button_link tile_silver" href="login.php">Log in</a>
 EOF
 
 ## Every page, and every action
@@ -66,20 +66,20 @@ curl_getj "action.php?query=roles.list"  > /dev/null
 curl_getj "action.php?query=poll&values=" > /dev/null
 
 cat >admin.index.tmp <<EOF
-          <a class="button_link before_button" href="setup.php">Set-Up</a>
-          <a class="button_link before_button" href="checkin.php">Race Check-In</a>
-          <a class="button_link before_button" href="photo-thumbs.php">Photos</a>
-          <a class="button_link during_button" href="coordinator.php">Race Dashboard</a>
-          <a class="button_link during_button" href="kiosk-dashboard.php">Kiosk Dashboard</a>
-          <a class="button_link during_button" href="judging.php">Judging</a>
-          <a class="button_link during_button" href="ondeck.php">Race Schedule</a>
-          <a class="button_link during_button" href="racer-results.php">Results By Racer</a>
-          <a class="button_link after_button" href="standings.php">Standings</a>
-          <a class="button_link after_button" href="export.php">Export Results</a>
-          <a class="button_link after_button" href="history.php">Retrospective</a>
-          <a class="button_link other_button" href="print.php">Printables</a>
-          <a class="button_link other_button" href="about.php">About</a>
-          <a class="button_link other_button" href="login.php?logout">Log out</a>
+          <a class="button_link tile_blue" href="checkin.php">Race Check-In</a>
+          <a class="button_link tile_blue" href="photo-thumbs.php">Photos</a>
+          <a class="button_link tile_blue" href="print.php">Printables</a>
+          <a class="button_link tile_blue" href="ondeck.php">Race Schedule</a>
+          <a class="button_link tile_blue" href="judging.php">Judging</a>
+          <a class="button_link tile_blue" href="racer-results.php">Results By Racer</a>
+          <a class="button_link tile_red" href="coordinator.php">Race Dashboard</a>
+          <a class="button_link tile_red" href="kiosk-dashboard.php">Kiosk Dashboard</a>
+          <a class="button_link tile_red" href="standings.php">Standings</a>
+          <a class="button_link tile_gold" href="export.php">Export Results</a>
+          <a class="button_link tile_gold" href="history.php">Retrospective</a>
+          <a class="button_link tile_gold" href="setup.php">Set-Up</a>
+          <a class="button_link tile_silver" href="about.php">About</a>
+          <a class="button_link tile_silver" href="login.php?logout">Log out</a>
 EOF
 
 user_login_admin
@@ -92,17 +92,17 @@ user_logout
 
 # The race coordinator runs the event: no Set-Up, Export or Retrospective
 cat >coordinator.index.tmp <<EOF
-          <a class="button_link before_button" href="checkin.php">Race Check-In</a>
-          <a class="button_link before_button" href="photo-thumbs.php">Photos</a>
-          <a class="button_link during_button" href="coordinator.php">Race Dashboard</a>
-          <a class="button_link during_button" href="kiosk-dashboard.php">Kiosk Dashboard</a>
-          <a class="button_link during_button" href="judging.php">Judging</a>
-          <a class="button_link during_button" href="ondeck.php">Race Schedule</a>
-          <a class="button_link during_button" href="racer-results.php">Results By Racer</a>
-          <a class="button_link after_button" href="standings.php">Standings</a>
-          <a class="button_link other_button" href="print.php">Printables</a>
-          <a class="button_link other_button" href="about.php">About</a>
-          <a class="button_link other_button" href="login.php?logout">Log out</a>
+          <a class="button_link tile_blue" href="checkin.php">Race Check-In</a>
+          <a class="button_link tile_blue" href="photo-thumbs.php">Photos</a>
+          <a class="button_link tile_blue" href="print.php">Printables</a>
+          <a class="button_link tile_blue" href="ondeck.php">Race Schedule</a>
+          <a class="button_link tile_blue" href="judging.php">Judging</a>
+          <a class="button_link tile_blue" href="racer-results.php">Results By Racer</a>
+          <a class="button_link tile_red" href="coordinator.php">Race Dashboard</a>
+          <a class="button_link tile_red" href="kiosk-dashboard.php">Kiosk Dashboard</a>
+          <a class="button_link tile_red" href="standings.php">Standings</a>
+          <a class="button_link tile_silver" href="about.php">About</a>
+          <a class="button_link tile_silver" href="login.php?logout">Log out</a>
 EOF
 
 user_login_coordinator
@@ -119,15 +119,15 @@ if [ $OK -eq 0 ]; then
 fi
 
 cat >racecrew.index.tmp <<EOF
-        <a class="button_link before_button" href="checkin.php">Race Check-In</a>
-          <a class="button_link before_button" href="photo-thumbs.php">Photos</a>
-        <a class="button_link during_button" href="judging.php">Judging</a>
-        <a class="button_link during_button" href="ondeck.php">Race Schedule</a>
-        <a class="button_link during_button" href="racer-results.php">Results By Racer</a>
-        <a class="button_link after_button" href="standings.php">Standings</a>
-        <a class="button_link other_button" href="print.php">Printables</a>
-        <a class="button_link other_button" href="about.php">About</a>
-        <a class="button_link other_button" href="login.php?logout">Log out</a>
+          <a class="button_link tile_blue" href="checkin.php">Race Check-In</a>
+          <a class="button_link tile_blue" href="photo-thumbs.php">Photos</a>
+          <a class="button_link tile_blue" href="print.php">Printables</a>
+          <a class="button_link tile_blue" href="ondeck.php">Race Schedule</a>
+          <a class="button_link tile_blue" href="judging.php">Judging</a>
+          <a class="button_link tile_blue" href="racer-results.php">Results By Racer</a>
+          <a class="button_link tile_red" href="standings.php">Standings</a>
+          <a class="button_link tile_silver" href="about.php">About</a>
+          <a class="button_link tile_silver" href="login.php?logout">Log out</a>
 EOF
 
 user_login_crew
