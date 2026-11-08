@@ -89,6 +89,9 @@ function update_results(results) {
     $("td.resultid_" + result.resultid + " span.time").text(
       result.outcome[0] == 'x' ? result.outcome.substring(1) : result.outcome);
   }
+  if (results.length > 0) {
+    mark_heat_winners_on_page();
+  }
 
   if (g_as_kiosk) {
     // Any tbody's with no results should be collapsed or hidden
@@ -99,5 +102,26 @@ function update_results(results) {
                           return $(this).text() != '--';
                         }).length == 0);
     });
+  }
+}
+
+// After live results arrive, outline each heat's winner: the lowest time
+// (or best place) among that heat's lanes on the page.  Only on the full
+// page; showing one racer, the page lacks the other lanes, so the server's
+// marks (racer-results.php) stand until the next reload.
+function mark_heat_winners_on_page() {
+  if (/[?&]racerid=/.test(location.search)) {
+    return;
+  }
+  var heats = {};
+  $("td[data-heat]").each(function() {
+    var v = parseFloat($(this).find("span.time").text());
+    if (isNaN(v)) return;
+    var key = $(this).attr('data-heat');
+    (heats[key] = heats[key] || []).push({td: $(this), v: v});
+  });
+  for (var key in heats) {
+    var best = Math.min.apply(null, heats[key].map(function(c) { return c.v; }));
+    heats[key].forEach(function(c) { c.td.toggleClass('heat_winner', c.v == best); });
   }
 }

@@ -21,6 +21,7 @@ $mobile_ready_pages = array(
   'ondeck.php',
   'photo-thumbs.php',
   'print.php',  // had its own viewport tag before
+  'racer-results.php',
   'scenes.php',
   'slideshow.php',
   'standings.php',

@@ -97,6 +97,31 @@ $sql = 'SELECT RegistrationInfo.racerid,'
     .(schema_version() >= 2 ? 'Classes.sortorder, ' : '')
     .'class, round, lastname, firstname, carnumber, resultid, lane';
 
+// The winning lane(s) of each finished heat, by resultid: whoever placed
+// first, or, if the timer reported no places, the fastest time (the same
+// rule as the Race Schedule).  Computed over every lane, so it's right even
+// when showing just one racer.
+$heat_winners = array();
+$heats = array();
+foreach ($db->query('SELECT resultid, roundid, heat, finishtime, finishplace FROM RaceChart'
+                    .' WHERE completed IS NOT NULL AND completed <> \'\'') as $hr) {
+  $heats[$hr['roundid'].'_'.$hr['heat']][] = $hr;
+}
+foreach ($heats as $lanes) {
+  $firsts = array_filter($lanes, function($l) { return $l['finishplace'] == 1; });
+  if (count($firsts) == 0) {
+    $times = array_filter(array_map(function($l) { return $l['finishtime']; }, $lanes),
+                          function($t) { return $t !== null; });
+    if (count($times) == 0) continue;
+    $best = min($times);
+    $firsts = array_filter($lanes, function($l) use ($best) {
+        return $l['finishtime'] !== null && $l['finishtime'] == $best; });
+  }
+  foreach ($firsts as $l) {
+    $heat_winners[$l['resultid']] = true;
+  }
+}
+
 $stmt = $db->query($sql);
 if ($stmt === FALSE) {
   $info = $db->errorInfo();
@@ -209,7 +234,9 @@ foreach ($rounds as $round) {
     $ft = $use_points ? (isset($rs['finishplace']) ? ordinal($rs['finishplace']) : '--')
                       : (isset($rs['finishtime']) ? sprintf($time_format, $rs['finishtime']) : '--');
 
-    $racer_cells[$lane - 1][] = '<td class="resultid_'.$rs['resultid'].'">'
+    $racer_cells[$lane - 1][] = '<td class="resultid_'.$rs['resultid']
+                 .(isset($heat_winners[$rs['resultid']]) ? ' heat_winner' : '').'"'
+                 .' data-heat="'.$roundid.'_'.$rs['heat'].'">'
     //.'<a class="heat_link" href="ondeck.php#heat_'.$roundid.'_'.$rs['heat'].'">'
                  .'<span class="time">'.$ft.'</span>'
     //.'</a>'

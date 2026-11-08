@@ -184,3 +184,61 @@ h2.now_running a {
 .scroll-bounding-rect + .block_buttons {
   margin: var(--space-4) 0;
 }
+
+/* The winner of each finished heat, as on the Race Schedule */
+td.heat_winner {
+  box-shadow: inset 0 0 0 3px var(--color-danger);
+}
+
+/* Rounds with no racers to show (not scheduled yet, or, when showing one
+   racer, rounds they're not in) aren't worth a title and an empty header */
+.main_table tbody:not(:has(tr.d0)):not(:has(tr.d1)) {
+  display: none;
+}
+
+/* ---------------- Phones ----------------
+   The page clips sideways (the TV kiosk scrolls it), so on a phone the
+   table has to fit: small photos side by side over the name, normal-size
+   times, and columns sized by their content. */
+@media (max-width: 720px) {
+  .curgroup {
+    table-layout: auto;
+  }
+  .main_table {
+    width: 100%;
+  }
+  td {
+    padding: var(--space-1) 2px;
+    text-align: center;
+  }
+  td span.time {
+    font-size: var(--text-base);
+  }
+  .main_table th {
+    padding: var(--space-1);
+  }
+  .group_title {
+    font-size: var(--text-lg);
+  }
+  /* Racer: photos in a row, then the name */
+  img.racer-photo {
+    float: none;
+    display: inline-block;
+    height: 32px;
+    margin: 0 2px 0 0 !important;
+  }
+  .racer_label,
+  th.nrows1 .racer_label,
+  th.nrows2 .racer_label,
+  th.nrows3 .racer_label,
+  th.nrows4 .racer_label {
+    float: none;
+    display: block;
+    margin-top: 2px !important;
+    font-size: var(--text-sm);
+    text-align: left;
+  }
+  .curgroup .pre_group_title {
+    font-size: var(--text-xs);
+  }
+}
