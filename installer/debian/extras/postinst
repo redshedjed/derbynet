@@ -1,9 +1,12 @@
 #! /bin/sh
 
-######## For RPi, some of the /extras scripts prefer config files in /boot,
-######## where they can be easily edited on a foreign host.
-if [ "$ID" = "raspbian" ] ; then
-  if [ ! -f /boot/derbynet.conf ] ; then
-    cp /etc/derbynet.conf /boot
+######## On a Raspberry Pi, some of the /extras scripts prefer config files in
+######## the boot partition, where they can be easily edited on a foreign host.
+######## That's /boot/firmware on current Raspberry Pi OS, /boot before it.
+if grep -qs 'Raspberry Pi' /proc/device-tree/model ; then
+  BOOT=/boot
+  test -d /boot/firmware && BOOT=/boot/firmware
+  if [ ! -f $BOOT/derbynet.conf ] ; then
+    cp /etc/derbynet.conf $BOOT
   fi
 fi

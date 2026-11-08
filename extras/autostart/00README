@@ -1,6 +1,5 @@
 The Autostart mechanism is a specification of freedesktop.org, implemented by
-many Linux desktop managers, including LXDE, the default desktop environment for
-the Raspberry Pi's Raspbian operating system.
+many Linux desktops, including the Raspberry Pi's.
 
 The files in this directory allow various DerbyNet-related applications to be
 automatically started by copying the corresponding desktop file to the user's
@@ -8,3 +7,43 @@ automatically started by copying the corresponding desktop file to the user's
 necessary first to create the .config/autostart/ folder.)
 
 It's unlikely that you would want to autostart ALL the files in this folder.
+
+
+A kiosk or replay camera on a Raspberry Pi
+------------------------------------------
+
+For a Pi 4 or 5 with current Raspberry Pi OS (with desktop):
+
+1. Install Chromium if it isn't there:  sudo apt install chromium
+   (On older releases the package is chromium-browser.)
+
+2. In derbynet.conf -- /boot/firmware/derbynet.conf, which you can also edit
+   from another computer with the SD card -- set the server:
+
+       DERBYNET_SERVER="http://192.168.1.100/derbynet"
+
+   For a replay camera rather than a kiosk, also:
+
+       KIOSK_PAGE=camera.php
+
+   (If DerbyNet's extras package isn't installed, create the file.)
+
+3. Turn off screen blanking:  sudo raspi-config, Display Options, Screen
+   Blanking, No.
+
+4. Start it with the desktop:
+
+       mkdir -p ~/.config/autostart
+       cp /usr/share/derbynet/autostart/kiosk.desktop ~/.config/autostart/
+
+   (kiosk.desktop runs /usr/share/derbynet/scripts/kiosk.sh; if the script is
+   somewhere else, edit its Exec line.)
+
+5. Reboot.  The Pi shows "Waiting for the DerbyNet server" until it can
+   reach it, then goes full-screen.  A kiosk appears on the Kiosk Dashboard
+   under its serial number (or ADDRESS, if set in derbynet.conf), where you
+   choose what it shows; it keeps that name across restarts.
+
+To get out of full-screen on the Pi: Alt+F4 closes the browser (it restarts
+by itself after a few seconds); to stop it for good, remove the file from
+~/.config/autostart and reboot.
