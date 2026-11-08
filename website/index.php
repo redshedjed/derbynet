@@ -94,6 +94,10 @@ div.index_column {
     display: block;
     float: none;
   }
+  /* The second column (After, Other) starts a new group under the first */
+  div.index_column + div.index_column {
+    margin-top: 44px;
+  }
 }
 
 div.index_background {
