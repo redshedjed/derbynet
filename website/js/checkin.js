@@ -495,12 +495,15 @@ function on_new_mobile_checkin_key() {
          });
 }
 function on_mobile_checkin_submit() {
-  console.log('on_mobile_checkin_submit');
   update_qrcode();
   return false;
 }
+
 $(function() {
+  // The address in the QR code (update_qrcode adds the Mobile Check-In key);
+  // the code follows as the address is edited
   $("#mobile-checkin-url").val(g_preferred_urls[0] + "/mcheckin.php");
+  $("#mobile-checkin-url").on('keyup mouseup', update_qrcode);
   $("#mobile-checkin-form").on('submit', on_mobile_checkin_submit);
 });
 

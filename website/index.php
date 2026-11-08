@@ -23,6 +23,12 @@ try {
   exit();
 }
 session_write_close();
+// Someone not logged in gets the visitor's menu -- except a phone let in by
+// the Mobile Check-In QR code (inc/mobile-checkin-key.inc), which keeps its
+// Race Check-In button.
+if ($_SESSION['role'] == '' && !isset($_SESSION['mobile-checkin-key'])) {
+  $_SESSION['permissions'] = $roles['']['permissions'];
+}
 
 $show_voting_button =
   $schema_version >= BALLOTING_SCHEMA &&

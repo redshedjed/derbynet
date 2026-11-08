@@ -24,7 +24,8 @@ function print_selected() {
 
   var options = {};
   $.each(doc_class_details['options'], function(opt, opt_data) {
-    var control = $("input[name^='" + doc_class + "-" + opt + "']");
+    var ctrl_name = doc_class + "-" + opt;
+    var control = $("input[name^='" + ctrl_name + "']");
     if (opt_data.type == 'bool') {
       options[opt] = control.is(':checked');
     } else if (opt_data.type == 'int') {
@@ -33,6 +34,22 @@ function print_selected() {
       options[opt] = control.val();
     } else if (opt_data.type == 'radio') {
       options[opt] = control.filter(':checked').val();
+    } else if (opt_data.type == 'emblems') {
+      // An 'emblems' value is presented as an array whose first element
+      // is a string, and the remaining elements give emblem numbers,
+      // indexed either by car number century or partition sortorder.
+      control = $("#" + ctrl_name);
+      var val = control.val();
+
+      var emblems_list =
+          $('#' + ctrl_name + (val == 'by-carno' ? '-bycarno' : '-bypart')
+            + ' ul li');
+
+      options[opt] = emblems_list.map(function(idx, elt) {
+        return parseInt($(elt).attr('data-emblem'));
+      }).get();
+
+      options[opt].unshift(val);
     } else {
       console.error('Unrecognized option type: ' + opt_data.type);
     }
@@ -70,6 +87,11 @@ function on_tr_click(event) {
 }
 
 function process_racer_list(data) {
+  if (data.hasOwnProperty('cease')) {
+    clearInterval(g_poll_interval);
+    window.location.href = '../index.php';
+    return;
+  }
   var table = $("div#subject-racers table");
   $.each(data.racers, function (index, racer) {
     var racerid = racer.racerid;
@@ -132,6 +154,11 @@ function make_classes_and_ranks(data) {
 }
 
 function process_award_list(data) {
+  if (data.hasOwnProperty('cease')) {
+    clearInterval(g_poll_interval);
+    window.location.href = '../index.php';
+    return;
+  }
   var awardtypes = make_award_types(data);
   var classes_and_ranks = make_classes_and_ranks(data);
   var table = $("div#subject-awards table");
@@ -208,10 +235,6 @@ function poll() {
           data: {query: "racer.list",
                  order: $("#sortorder-racers option:selected").val()},
           success: function(data) {
-            if (data.hasOwnProperty('cease')) {
-              clearInterval(g_poll_interval);
-              window.location.href = '../index.php';
-            }
             process_racer_list(data);
           },
          });
@@ -273,10 +296,32 @@ function on_walkins_count_change() {
   update_print_button();
 }
 
+function on_emblems_select_change(sel) {
+  var id = $(sel).attr('id');
+  var val = $(sel).val();
+  $("#" + id + "-bycarno").toggleClass("hidden", val != 'by-carno');
+  $("#" + id + "-bypart").toggleClass("hidden", val != 'by-part');
+}
+
+function on_cartags_image_click(element) {
+  var current = $(element).parent().attr('data-emblem');
+  $("#image-picker-select").val(current);
+  $("#image-picker-select").data('picker').sync_picker_with_select();
+  $("#image-picker-close").off('click').on('click',  function(event) {
+    var emblem_index = $("#image-picker-select").val();
+    $(element).parent().find('img').attr('src', "image.php/" + g_emblems[emblem_index]);
+    $(element).parent().attr('data-emblem', emblem_index);
+    close_modal("#image-picker-modal");
+  });
+  show_modal("#image-picker-modal");
+}
+
 $(function() {
   poll();
   g_poll_interval = setInterval(function() { poll(); }, 10000);
   reveal_doc_specific_options();
   $("input[type=radio][name='doc-class']").on("change", function() { reveal_doc_specific_options(); });
   $("#walkins-count").on('keyup mouseup', on_walkins_count_change);
+
+  $("#image-picker-select").imagepicker()
 });

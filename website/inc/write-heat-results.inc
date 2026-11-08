@@ -3,6 +3,22 @@
 require_once('inc/last-heat.inc');
 require_once('inc/timer-test.inc');
 
+// Utility function used in action.timer-message
+function is_all_zeroes($results) {
+  foreach ($results as $value) {
+    if (!isset($value['time'])) {
+      return false;
+    } else if (preg_match('/[^0.]/', $value['time']) == 1) {
+      // At least one match for a non-zero character
+      return false;
+    }
+  }
+  return true;
+
+  // in PHP 8.4 and above:
+  // return array_any($results, function($value, $key) { ... });
+}
+
 function compare_by_finishtime(&$lhs, &$rhs) {
   if ($lhs['finishtime'] == $rhs['finishtime']) return 0;
   return ($lhs['finishtime'] < $rhs['finishtime']) ? -1 : 1;

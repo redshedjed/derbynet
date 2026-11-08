@@ -384,6 +384,18 @@ tbody {
   margin-bottom: 3px;
 }
 
+/* Small paired buttons, e.g. Select All / Deselect All on Printables:
+   side by side, with a little room */
+.block_buttons input.mini-mini {
+  height: 28px;
+  width: 128px;
+  padding: 4px;
+  line-height: 1;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 0 3px var(--space-2) 3px;
+}
+
 /* ---------------- Status messages ---------------- */
 
 #ajax_working {
