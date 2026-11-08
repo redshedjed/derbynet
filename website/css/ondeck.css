@@ -1,34 +1,60 @@
-.group_spacer {
-   height: 30px;
-}
+/* Racers On Deck (ondeck.php), also the ondeck TV kiosk.  One table: a
+   title row per round (th.divider), then a row per heat with a "Heat N"
+   label and a cell per lane.  js/ondeck.js sets the column widths (in vw)
+   and marks the heat racing now (.curheat) and the next one (.nextheat),
+   which also show car photos.
 
-.pre_group_title {
-	align: center;
+   Text sizes scale with the window, as before, but with a floor, so the
+   page is readable on a phone and still large on a TV. */
+
+.group_spacer {
+  height: 30px;
 }
 
 .curgroup {
   table-layout: fixed;
 }
-.group_title {  }
 
-.curgroup .group_title,
-.curgroup .pre_group_title {
-	/* Cub Scout blue & gold, respectively. */
-  border: 5px solid var(--color-brand);
-  background-color: #F7D117;
+/* Round title: "Fake Lions, Round 1" */
+th.divider {
+  padding: var(--space-3) var(--space-3) var(--space-1) var(--space-3);
+  font-size: clamp(1rem, 1.6vw, 2rem);
+  font-weight: var(--weight-semibold);
+  color: var(--color-brand-strong);
+  text-align: center;
+  background: var(--color-page);
+  border-bottom: 2px solid var(--color-border);
 }
 
 tr {
   border: 0px solid black;
 }
-.curheat {
-  border: 10px solid black;
-}
+
+/* "Heat N" labels */
 .curgroup .d0 th,
 .curgroup .d1 th {
+  padding: var(--space-1);
+  font-size: clamp(0.7rem, 1.2vw, 1.5rem);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
   background-color: var(--color-brand);
   color: #ffffff;
   width: 4vh;
+}
+
+/* The heat racing now: a gold frame and tint */
+.curheat {
+  border: 4px solid var(--stage-after);
+}
+.curheat td {
+  background-color: #FFF4CC;
+}
+.curgroup .curheat th {
+  background-color: var(--stage-after);
+}
+/* The next heat */
+.nextheat {
+  border: 2px dashed var(--stage-after);
 }
 
 /* td.in_prev tries to mark cars that also appear in previous heat; it's not
@@ -47,17 +73,29 @@ td.in_prev {
 }
 
 th {
-    font-size: 1.5vw;
+  font-size: clamp(0.7rem, 1.5vw, 1.8rem);
 }
 th.masterheat {
-    font-size: 3vw;
+  font-size: clamp(1rem, 3vw, 3.5rem);
 }
 td {
-    font-size: 2vw;
-    padding: 0.5vw;
+  font-size: clamp(0.8rem, 2vw, 2.6rem);
+  padding: 0.5vw;
+  border: 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+/* Each lane: car number, name, then time once raced */
+td .car {
+  color: var(--color-text-muted);
+  font-size: 0.85em;
 }
 td .racer {
-    font-weight: bold;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+td .time {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-brand-strong);
 }
 
 img.racer-photo {
@@ -129,4 +167,17 @@ th.nrows4 img {
 #photo_view_modal img {
   max-width: 600px;
   max-height: 600px;
+}
+
+/* On a phone the label column is too narrow for "Heat 4": show just 4 */
+@media (max-width: 720px) {
+  .curgroup .d0 th .heat_word,
+  .curgroup .d1 th .heat_word {
+    display: none;
+  }
+  .curgroup .d0 th,
+  .curgroup .d1 th {
+    font-size: var(--text-base);
+    text-align: center;
+  }
 }

@@ -114,7 +114,11 @@ function repopulate_schedule(json) {
           .css({'width': th0_width_vw + 'vw'})
           .appendTo(row);
       }
-      $("<th/>").text(row_label)
+      // "Heat " is its own span so narrow screens can show just the number
+      $("<th/>")
+        .append($("<span class='heat_word'/>")
+                .text(row_label.substring(0, row_label.length - String(cell['heat']).length)))
+        .append(document.createTextNode(cell['heat']))
         .css({'width': th_width_vw + 'vw'})
         .appendTo(row);
       roundid = cell['roundid'];
