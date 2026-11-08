@@ -39,6 +39,15 @@ function populate_details(details) {
     .prop('disabled', details.purge.nracers == 0 && details.purge.nawards == 0);
 
   $("#database_step").toggleClass('hidden', details.locked);
+
+  // A new or out-of-date database has to be initialized or updated before
+  // anything else, so that button joins step 1; once the database is fine,
+  // it's Re-Initialize, which belongs with the other Database Tools.
+  if (details.schema.button == 're-initialize') {
+    $("#schema_step").removeClass('step_needed').insertBefore("#purge_step");
+  } else {
+    $("#schema_step").addClass('step_needed').insertAfter("#database_step");
+  }
   
   if (details.schema.button == 'disabled' || !details.database.writable) {
     $("#schema_button").prop('disabled', true).attr('value', 'Initialize');

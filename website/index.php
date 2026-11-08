@@ -10,6 +10,7 @@ require_once('inc/data.inc');
 require_once('inc/schema_version.inc');
 require_once('inc/banner.inc');
 require_once('inc/authorize.inc');
+require_once('inc/race-day-guide.inc');
 
 // This first database access is surrounded by a try/catch in order to catch
 // broken/corrupt databases (e.g., sqlite pointing to a file that's not actually
@@ -157,6 +158,87 @@ p.logged_in_as {
   letter-spacing: 0.02em;
   text-align: center;
 }
+/* Race Day steps (inc/race-day-guide.inc): a row of steps above the menu;
+   done ones checked, the next one highlighted.  A column on a phone. */
+nav.race_day_guide {
+  max-width: 1000px;
+  margin: 0 auto var(--tile-group-gap) auto;
+  padding: var(--space-2);
+  box-sizing: border-box;
+}
+nav.race_day_guide ol {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+nav.race_day_guide li {
+  flex: 1 1 0;
+  min-width: 0;
+}
+nav.race_day_guide li > a,
+nav.race_day_guide li > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  text-decoration: none;
+}
+nav.race_day_guide li > a:hover {
+  background: var(--color-surface-sunken);
+}
+nav.race_day_guide .step_mark {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--gray-200);
+  color: var(--color-text-muted);
+  font-weight: var(--weight-bold, 700);
+  line-height: 28px;
+  text-align: center;
+}
+nav.race_day_guide .step_text {
+  min-width: 0;
+}
+nav.race_day_guide .step_title {
+  display: block;
+  font-weight: var(--weight-semibold);
+}
+nav.race_day_guide .step_status {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+nav.race_day_guide li.done .step_mark {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+nav.race_day_guide li.next > a,
+nav.race_day_guide li.next > div {
+  border-color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 7%, var(--color-surface));
+}
+nav.race_day_guide li.next .step_mark {
+  background: var(--color-brand);
+  color: var(--color-text-on-brand);
+}
+@media (max-width: 640px) {
+  nav.race_day_guide {
+    margin-left: var(--space-3);
+    margin-right: var(--space-3);
+  }
+  nav.race_day_guide ol {
+    flex-direction: column;
+    gap: 2px;
+  }
+}
 </style>
 </head>
 <body>
@@ -170,6 +252,9 @@ p.logged_in_as {
  $two_columns = have_permission(SET_UP_PERMISSION | CONTROL_RACE_PERMISSION);
 
 echo "<div class='index_background tile-buttons'>\n";
+
+// For those who set up or run the race: the day's steps, and which is next
+race_day_guide();
 
 // When there's a ballot, Vote! leads the menu for visitors: a big tile on its
 // own above the other buttons.  (The people running or setting up the race

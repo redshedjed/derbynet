@@ -557,6 +557,43 @@ function offer_new_rounds(rounds, classes) {
   $("#add-new-rounds-button").toggleClass("hidden", completed_rounds.length == 0);
 }
 
+// The "Next:" line at the top of the dashboard, saying what to do next to
+// get the race going: set lanes, schedule a round, race it, turn racing on.
+// Hidden while racing.
+function update_next_step(json) {
+  var current = json['current-heat'];
+  var lanes = json['timer-state'] ? json['timer-state'].lanes : 0;
+  var rounds = json.rounds || [];
+  var to_race = rounds.filter(r => r.heats_scheduled > r.heats_run);
+  var to_schedule = rounds.filter(r => r.heats_scheduled == 0 && r.unscheduled > 0);
+  var current_has_heats = to_race.some(r => r.roundid == current.roundid);
+  var simulate = " (No timer?  <a target='_blank' href='timer-test.php'>Simulate racing</a>.)";
+  var next = '';
+  if (current.now_racing) {
+    next = '';
+  } else if (!(lanes > 0)) {
+    next = "The number of lanes isn't set: the Administrator sets it on the"
+      + " Settings page.  Then rounds can be scheduled.";
+  } else if (current_has_heats) {
+    next = "Turn <b>Racing</b> on (the switch at the left) to run the heats." + simulate;
+  } else if (to_race.length > 0) {
+    next = "Click a scheduled round at the right, then press <b>Race</b>.";
+  } else if (to_schedule.length > 0) {
+    next = "Click a round at the right, then press <b>Schedule</b> to make its heats"
+      + ($("#playlist-start").is(':visible')
+         ? ", or press <b>Start Playlist</b> to run the rounds in playlist order."
+         : ".");
+  } else if (rounds.some(r => r.heats_run > 0)) {
+    next = "All the scheduled heats are done.  Add the next round with"
+      + " <b>Add New Rounds</b>, or go on to present the awards.";
+  } else {
+    next = "No racers are checked in yet: check them in on"
+      + " <a href='checkin.php'>Race Check-In</a>.";
+  }
+  $("#not-racing-warning").html(next ? "<b>Next:</b> " + next : '')
+    .toggleClass('hidden', next == '');
+}
+
 function process_coordinator_poll_json(json) {
   if (json['concerns']) {
     // When building a new roster (for a follow-on or aggregate round), there
@@ -701,7 +738,7 @@ function process_coordinator_poll_json(json) {
     $('#timer-testing-herald').remove();
   }
 
-  $("#not-racing-warning").toggleClass('hidden', json['current-heat']['now_racing']);;
+  update_next_step(json);
 
   $("#playlist-start").toggleClass('hidden',
                                    !(json['current-heat'].roundid == -1 &&

@@ -278,3 +278,41 @@ span.trouble {
     width: 260px;
     float: left;
 }
+
+/* ---------------- Getting Ready: numbered steps ----------------
+   Numbered by CSS, so a hidden step (Choose Database, when the settings are
+   locked) leaves no gap. */
+.setup_steps {
+  counter-reset: setup-step;
+}
+.setup_steps .step_div:not(.hidden) .step_number {
+  counter-increment: setup-step;
+}
+.step_number {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-brand);
+  color: var(--color-text-on-brand);
+  font-weight: var(--weight-bold, 700);
+  line-height: 32px;
+  text-align: center;
+}
+.step_number::before {
+  content: counter(setup-step);
+}
+/* Steps without a number (the database's Initialize, when it's needed, and
+   the Database Tools) line up with the numbered ones */
+.setup_steps .step_div:not(:has(.step_number))::before {
+  content: "";
+  flex: 0 0 32px;
+}
+.setup_intro {
+  margin: 0 0 var(--space-3) 0;
+  color: var(--color-text-muted);
+}
+/* The fake-roster notes sit under step 3, indented past its number and icon */
+.setup_steps .setup_note {
+  margin: var(--space-1) 0 var(--space-2) calc(32px + 48px + 2 * var(--space-4));
+}

@@ -70,33 +70,58 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
 //]]>
 </script>
 
-<!-- Three sections, each a card with its own accent color.  setup.js finds
-     each step by its id (roster_step, schema_step, ...), so the ids, status
-     icons and step_details divs must stay. -->
+<!-- Two cards: the steps to get ready for race day, in the order to do them,
+     then the database tools that are rarely needed (and some that delete
+     data).  setup.js finds each step by its id (roster_step, schema_step,
+     ...), so the ids, status icons and step_details divs must stay.  It
+     also moves schema_step up to step 1 when the database needs
+     initializing or updating. -->
 <div class="setup_sections tile-buttons">
 
-<!-- ======================= Race Day Setup ======================= -->
-<section class="setup_section card card-accent accent-before" aria-labelledby="race-day-heading">
-  <h2 id="race-day-heading" class="card-title">Race Day Setup</h2>
+<!-- ======================= Getting ready ======================= -->
+<section class="setup_section card card-accent accent-before setup_steps" aria-labelledby="ready-heading">
+  <h2 id="ready-heading" class="card-title">Getting Ready for Race Day</h2>
+  <p class="setup_intro">Work down the list.  Then on race day, check racers in
+    on <a href="checkin.php">Race Check-In</a> and run the race from the
+    <a href="coordinator.php">Race Dashboard</a>.</p>
 
-  <div id="offer_fake" class="setup_note">
-    For experimenting, you can make a
-    <a href="fakeroster.php">Fake Roster</a> of made-up racers.
+  <div id="database_step" class="step_div">
+    <div class="step_number"></div>
+    <div class="status_icon"><img/></div>
+    <div class="step_button block_buttons">
+      <input type="button" value="Choose Database" onclick="show_ezsetup_modal()"/>
+    </div>
+    <div class="step_details"></div>
   </div>
-  <div id="remind_fake" class="setup_note setup_note_warning">
-    To remove the fake roster data, re-initialize the database, or click
-    "Purge Data" and delete racers.
+
+  <div id="settings_step" class="step_div">
+    <div class="step_number"></div>
+    <div class="status_icon"><img/></div>
+    <div class="step_button block_buttons">
+      <a class="button_link" href="settings.php">Settings</a>
+    </div>
+    <div class="step_details"></div>
   </div>
 
   <div id="roster_step" class="step_div">
+    <div class="step_number"></div>
     <div class="status_icon"><img/></div>
     <div class="step_button block_buttons">
       <a class="button_link" href="import-roster.php">Import Roster</a>
     </div>
     <div class="step_details"></div>
   </div>
+  <div id="offer_fake" class="setup_note">
+    For practice, you can make a
+    <a href="fakeroster.php">Fake Roster</a> of made-up racers.
+  </div>
+  <div id="remind_fake" class="setup_note setup_note_warning">
+    To remove the fake roster, use Purge Data (Database Tools, below) and
+    delete racers.
+  </div>
 
   <div id="groups_step" class="step_div">
+    <div class="step_number"></div>
     <div class="status_icon"><img/></div>
     <div class="step_button block_buttons">
       <a class="button_link" href="racing-groups.php">Racing Groups</a>
@@ -105,6 +130,7 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
   </div>
 
   <div id="awards_step" class="step_div">
+    <div class="step_number"></div>
     <div class="status_icon"><img/></div>
     <div class="step_button block_buttons">
       <a class="button_link" href="import-awards.php">Import Awards</a>
@@ -112,22 +138,37 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
     <div class="step_details"></div>
   </div>
 
-  <p class="setup_more">You may also want to visit
-    the <a href="scenes.php?back=setup.php">Scene Editor</a>
-    or the <a href="playlist.php?back=setup.php">Playlist Editor</a>.</p>
+  <div id="printables_step" class="step_div">
+    <div class="step_number"></div>
+    <div class="status_icon"></div>
+    <div class="step_button block_buttons">
+      <a class="button_link" href="print.php">Printables</a>
+    </div>
+    <div class="step_details">
+      <p>Check-in cards (with each racer's barcode), car stickers and tags,
+        and award certificates.</p>
+    </div>
+  </div>
+
+  <div id="displays_step" class="step_div">
+    <div class="step_number"></div>
+    <div class="status_icon"></div>
+    <div class="step_button block_buttons">
+      <a class="button_link" href="kiosk-dashboard.php">Kiosk Dashboard</a>
+    </div>
+    <div class="step_details">
+      <p>Optional: what the TVs and screens show.  Set them up ahead of time
+        with the <a href="scenes.php?back=setup.php">Scene Editor</a>, and the
+        order of rounds with the
+        <a href="playlist.php?back=setup.php">Playlist Editor</a>.</p>
+    </div>
+  </div>
 </section>
 
-<!-- ======================= Database ======================= -->
-<section class="setup_section card card-accent accent-ink" aria-labelledby="database-heading">
-  <h2 id="database-heading" class="card-title">Database</h2>
-
-  <div id="database_step" class="step_div">
-    <div class="status_icon"><img/></div>
-    <div class="step_button block_buttons">
-      <input type="button" value="Choose Database" onclick="show_ezsetup_modal()"/>
-    </div>
-    <div class="step_details"></div>
-  </div>
+<!-- ======================= Database tools ======================= -->
+<section class="setup_section card card-accent accent-ink" aria-labelledby="tools-heading">
+  <h2 id="tools-heading" class="card-title">Database Tools</h2>
+  <div id="tools_steps">
 
   <div id="import_database_step" class="step_div">
     <div class="status_icon"></div>
@@ -137,44 +178,6 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
     <div class="step_details">
       <p>Load a database snapshot you captured earlier.</p>
     </div>
-  </div>
-
-  <div id="schema_step" class="step_div">
-    <div class="status_icon"><img/></div>
-    <div class="step_button block_buttons">
-      <input id="schema_button" type="button"/>
-    </div>
-    <div id="schema_details" class="step_details"></div>
-  </div>
-
-  <div id="purge_step" class="step_div">
-    <div class="status_icon"></div>
-    <div class="step_button block_buttons">
-      <input id="purge_data_button" type="button" class="btn-danger"
-             value="Purge Data" onclick="show_purge_modal()"/>
-    </div>
-    <div class="step_details">
-      <p>After testing or experimentation, you may wish to delete
-      some or all of the data in the database.</p>
-    </div>
-  </div>
-
-  <p class="setup_more">To save a snapshot of the database, or to see the
-  connection URLs, revision and configuration details, open
-  <a href="system-info.php">System Info</a>.</p>
-</section>
-
-<!-- ======================= Settings ======================= -->
-<section class="setup_section card card-accent accent-gold" aria-labelledby="settings-heading">
-  <h2 id="settings-heading" class="card-title">Settings</h2>
-
-  <!-- Photo directories and lane count -->
-  <div id="settings_step" class="step_div">
-    <div class="status_icon"><img/></div>
-    <div class="step_button block_buttons">
-      <a class="button_link" href="settings.php">Settings</a>
-    </div>
-    <div class="step_details"></div>
   </div>
 
   <div id="directions_step" class="step_div">
@@ -193,6 +196,31 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
         click it to choose one.</p>
     </div>
   </div>
+
+  <div id="schema_step" class="step_div">
+    <div class="status_icon"><img/></div>
+    <div class="step_button block_buttons">
+      <input id="schema_button" type="button"/>
+    </div>
+    <div id="schema_details" class="step_details"></div>
+  </div>
+
+  <div id="purge_step" class="step_div">
+    <div class="status_icon"></div>
+    <div class="step_button block_buttons">
+      <input id="purge_data_button" type="button" class="btn-danger"
+             value="Purge Data" onclick="show_purge_modal()"/>
+    </div>
+    <div class="step_details">
+      <p>After testing or practice, delete some or all of the data in the
+      database.</p>
+    </div>
+  </div>
+
+  </div>
+  <p class="setup_more">To save a snapshot of the database, or to see the
+  connection URLs, revision and configuration details, open
+  <a href="system-info.php">System Info</a>.</p>
 </section>
 
 </div>

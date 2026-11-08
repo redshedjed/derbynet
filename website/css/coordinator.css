@@ -42,19 +42,20 @@
 
 /* ---------------- Warnings ---------------- */
 
+/* "Next:" -- what to do next to get the race going (update_next_step in
+   coordinator-poll.js); hidden while racing */
 #not-racing-warning {
   margin: 0 0 var(--space-3) 0;
   padding: var(--space-3) var(--space-4);
-  text-align: center;
   font-size: var(--text-lg);
-  font-weight: var(--weight-semibold);
-  color: white;
-  background-color: var(--color-danger);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border-left: 6px solid var(--color-brand);
   border-radius: var(--radius-lg);
-  box-shadow: 0 4px 14px rgba(179, 18, 31, 0.25);
+  box-shadow: var(--shadow-card);
 }
-#not-racing-warning a {
-  color: white;
+#not-racing-warning b {
+  color: var(--color-brand);
 }
 
 #notifications {
