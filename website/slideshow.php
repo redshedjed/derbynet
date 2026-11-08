@@ -1,4 +1,11 @@
-<!DOCTYPE html>
+<?php
+// The slideshow runs only on kiosks (kiosks/slideshow.kiosk sets $as_kiosk
+// and includes this page).  Opened directly, it goes to the home page.
+if (!isset($as_kiosk)) {
+  header('Location: index.php');
+  exit(0);
+}
+?><!DOCTYPE html>
 <html>
 <?php
 require_once('inc/banner.inc');

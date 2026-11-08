@@ -188,9 +188,7 @@ make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', SET_UP_PERMISSION, 'd
 make_link_button('Judging', 'judging.php', JUDGING_PERMISSION, 'during_button');
 make_link_button('Race Schedule', 'ondeck.php', -1, 'during_button');
 make_link_button('Results By Racer', 'racer-results.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button');
-if (!have_permission(SET_UP_PERMISSION)) {
-  make_link_button('Slideshow', 'slideshow.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button');
-}
+// (The slideshow runs only on kiosks, set from the Kiosk Dashboard.)
 end_tile_group();
 
 // end first column default set-up

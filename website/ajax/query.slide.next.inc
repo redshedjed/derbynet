@@ -40,9 +40,15 @@ if (isset($_GET['racerid'])) {
   $racerid = $_GET['racerid'];
 }
 
+// The kiosk's group filter, e.g. "1,3,4".  It goes into the SQL below and
+// this query is open to anyone, so keep only whole numbers.
 $has_classids = isset($_GET['classids']);
 if ($has_classids) {
-  $classids = $_GET['classids'];
+  $classids = implode(',', array_map('intval',
+                                     array_filter(explode(',', $_GET['classids']), 'is_numeric')));
+  if ($classids === '') {
+    $classids = '-1';  // a filter with no valid groups matches no racers
+  }
 }
 
 
