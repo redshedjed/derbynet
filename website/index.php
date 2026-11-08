@@ -88,6 +88,31 @@ div.index_background {
   width: 238px;
   height: 30px;
 }
+
+/* Vote!: twice as tall as the other tiles, with large centered text, set
+   apart from the list below it by space and a rule */
+.vote_feature {
+  margin: 0 auto var(--space-5) auto;
+  padding-bottom: var(--space-5);
+  max-width: 320px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.tile-buttons .vote_feature.block_buttons a.button_link.vote_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  min-height: 86px;   /* with padding and border: twice a 53px tile */
+  margin: 0 auto;
+  /* Same side padding as the other tiles (16px left from the tile style,
+     15px right from the base button), so it's the same width */
+  padding-left: var(--space-4);
+  padding-right: 15px;
+  font-size: 2.25rem;
+  font-weight: var(--weight-bold, 700);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
 </style>
 </head>
 <body>
@@ -101,6 +126,15 @@ div.index_background {
  $two_columns = have_permission(SET_UP_PERMISSION);
 
 echo "<div class='index_background tile-buttons'>\n";
+
+// When there's a ballot, Vote! leads the menu for visitors: a big tile on its
+// own above the other buttons.  (People who can set up the race don't see it.)
+if ($show_voting_button && !have_permission(SET_UP_PERMISSION)
+    && have_permission(VIEW_RACE_RESULTS_PERMISSION)) {
+  echo "<div class='vote_feature block_buttons'>\n";
+  echo "<a class='button_link during_button vote_button' href='vote.php'>Vote!</a>\n";
+  echo "</div>\n";
+}
 
 if ($two_columns) {
   echo "<div class='index_column'>\n";
@@ -130,9 +164,7 @@ $need_spacer = make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', SET_UP
 $need_spacer = make_link_button('Judging', 'judging.php', JUDGING_PERMISSION, 'during_button') || $need_spacer;
 if (!have_permission(SET_UP_PERMISSION)) {
   $need_spacer = make_link_button('Slideshow', 'slideshow.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button') || $need_spacer;
-  if ($show_voting_button) {
-    $need_spacer = make_link_button('Vote!', 'vote.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button') || $need_spacer;
-  }
+  // (Vote! is shown above the list, by itself; see the top of the page.)
 }
 
 // *********** During, part 2 ***************
