@@ -100,13 +100,19 @@ $(function() {
 
   <div id="queue" class="card card-accent accent-during">
     <h2 class="card-title">Playlist</h2>
+    <p class="rounds-hint">The order the rounds are raced in.  On race day,
+      <b>Start Playlist</b> on the Race Dashboard schedules and races each round in
+      turn, and after each one does what you choose here (pause, change the
+      displays, or go on).</p>
 
     <div id="racing-scene-div">
       <label for="racing-scene">Racing scene</label>
       <select id="racing-scene">
       </select>
       <p id='racing-scene-psa' class='hidden'>
-        It's usually a good idea to set a racing scene if you're using playlists.
+        It's usually a good idea to set a racing scene if you're using playlists:
+        what the displays show while a round is racing (scenes are set up in the
+        Scene Editor).
       </p>
     </div>
 
@@ -118,6 +124,13 @@ $(function() {
   <div id="rounds-div" class="card card-accent accent-before">
     <h2 class="card-title">Available Rounds</h2>
     <p class="rounds-hint">Click a round to add it to the playlist.</p>
+    <ul class="rounds-key">
+      <li><span class="key-solid"></span>A round that exists.  Every group's
+        Round 1 is made automatically.</li>
+      <li><span class="key-dashed"></span>A next round (finals) that doesn't exist
+        yet.  Adding it to the playlist makes it from the top racers of the round
+        before; it's offered once that round is finished or in the playlist.</li>
+    </ul>
     <ul class="mlistview" id="rounds-ul">
     </ul>
   </div>

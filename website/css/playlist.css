@@ -235,3 +235,35 @@ div.flipswitch.bucketed-multi.checked {
   padding-left: 7em;
   width: 1.8125em;
 }
+
+/* Key to the Available Rounds: a solid swatch (a round that exists) and a
+   dashed one (a next round, not made yet) */
+ul.rounds-key {
+  margin: 0 0 var(--space-3) 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+ul.rounds-key li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-1) 0;
+}
+ul.rounds-key span {
+  flex: none;
+  width: 22px;
+  height: 14px;
+  margin-top: 2px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  background: var(--color-surface);
+}
+ul.rounds-key .key-solid {
+  border: 1px solid var(--gray-200);
+  border-left: 5px solid var(--color-brand);
+}
+ul.rounds-key .key-dashed {
+  border: 2px dashed var(--color-border-strong);
+}

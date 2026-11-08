@@ -65,6 +65,8 @@ $(function() {
        data-on-text="Yes" data-off-text="No"
          <?php if (use_subgroups()) echo "checked=\"checked\""; ?>/>
 </div>
+<p class="rg-hint">Subgroups split a group for standings and trophies only
+  (e.g. by age); they don't change who races whom.</p>
 
 <div class="labels">
   <label for="supergroup-label">The full roster is a (or the)</label>
@@ -114,6 +116,15 @@ $(function() {
 
 <div id="race-structure">
 
+<!-- What the words mean, where they're used -->
+<div class="rg-explain">
+  <p><b>Groups</b> race separately: each group races its own <b>Round 1</b>, a
+    full set of heats, made automatically for every group.  Later rounds (finals)
+    are made from the top racers of a round.</p>
+  <p>To plan the order of the rounds, and any finals, use the
+    <a href="playlist.php?back=racing-groups.php">Rounds Playlist</a> (optional).</p>
+</div>
+
 <p class="instructions" id="drag-groups">Drag <span class="group-color">&nbsp;</span> groups to reorder.</p>
 <p class="instructions" id="drag-subgroups">Drag <span class="subgroup-color">&nbsp;</span> subgroups
         to reorder<span id="or-to-move"> or to move to another group</span>.</p>
@@ -138,6 +149,10 @@ $(function() {
   <input id="add-aggregate-button" class="modest-button" type="button"
          value="Add Aggregate"/>
 </div>
+<p class="rg-hint">An <b>aggregate</b> combines groups (e.g. all the Webelos
+  dens) for standings and speed trophies of its own.  It can also race a round of
+  its own, such as a Grand Finals for the top racers of its groups: add it in the
+  Rounds Playlist, or with Add New Rounds on the Race Dashboard.</p>
 
 </div><!-- race-structure -->
 

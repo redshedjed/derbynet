@@ -129,6 +129,18 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
     <div class="step_details"></div>
   </div>
 
+  <div id="playlist_step" class="step_div">
+    <div class="step_number"></div>
+    <div class="status_icon"></div>
+    <div class="step_button block_buttons">
+      <a class="button_link" href="playlist.php?back=setup.php">Rounds Playlist</a>
+    </div>
+    <div class="step_details">
+      <p>Optional: the order the rounds are raced in, and any finals.  Without
+        one, the race coordinator schedules each round from the Race Dashboard.</p>
+    </div>
+  </div>
+
   <div id="awards_step" class="step_div">
     <div class="step_number"></div>
     <div class="status_icon"><img/></div>
@@ -158,9 +170,7 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
     </div>
     <div class="step_details">
       <p>Optional: what the TVs and screens show.  Set them up ahead of time
-        with the <a href="scenes.php?back=setup.php">Scene Editor</a>, and the
-        order of rounds with the
-        <a href="playlist.php?back=setup.php">Playlist Editor</a>.</p>
+        with the <a href="scenes.php?back=setup.php">Scene Editor</a>.</p>
     </div>
   </div>
 </section>

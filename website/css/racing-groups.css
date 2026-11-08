@@ -341,3 +341,21 @@ div.block_buttons input.modest-button:hover {
   font-weight: bold;
 }
 
+
+/* Short explanations: what groups, rounds, subgroups and aggregates are */
+.rg-explain {
+  margin: 0 0 var(--space-3) 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+.rg-explain p {
+  margin: var(--space-1) 0;
+}
+p.rg-hint {
+  margin: var(--space-1) 0 var(--space-3) 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
