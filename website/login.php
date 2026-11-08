@@ -5,6 +5,18 @@
 
 require_once('inc/data.inc');
 require_once('inc/authorize.inc');
+
+// Log out (login.php?logout): back to what a visitor can do, then straight
+// to the home page -- without showing this page first.
+if (isset($_GET['logout'])) {
+  $_SESSION['permissions'] = $roles['']['permissions'];
+  unset($_SESSION['role']);
+  unset($_SESSION['setting_up']);
+  unset($_SESSION['mobile-checkin-key']);
+  session_write_close();
+  header('Location: index.php');
+  exit(0);
+}
 session_write_close();
 require_once('inc/banner.inc');
 require_once('inc/permissions.inc');
@@ -91,7 +103,7 @@ var g_after_login = <?php
 </script>
 <script type="text/javascript" src="js/login.js"></script>
 </head>
-<body<?php if (isset($_GET['logout'])) echo ' onload="handle_logout()"'; ?>>
+<body>
 
 <a id="banner_link" href="<?php echo isset($_GET['all']) ? '?' : '?all'; ?>">
   <?php make_banner(''); ?>
@@ -136,7 +148,7 @@ foreach ($roles as $name => $details) {
 if (@$_SESSION['role']) {
 ?>
 <div id="login-logout" class="accent-other">
-<input type="button" value="Log out" onclick='handle_logout();'/>
+<input type="button" value="Log out" onclick='location.href = "login.php?logout";'/>
 </div>
 <?php
 }
