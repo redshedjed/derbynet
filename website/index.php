@@ -99,6 +99,11 @@ div.index_column {
 
 div.index_background {
   padding-top: var(--space-5);
+  /* Room below the last button (Log in / Log out), the same as between
+     groups.  flow-root makes it hold the floated columns of the two-column
+     menu, so the padding comes after them. */
+  padding-bottom: 44px;
+  display: flow-root;
 }
 
 /* Home menu tiles: the tile look and the stage colors (before_button, ...)
