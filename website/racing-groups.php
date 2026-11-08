@@ -59,14 +59,24 @@ $(function() {
 <label for="custom-group-radio">Custom racing groups</label>
 
 
-<div class="switch">
+<!-- Subgroups are the dens (sub-divisions) within a racing group, so they only
+     mean something when dens race together: hidden when each den races as its
+     own group (process_polling_data in racing-groups.js). -->
+<div class="switch subgroups-control">
   <label for="use-subgroups">Use Subgroups?</label>
   <input id="use-subgroups" type="checkbox" class="flipswitch"
        data-on-text="Yes" data-off-text="No"
          <?php if (use_subgroups()) echo "checked=\"checked\""; ?>/>
 </div>
-<p class="rg-hint">Subgroups split a group for standings and trophies only
-  (e.g. by age); they don't change who races whom.</p>
+<p class="rg-hint subgroups-control">With subgroups, each
+  <span class="partition-label-lc"><?php echo partition_label_lc(); ?></span> in a racing
+  group gets its own standings and speed trophies, though the group races
+  together.</p>
+<p class="rg-hint subgroups-none">Subgroups apply when
+  <span class="partition-label-lc"><?php echo partition_label_lc(); ?></span>s race
+  together (one big group, or custom groups): each
+  <span class="partition-label-lc"><?php echo partition_label_lc(); ?></span> is then a
+  subgroup, with its own standings and trophies.</p>
 
 <div class="labels">
   <label for="supergroup-label">The full roster is a (or the)</label>
@@ -235,13 +245,6 @@ $(function() {
 
     <div id="constituent_extension">
       <p>Constituent of <span id="constituent_owner"></span>, possibly other aggregates.</p>
-    </div>
-
-    <div id="edit_ranks_extension" class="hidden">
-      <input id="add_rank_button" type="button"
-             value="Add <?php echo subgroup_label(); ?>"
-             onclick="show_add_rank_modal();" />
-      <br/>
     </div>
 
     <input type="submit"/>

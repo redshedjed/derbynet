@@ -152,6 +152,11 @@ function process_polling_data(data) {
       .trigger('change', /*synthetic*/true);
   }
 
+  // Subgroups only mean something when dens race together
+  var by_partition = data['group-formation-rule'] == 'by-partition';
+  $(".subgroups-control").toggleClass('hidden', by_partition);
+  $(".subgroups-none").toggleClass('hidden', !by_partition);
+
   // Instructions
   $("#drag-groups").toggleClass('hidden', data['group-formation-rule'] == 'one-group');
   $("#drag-subgroups").toggleClass('hidden', data['group-formation-rule'] == 'by-partition');

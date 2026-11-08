@@ -103,8 +103,15 @@ if (have_permission(SET_UP_PERMISSION)) {
         ++$num_picked;
         $written[] = $post_key;
         if (@$setting['type'] == 'checkbox') {
+          // On if the box's own parameter is present -- unless it says 0 or
+          // false, as some pages send it either way (Racing Groups' Use
+          // Subgroups, the Timer page's reverse lanes), which used to make
+          // those impossible to turn off.
           if (isset($_POST[$post_key_base])) {
-            ++$num_picked;
+            ++$num_picked;  // a recognized parameter, whether on or off
+          }
+          if (isset($_POST[$post_key_base]) &&
+              !in_array(strtolower(strval($_POST[$post_key_base])), array('0', 'false', ''), true)) {
             $itemvalue = '1';
           } else {
             $itemvalue = '0';
