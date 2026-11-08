@@ -5,7 +5,7 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 
-user_login_coordinator
+user_login_admin
 
 RESET_SOURCE=points-racing `dirname $0`/reset-database.sh "$BASE_URL"
 `dirname $0`/import-roster.sh "$BASE_URL"
@@ -36,7 +36,7 @@ run_heat -place 1 2   111:1 131:4 101:2 121:3
 # both racers get 1 point each (tie for 3rd place)
 run_heat 1 3 121:9.9999 141:3.2 111:3.1 131:9.9999
 
-user_login_coordinator
+user_login_admin
 # Check the points for each racer in the heat: # heats, total points
 curl_text "standings.php" | grep 121 | expect_one "<td>3</td><td>6</td>"
 curl_text "standings.php" | grep 141 | expect_one "<td>2</td><td>4</td>"
@@ -48,7 +48,7 @@ user_login_timer
 # Now re-run with a tie for first place
 run_heat 1 3  121:3.3 141:3.1 111:3.1 131:3.4
 
-user_login_coordinator
+user_login_admin
 curl_text "standings.php" | grep 121 | expect_one "<td>3</td><td>6</td>"
 curl_text "standings.php" | grep 141 | expect_one "<td>2</td><td>5</td>"
 curl_text "standings.php" | grep 111 | expect_one "<td>3</td><td>12</td>"
@@ -59,7 +59,7 @@ user_login_timer
 # Finally, re-run the heat again, now with four good times:
 run_heat 1 3  121:3.3 141:3.2 111:3.1 131:3.4
 
-user_login_coordinator
+user_login_admin
 curl_text "standings.php" | grep 121 | expect_one "<td>3</td><td>6</td>"
 curl_text "standings.php" | grep 141 | expect_one "<td>2</td><td>4</td>"
 curl_text "standings.php" | grep 111 | expect_one "<td>3</td><td>12</td>"
@@ -68,7 +68,7 @@ user_login_timer
 
 run_heat -place 1 4   131:4 101:1 121:2 141:3
 
-user_login_coordinator
+user_login_admin
 curl_getj "action.php?query=poll.coordinator" | jq '.["last-heat"] == "available"' | expect_eq true
 curl_postj action.php "action=heat.rerun&heat=last" | check_jsuccess
 curl_getj "action.php?query=poll.coordinator" | \
@@ -105,7 +105,7 @@ run_heat -place 1 5   141:2 111:1 131:4 101:3  x
 # 141         Jesse          Jara        11                 9
 # 131         Felton         Fouche      16                 4
 
-user_login_coordinator
+user_login_admin
 curl_postj action.php "action=award.present&key=speed-2-1" | check_jsuccess
 curl_getj "action.php?query=award.current" | expect_one Asher
 

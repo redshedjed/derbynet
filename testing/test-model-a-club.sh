@@ -8,7 +8,7 @@ shift
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 
-user_login_coordinator
+user_login_admin
 
 RESET_SOURCE=modal-a-club `dirname $0`/reset-database.sh "$BASE_URL"
 

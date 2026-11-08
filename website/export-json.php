@@ -4,7 +4,7 @@ require_once('inc/authorize.inc');
 session_write_close();
 require_once('inc/export-all.inc');
 
-require_permission(VIEW_RACE_RESULTS_PERMISSION);
+require_permission(SET_UP_PERMISSION);  // Administrator
 
 header('Content-Type: application/json');
 

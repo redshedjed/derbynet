@@ -24,7 +24,7 @@ if [ `echo "$BASE_URL" | grep -i localhost` ]; then
     LOG_DIR=`mktemp -d /tmp/logs.XXXXXXXX`
     chmod 777 "$LOG_DIR"
 
-    user_login_coordinator
+    user_login_admin
 
     curl_postj action.php "action=settings.write&photo-dir=$PHOTO_DIR" | check_jsuccess
     curl_postj action.php "action=settings.write&car-photo-dir=$CAR_PHOTO_DIR" | check_jsuccess

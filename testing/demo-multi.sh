@@ -15,7 +15,7 @@ MAIN=main
 AUX=aux
 ONDECK=ondeck
 
-user_login_coordinator
+user_login_admin
 
 while true ; do
   # Resetting the database also clears all the kiosk settings
@@ -55,7 +55,7 @@ while true ; do
   # Start the timer
   curl_post action.php "action=timer-message&message=HELLO" | check_success
   curl_post action.php "action=timer-message&message=IDENTIFIED&lane_count=4" | check_success
-  user_login_coordinator
+  user_login_admin
 
   # Schedule Round 1
   curl_postj action.php "action=schedule.generate&roundid=1" | check_jsuccess
@@ -134,7 +134,7 @@ while true ; do
   # curl_postj action.php "action=kiosk.assign&address=$MAIN&page=kiosks/standings.kiosk" | check_jsuccess
   # curl_post action.php "action=standings.select&roundid=1&expose=all" | check_success
 
-  user_login_coordinator
+  user_login_admin
   ########## Awards Presentations ##############
   sleep 15s
   curl_postj action.php "action=kiosk.assign&address=$AUX&page=kiosks/award-presentations.kiosk" | check_jsuccess

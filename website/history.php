@@ -13,7 +13,7 @@ if (isset($_GET['debug'])) {
   $debug_history_entries = true;
 }
 
-require_permission(CHECK_IN_RACERS_PERMISSION);
+require_permission(SET_UP_PERMISSION);  // Administrator
 
 ?><!DOCTYPE html>
 <html>

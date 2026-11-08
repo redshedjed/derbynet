@@ -4,7 +4,7 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 
-user_login_coordinator
+user_login_admin
 
 # For kiosk polling, normally the server fills in an address based on the
 # client's IP and port.  For testing, we provide explicit query parameter.  The

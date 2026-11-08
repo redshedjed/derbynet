@@ -6,7 +6,7 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 
-user_login_coordinator
+user_login_admin
 
 curl_postj action.php "action=photo.assign&repo=car&racer=1&photo=Car-1234.jpg" | check_jfailure
 # For demo purposes, we want at least one car photo assigned early in the process

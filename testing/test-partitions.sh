@@ -4,7 +4,7 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 
-user_login_coordinator
+user_login_admin
 
 RESET_SOURCE=partitions1 `dirname $0`/reset-database.sh "$BASE_URL"
 curl_postj action.php "action=racer.import&firstname=Kristie&lastname=Kyzer" | check_jsuccess

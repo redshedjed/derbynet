@@ -85,7 +85,9 @@ foreach ($db->query($sql) as $rs) {
 <div id="top_matter" class="toolbar page-toolbar">
   <input type='button' class='btn btn-secondary' value='Manage Ballot'
          onclick='show_modal($("#ballot_modal"));'/>
+  <?php if (have_permission(EDIT_AWARDS_PERMISSION)) { /* awards are set up by the Administrator */ ?>
   <a class="btn btn-secondary" href="awards-editor.php">Edit Awards</a>
+  <?php } ?>
   <span class="toolbar-spacer"></span>
   <div id="sort_controls" class="segmented" role="group" aria-label="Sort racers by">
     <span class="segmented-label">Sort</span>

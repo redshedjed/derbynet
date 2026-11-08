@@ -2,6 +2,7 @@
 #
 # Set environment variable PASSWORDS_FILE to point to a file containing, e.g.,
 #
+#Administrator:backstage
 #RaceCoordinator:doyourbest
 #RaceCrew:murphy
 #
@@ -142,6 +143,12 @@ function user_login() {
 		| tee -a $OUTPUT_CURL | check_jsuccess
 }
 
+# Set-up, settings, imports and the like (and everything else)
+function user_login_admin() {
+    user_login Administrator
+}
+
+# Running the race, without set-up
 function user_login_coordinator() {
     user_login RaceCoordinator
 }

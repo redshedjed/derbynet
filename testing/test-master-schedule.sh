@@ -4,7 +4,7 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 
-user_login_coordinator
+user_login_admin
 
 curl_postj action.php "action=settings.write&use-master-sched-checkbox=1&use-master-sched=1" | check_jsuccess
 curl_postj action.php "action=settings.write&n-lanes=4" | check_jsuccess
@@ -128,7 +128,7 @@ curl_getj "action.php?query=poll.coordinator" | \
     jq ".[\"current-heat\"] | .[\"now_racing\"] == false" | \
     expect_eq true
 
-user_login_coordinator
+user_login_admin
 # Now create a aggregate round, 3 from each den.
 # (Bears/Freres have only 2 racers and Webelos only 3.)
 curl_postj action.php "action=roster.new&roundid=&top=3&bucketed=1&classid_1=1&classid_2=1&classid_3=1&classid_4=1&classname=Grand%20Finals" \

@@ -9,7 +9,7 @@ require_once('inc/name-mangler.inc');
 require_once('inc/awards.inc');
 require_once('inc/export-all.inc');
 
-require_permission(VIEW_RACE_RESULTS_PERMISSION);
+require_permission(SET_UP_PERMISSION);  // Administrator
 
 $workbook = export_all();
 

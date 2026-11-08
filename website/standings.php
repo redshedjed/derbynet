@@ -18,7 +18,8 @@ require_once('inc/authorize.inc');
 session_write_close();
 require_once('inc/banner.inc');
 require_once('inc/schema_version.inc');
-require_permission(VIEW_RACE_RESULTS_PERMISSION);
+// Final standings could spoil the awards: not for visitors
+require_permission(VIEW_AWARDS_PERMISSION);
 require_once('inc/standings.inc');
 ?><!DOCTYPE html>
 <html>

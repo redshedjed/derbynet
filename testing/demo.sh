@@ -7,7 +7,7 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 
-user_login_coordinator
+user_login_admin
 
 while true ; do
   curl_postj action.php "action=database.execute&script=schema" | check_jsuccess
@@ -44,7 +44,7 @@ while true ; do
   curl_post action.php "action=timer-message&message=HELLO" | check_success
   curl_post action.php "action=timer-message&message=IDENTIFIED&lane_count=4" | check_success
 
-  user_login_coordinator
+  user_login_admin
   # Schedule Round 1
   curl_postj action.php "action=schedule.generate&roundid=1" | check_jsuccess
   curl_postj action.php "action=schedule.generate&roundid=2" | check_jsuccess
@@ -81,7 +81,7 @@ while true ; do
   curl_post action.php "action=timer-message&message=FINISHED&lane1=3.8318&lane2=2.6336&lane3=3.7829&lane4=3.8474" | check_success
   sleep 3s
 
-  user_login_coordinator
+  user_login_admin
   ########## Now-Racing ##############
   curl_postj action.php "action=kiosk.assign&all=kiosks/now-racing.kiosk" | check_jsuccess
 
@@ -108,7 +108,7 @@ while true ; do
   sleep 15s
 
   ########## Results-By-Racer ##############
-  user_login_coordinator
+  user_login_admin
   curl_postj action.php "action=kiosk.assign&all=kiosks/results-by-racer.kiosk" | check_jsuccess
   user_login_timer
 

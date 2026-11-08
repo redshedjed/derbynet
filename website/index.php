@@ -154,13 +154,14 @@ div.index_background {
  $need_spacer = false;
 
  // This is a heuristic more than a hard rule -- when are there so many buttons that we need a second column?
- $two_columns = have_permission(SET_UP_PERMISSION);
+ $two_columns = have_permission(SET_UP_PERMISSION | CONTROL_RACE_PERMISSION);
 
 echo "<div class='index_background tile-buttons'>\n";
 
 // When there's a ballot, Vote! leads the menu for visitors: a big tile on its
-// own above the other buttons.  (People who can set up the race don't see it.)
-if ($show_voting_button && !have_permission(SET_UP_PERMISSION)
+// own above the other buttons.  (The people running or setting up the race
+// don't see it.)
+if ($show_voting_button && !have_permission(SET_UP_PERMISSION | CONTROL_RACE_PERMISSION)
     && have_permission(VIEW_RACE_RESULTS_PERMISSION)) {
   echo "<div class='vote_feature block_buttons'>\n";
   echo "<a class='button_link after_button vote_button' href='vote.php'>Vote!</a>\n";
@@ -184,8 +185,8 @@ end_tile_group();
 // *********** During ***************
 // (Vote! is shown above the list, by itself; see the top of the page.)
 begin_tile_group();
-make_link_button('Race Dashboard', 'coordinator.php', SET_UP_PERMISSION, 'during_button');
-make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', SET_UP_PERMISSION, 'during_button');
+make_link_button('Race Dashboard', 'coordinator.php', CONTROL_RACE_PERMISSION, 'during_button');
+make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', CONTROL_RACE_PERMISSION, 'during_button');
 make_link_button('Judging', 'judging.php', JUDGING_PERMISSION, 'during_button');
 make_link_button('Race Schedule', 'ondeck.php', -1, 'during_button');
 make_link_button('Results By Racer', 'racer-results.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button');
@@ -206,11 +207,8 @@ if ($two_columns) {
 // Present Awards is on the Kiosk Dashboard, since it drives the awards kiosk.
 begin_tile_group();
 make_link_button('Standings', 'standings.php', VIEW_AWARDS_PERMISSION, 'after_button');
-// Anyone can view results, but the anonymous home menu stays short for
-// visitors: exporting is offered once someone has logged in.
-if (@$_SESSION['role']) {
-  make_link_button('Export Results', 'export.php', VIEW_RACE_RESULTS_PERMISSION, 'after_button');
-}
+// Exporting and the retrospective are back-end work, for the Administrator
+make_link_button('Export Results', 'export.php', SET_UP_PERMISSION, 'after_button');
 make_link_button('Retrospective', 'history.php', SET_UP_PERMISSION, 'after_button');
 end_tile_group();
 

@@ -15,8 +15,8 @@ if (root.substring(root.length - 1) == '/') {
 
 var debugging = false;
 
-var role = 'RaceCoordinator';
-var password = 'doyourbest';
+var role = 'Administrator';
+var password = 'backstage';
 
 
 var all_uris = [

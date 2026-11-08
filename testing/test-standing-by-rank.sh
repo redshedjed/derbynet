@@ -4,7 +4,7 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 
-user_login_coordinator
+user_login_admin
 
 RESET_SOURCE=standing-by-rank `dirname $0`/reset-database.sh "$BASE_URL"
 
@@ -120,7 +120,7 @@ run_heat 1 20  319:2.519 101:1.010 315:3.015 206:5.506 x
 # 214 Thanh Turner
 # 218 Sterling Spalla
 
-user_login_coordinator
+user_login_admin
 
 curl_get "standings.php" | grep '<tr' | expect_count "data-rankid=.3." 5
 # Because Harold is ineligible, only 4 show up

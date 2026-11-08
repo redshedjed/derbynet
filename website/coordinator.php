@@ -6,7 +6,7 @@ session_write_close();
 require_once('inc/banner.inc');
 require_once('inc/partitions.inc');
 
-require_permission(SET_UP_PERMISSION);  // TODO: What's the correct permission?
+require_permission(CONTROL_RACE_PERMISSION);  // running the race
 
 $warn_no_timer = warn_no_timer();
 
@@ -143,7 +143,9 @@ $warn_no_timer = warn_no_timer();
 <div class="control_column">
 
   <div id="playlist-group">
+    <?php if (have_permission(SET_UP_PERMISSION)) { /* editing it is set-up */ ?>
     <a class='btn btn-secondary' href='playlist.php'>Rounds Playlist</a>
+    <?php } ?>
     <div id="playlist-start">
       <input type="button" class="btn btn-success" value="Start Playlist" onclick="handle_start_playlist();"/>
     </div>

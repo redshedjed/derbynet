@@ -5,7 +5,7 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 
-user_login_coordinator
+user_login_admin
 
 RESET_SOURCE=subgroup-ntrophies \
     `dirname $0`/reset-database.sh "$BASE_URL"

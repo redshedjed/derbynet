@@ -18,8 +18,8 @@ if (root.substring(root.length - 1) == '/') {
 
 var debugging = false
 
-var role = 'RaceCoordinator';
-var password = 'doyourbest';
+var role = 'Administrator';
+var password = 'backstage';
 
 puppeteer.launch({devtools: debugging}).then(async browser => {
   const all_pages = await browser.pages();

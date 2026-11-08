@@ -8,7 +8,7 @@ set -e -E -o pipefail
 source `dirname $0`/common.sh
 
 # Send a register-replay action for port 50000 to the server
-user_login_coordinator
+user_login_admin
 sleep 1 && ( curl_post action.php "action=register-replay&port=50000" ) &
 
 echo Respond to replay messages with an \"OK\"

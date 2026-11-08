@@ -10,7 +10,7 @@ require_once('inc/schema_version.inc');
 require_once('inc/standings.inc');
 require_once('inc/locked.inc');
 
-require_permission(PRESENT_AWARDS_PERMISSION);
+require_permission(CONTROL_RACE_PERMISSION);
 
 $urls = preferred_urls();
 
@@ -67,7 +67,9 @@ var g_standings_choices = <?php
   <span class="toolbar-spacer"></span>
   <input id="new_kiosk_window_button" type="button" class="btn btn-secondary" value="New Kiosk Window"/>
   <a class="btn btn-secondary" href="awards-presentation.php">Present Awards</a>
+  <?php if (have_permission(SET_UP_PERMISSION)) { /* editing scenes is set-up */ ?>
   <a class="btn btn-secondary" href="scenes.php">Scene Editor</a>
+  <?php } ?>
 </div>
 
 <div class="kiosk_page">

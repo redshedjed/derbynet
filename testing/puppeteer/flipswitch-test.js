@@ -37,7 +37,7 @@ async function main() {
 
     await page.goto(root + '/login.php');
     await Promise.all([page.waitForNavigation(),
-                       page.evaluate(() => window.handle_login('RaceCoordinator', 'doyourbest'))]);
+                       page.evaluate(() => window.handle_login('Administrator', 'backstage'))]);
 
     // Clicks the visible switch that wraps a checkbox; returns the requests the
     // click sent that match `action`.

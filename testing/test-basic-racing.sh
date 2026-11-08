@@ -4,7 +4,7 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 
-user_login_coordinator
+user_login_admin
 
 curl_postj action.php "action=settings.write&unused-lane-mask=0&n-lanes=4" | check_jsuccess
 
@@ -50,7 +50,7 @@ run_heat 1 4 131:3.7412 101:3.4053 121:3.3414 141:2.8045
 run_heat 1 5 141:2.9661 111:3.9673 131:3.5686 101:3.8388    x
 
 ### Racing for roundid=2: 5 heats
-user_login_coordinator
+user_login_admin
 curl_postj action.php "action=heat.select&roundid=2&now_racing=1" | check_jsuccess
 
 user_login_timer
@@ -60,7 +60,7 @@ cat $DEBUG_CURL | expect_one "<heat-ready[ />]"
 run_heat 2 1  207:2.6149 227:2.0731 247:3.0402 217:3.7937
 run_heat 2 2  217:2.9945 237:3.4571 207:2.1867 227:2.3447
 
-user_login_coordinator
+user_login_admin
 curl_getj "action.php?query=poll.coordinator" | jq '.["last-heat"] == "available"' | expect_eq true
 curl_postj action.php "action=heat.rerun&heat=last" | check_jsuccess
 curl_getj "action.php?query=poll.coordinator" | \
@@ -84,7 +84,7 @@ run_heat 2 3  227:2.4901 247:2.0838 217:3.6469 237:2.1003
 run_heat 2 4  237:3.9403 207:3.4869 227:3.5717 247:3.5386
 run_heat 2 5  247:3.0439 217:3.4090 237:3.3881 207:2.9110  x
 
-user_login_coordinator
+user_login_admin
 ### Un-checkin a few roundid=3 and re-generate schedule
 curl_postj action.php "action=racer.pass&racer=13&value=0" | check_jsuccess
 curl_postj action.php "action=racer.pass&racer=23&value=0" | check_jsuccess
@@ -103,7 +103,7 @@ run_heat 3 2  139:2.7384 303:3.0321 -          343:9.9999
 run_heat 3 3  343:9.9999 139:3.4490 303:2.8584 -
 run_heat 3 4  -          343:9.9999 139:2.7565 303:3.0264  x
 
-user_login_coordinator
+user_login_admin
 ### Editing racers
 
 [ `curl_get checkin.php | grep '"racerid":5,' | grep -c '"class":"Arrows'` -eq 1 ] || test_fails Initial class
@@ -151,7 +151,7 @@ run_heat 4 7  510:2.5955 999:3.7658 502:3.7152 null:3.4789
 run_heat 4 8  999:3.6487 502:3.0060 510:3.9589 null:3.6175  x
 
 ### Racing for roundid=5
-user_login_coordinator
+user_login_admin
 curl_postj action.php "action=heat.select&roundid=5&now_racing=1" | check_jsuccess
 user_login_timer
 curl_post action.php "action=timer-message&message=HEARTBEAT" | check_success
@@ -173,7 +173,7 @@ curl_getj "action.php?query=award.list" | \
 curl_getj "action.php?query=award.list" | \
     jq -e '.["speed-awards"] | map(select(.classid == 5)) | length == 3' > /dev/null || test_fails
 
-user_login_coordinator
+user_login_admin
 
 curl_postj action.php "action=award.present&key=speed-1" | check_jsuccess
 curl_getj "action.php?query=award.current" | expect_one Elliot

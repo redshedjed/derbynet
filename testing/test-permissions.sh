@@ -65,7 +65,7 @@ curl_getj "action.php?query=poll.kiosk.all" > /dev/null
 curl_getj "action.php?query=roles.list"  > /dev/null
 curl_getj "action.php?query=poll&values=" > /dev/null
 
-cat >coordinator.index.tmp <<EOF
+cat >admin.index.tmp <<EOF
           <a class="button_link before_button" href="setup.php">Set-Up</a>
           <a class="button_link before_button" href="checkin.php">Race Check-In</a>
           <a class="button_link before_button" href="photo-thumbs.php">Photos</a>
@@ -77,6 +77,29 @@ cat >coordinator.index.tmp <<EOF
           <a class="button_link after_button" href="standings.php">Standings</a>
           <a class="button_link after_button" href="export.php">Export Results</a>
           <a class="button_link after_button" href="history.php">Retrospective</a>
+          <a class="button_link other_button" href="print.php">Printables</a>
+          <a class="button_link other_button" href="about.php">About</a>
+          <a class="button_link other_button" href="login.php?logout">Log out</a>
+EOF
+
+user_login_admin
+( curl_get index.php | grep '<a' | grep button_link | diff -b - admin.index.tmp ) || OK=0
+if [ $OK -eq 0 ]; then
+    curl_get index.php | grep '<a' | grep button_link
+    test_fails Administrator index page
+fi
+user_logout
+
+# The race coordinator runs the event: no Set-Up, Export or Retrospective
+cat >coordinator.index.tmp <<EOF
+          <a class="button_link before_button" href="checkin.php">Race Check-In</a>
+          <a class="button_link before_button" href="photo-thumbs.php">Photos</a>
+          <a class="button_link during_button" href="coordinator.php">Race Dashboard</a>
+          <a class="button_link during_button" href="kiosk-dashboard.php">Kiosk Dashboard</a>
+          <a class="button_link during_button" href="judging.php">Judging</a>
+          <a class="button_link during_button" href="ondeck.php">Race Schedule</a>
+          <a class="button_link during_button" href="racer-results.php">Results By Racer</a>
+          <a class="button_link after_button" href="standings.php">Standings</a>
           <a class="button_link other_button" href="print.php">Printables</a>
           <a class="button_link other_button" href="about.php">About</a>
           <a class="button_link other_button" href="login.php?logout">Log out</a>
@@ -102,7 +125,6 @@ cat >racecrew.index.tmp <<EOF
         <a class="button_link during_button" href="ondeck.php">Race Schedule</a>
         <a class="button_link during_button" href="racer-results.php">Results By Racer</a>
         <a class="button_link after_button" href="standings.php">Standings</a>
-        <a class="button_link after_button" href="export.php">Export Results</a>
         <a class="button_link other_button" href="print.php">Printables</a>
         <a class="button_link other_button" href="about.php">About</a>
         <a class="button_link other_button" href="login.php?logout">Log out</a>

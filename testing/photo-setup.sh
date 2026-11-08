@@ -39,7 +39,7 @@ done
 
 echo Done
 
-user_login_coordinator
+user_login_admin
 
 # Delete a photo, then upload it again
 curl_photo_any head/file/original/Cub-3126.jpg/xyz

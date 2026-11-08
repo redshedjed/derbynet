@@ -282,7 +282,9 @@ if (locked_settings()) {
 
     @include_once(data_folder_file_path($config_roles));
     if (!isset($post_setup_role)) {
-      $post_setup_role = 'RaceCoordinator';
+      // Older config files have no Administrator; their RaceCoordinator can
+      // do everything
+      $post_setup_role = isset($roles['Administrator']) ? 'Administrator' : 'RaceCoordinator';
     }
     $_SESSION['role'] = $post_setup_role;
     $role = $roles[$post_setup_role];

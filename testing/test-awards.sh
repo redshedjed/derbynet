@@ -16,7 +16,7 @@ fi
 
 # This test depends on the set-up and simulated racing from other tests.
 
-user_login_coordinator
+user_login_admin
 
 curl_postj action.php "action=award.import" | check_jfailure
 curl_postj action.php "action=award.import&awardname=Test%20Award" | check_jfailure

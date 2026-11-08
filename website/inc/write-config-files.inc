@@ -56,16 +56,29 @@ function write_config_roles_file($filename) {
                 'Photo' => array('password' => 'flashbulb',
                                  'permissions' => PHOTO_UPLOAD_PERMISSION,
                                  'interactive' => false),
+                // Front of house: check-in, photos, judging, printables
                 'RaceCrew' => array('password' => 'murphy',
                                     'permissions' =>
                                     VIEW_RACE_RESULTS_PERMISSION | VIEW_AWARDS_PERMISSION
                                     | CHECK_IN_RACERS_PERMISSION | REVERT_CHECK_IN_PERMISSION
                                     | ASSIGN_RACER_IMAGE_PERMISSION | JUDGING_PERMISSION | PHOTO_UPLOAD_PERMISSION
                                     | EDIT_RACER_PERMISSION | REGISTER_NEW_RACER_PERMISSION),
+                // Runs the event once it's set up: everything the race crew
+                // does, plus the Race and Kiosk Dashboards and presenting awards
                 'RaceCoordinator' => array('password' => 'doyourbest',
-                                           'permissions' => -1)
+                                           'permissions' =>
+                                           VIEW_RACE_RESULTS_PERMISSION | VIEW_AWARDS_PERMISSION
+                                           | CHECK_IN_RACERS_PERMISSION | REVERT_CHECK_IN_PERMISSION
+                                           | ASSIGN_RACER_IMAGE_PERMISSION | JUDGING_PERMISSION | PHOTO_UPLOAD_PERMISSION
+                                           | EDIT_RACER_PERMISSION | REGISTER_NEW_RACER_PERMISSION
+                                           | CONTROL_RACE_PERMISSION | PRESENT_AWARDS_PERMISSION
+                                           | TIMER_MESSAGE_PERMISSION),
+                // Back end: set-up, settings, the database, imports and other
+                // bulk changes, awards, export and the retrospective
+                'Administrator' => array('password' => 'backstage',
+                                         'permissions' => -1)
 	       );
-\$post_setup_role = 'RaceCoordinator';
+\$post_setup_role = 'Administrator';
 ?>
 
 END;

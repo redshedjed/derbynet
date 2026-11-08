@@ -15,7 +15,11 @@ require_once('inc/racing-state.inc');
 require_once('inc/partitions.inc');
 
 $ok = true;
-if (!have_permission(SET_UP_PERMISSION)) {
+// Clearing one round's results so it can be raced again (Repeat Round on the
+// Race Dashboard) is part of running the race; anything more takes set-up.
+$repeat_round = $_POST['purge'] == 'results' && isset($_POST['roundid']);
+if (!have_permission(SET_UP_PERMISSION) &&
+    !($repeat_round && have_permission(CONTROL_RACE_PERMISSION))) {
   json_not_authorized();
   $ok = false;
 } else if ($_POST['purge'] == 'results') {

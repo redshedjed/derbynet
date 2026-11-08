@@ -9,7 +9,7 @@ if [ "$2" = "" -o "$3" != "" ]; then
     exit
 fi
 
-user_login_coordinator
+user_login_admin
 
 curl --location -s -b $COOKIES_CURL -c $COOKIES_CURL $BASE_URL/action.php \
     -X POST -F snapshot="@$2" -F action=snapshot.put
