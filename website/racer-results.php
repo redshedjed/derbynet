@@ -18,8 +18,15 @@ $limit_to_roundid = false;
 if (isset($as_kiosk)) {
   $params = kiosk_parameters();
   if (isset($params['roundid'])) {
-    $limit_to_roundid = $params['roundid'];
+    $limit_to_roundid = intval($params['roundid']);
   }
+}
+
+// One racer's results (?racerid=), as a whole number: it goes into the SQL
+// below, and this page is open to anyone.
+$limit_to_racerid = false;
+if (isset($_GET['racerid']) && is_numeric($_GET['racerid'])) {
+  $limit_to_racerid = intval($_GET['racerid']);
 }
 ?><!DOCTYPE html>
 <html>
@@ -49,8 +56,8 @@ if (isset($as_kiosk)) {
     echo '<script type="text/javascript" src="js/results-by-racer-scrolling.js"></script>'."\n";
 ?>
 <title>Results By Racer <?php
-    if (isset($_GET['racerid']) && is_numeric($_GET['racerid'])) {
-      echo ' for '.$_GET['racerid'];
+    if ($limit_to_racerid !== false) {
+      echo ' for '.$limit_to_racerid;
     } ?></title>
 <?php require('inc/stylesheet.inc'); ?>
 <link rel="stylesheet" type="text/css" href="css/kiosks.css"/>
@@ -85,7 +92,7 @@ $sql = 'SELECT RegistrationInfo.racerid,'
                          'Classes', 'Rounds.classid = Classes.classid')
     .' WHERE Rounds.roundid = RaceChart.roundid'
     .($limit_to_roundid !== false ? " AND Rounds.roundid = $limit_to_roundid" : '')
-    .(isset($_GET['racerid']) ? " AND RaceChart.racerid = $_GET[racerid]" : '')
+    .($limit_to_racerid !== false ? " AND RaceChart.racerid = $limit_to_racerid" : '')
     .' ORDER BY '
     .(schema_version() >= 2 ? 'Classes.sortorder, ' : '')
     .'class, round, lastname, firstname, carnumber, resultid, lane';
@@ -226,7 +233,7 @@ $stmt->closeCursor();
 </div>
 <div class="block_buttons">
 <?php
-  if (isset($_GET['racerid'])) {
+  if ($limit_to_racerid !== false) {
     echo '<a class="button_link" href="racer-results.php">View All Racers</a>'."\n";
   }
 ?>
