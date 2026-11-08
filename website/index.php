@@ -72,8 +72,7 @@ div.tile_group {
 div.tile_group + div.tile_group {
   margin-top: 44px;
 }
-div.tile_group a.button_link,
-div.tile_group div.double {
+div.tile_group a.button_link {
   margin-top: 0;
   margin-bottom: 0;
 }
@@ -168,16 +167,8 @@ echo "<div class='block_buttons'>\n";
 begin_tile_group();
 make_link_button('Set-Up', 'setup.php', SET_UP_PERMISSION, 'before_button');
 make_link_button('Race Check-In', 'checkin.php', CHECK_IN_RACERS_PERMISSION, 'before_button');
-if (have_permission(ASSIGN_RACER_IMAGE_PERMISSION)) {
-  if ($schema_version > 1) {
-    echo "<div class='double'>";
-    echo "<a class='button_link left before_button' href='photo-thumbs.php?repo=head'><b>Racer</b><br/>Photos</a>\n";
-    echo "<a class='button_link right before_button' href='photo-thumbs.php?repo=car'><b>Car</b><br/>Photos</a>\n";
-    echo "</div>";
-  } else {
-    make_link_button('Edit Racer Photos', 'photo-thumbs.php?repo=head', ASSIGN_RACER_IMAGE_PERMISSION, 'before_button');
-  }
-}
+// Racer and car photos are one page, with a Racer / Car switch
+make_link_button('Photos', 'photo-thumbs.php', ASSIGN_RACER_IMAGE_PERMISSION, 'before_button');
 end_tile_group();
 
 // *********** During ***************

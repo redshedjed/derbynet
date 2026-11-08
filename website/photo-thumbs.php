@@ -10,9 +10,10 @@ require_permission(ASSIGN_RACER_IMAGE_PERMISSION);
 
 require_once('inc/photo-config.inc');
 
-$repo = isset($_GET['repo']) ? $_GET['repo'] : 'head';
+// Racer photos (head) or car photos (car); a database before schema 2 has
+// racer photos only
+$repo = isset($_GET['repo']) && $_GET['repo'] == 'car' && schema_version() >= 2 ? 'car' : 'head';
 $photo_repository = photo_repository($repo);
-$other_repo =  $repo == 'car' ? 'head' : 'car';
 
 
 $order = '';
@@ -26,6 +27,21 @@ function back_param() {
   return isset($_GET['back'])
       ? '&amp;back='.htmlspecialchars(urlencode($_GET['back']), ENT_QUOTES, 'UTF-8')
       : '';
+}
+
+// One segment of the Racer / Car switch: the same page for the other photos,
+// keeping the sort, the racer scrolled to, and where Back goes
+function link_for_repo($key, $text) {
+  global $repo, $order;
+  if ($repo == $key) {
+    echo "<span class='current' aria-current='true'>".$text."</span>";
+  } else {
+    $url = "photo-thumbs.php?repo=".$key."&amp;order=".$order;
+    if (isset($_GET['racerid']) && is_numeric($_GET['racerid'])) {
+      $url .= "&amp;racerid=".intval($_GET['racerid']);
+    }
+    echo "<a href='".$url.back_param()."'>".$text."</a>";
+  }
 }
 
 // One segment of the Sort control; the current sort is marked and not a link.
@@ -77,7 +93,7 @@ function photo_crop_expression($basename) {
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>Assign Racer Photos</title>
+<title>Photos</title>
 <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
 <link rel="stylesheet" type="text/css" href="css/jquery.Jcrop.min.css"/>
@@ -104,10 +120,17 @@ var g_photo_repo_name = '<?php echo $photo_repository->name(); ?>';
 <script type="text/javascript" src="js/photo-thumbs.js"></script>
 </head>
 <body class="fill-page">
-<?php make_banner(($repo == 'head' ? 'Racer' : 'Car').' Photos',
-                  isset($_GET['back']) ? $_GET['back'] : 'index.php'); ?>
+<?php make_banner('Photos', isset($_GET['back']) ? $_GET['back'] : 'index.php'); ?>
 
 <div id="photo-toolbar" class="toolbar page-toolbar">
+
+<?php if (schema_version() >= 2) { ?>
+<div id="repo_controls" class="segmented" role="group" aria-label="Which photos">
+  <span class="segmented-label">Photos</span>
+<?php link_for_repo('head', "Racer"); ?>
+<?php link_for_repo('car', "Car"); ?>
+</div>
+<?php } ?>
 
 <div id="sort_controls" class="segmented" role="group" aria-label="Sort racers by">
   <span class="segmented-label">Sort</span>
@@ -119,14 +142,6 @@ var g_photo_repo_name = '<?php echo $photo_repository->name(); ?>';
 <?php
     echo "<a class='btn btn-secondary' id='refresh-button' href='#'"
         ." onclick='window.location.reload(); return false;'>Refresh</a>\n";
-    $url = "photo-thumbs.php?repo=$other_repo&amp;order=$order";
-    if (isset($_GET['racerid']) && is_numeric($_GET['racerid'])) {
-      $url .= "&amp;racerid=$_GET[racerid]";
-    }
-    $url .= back_param();
-    echo "<a id='other-button' class='btn btn-secondary' href='$url'>";
-    echo   $other_repo == 'head' ? 'Racer Photos' : 'Car Photos';
-    echo "</a>\n";
 ?>
 
 <span class="toolbar-spacer"></span>

@@ -267,6 +267,8 @@ function on_delete_photo_button() {
 // For #upload-target div:
 Dropzone.options.uploadTarget = {
   paramName: 'photo',
+  dictDefaultMessage: 'Drop ' + (g_photo_repo_name == 'car' ? 'car' : 'racer')
+                      + ' photos here to upload',
   maxFilesize: 8,
   acceptedFiles: 'image/*',
   // dropzone considers the upload successful as long as there was an HTTP response.  We need to look at the

@@ -68,8 +68,7 @@ curl_getj "action.php?query=poll&values=" > /dev/null
 cat >coordinator.index.tmp <<EOF
           <a class="button_link before_button" href="setup.php">Set-Up</a>
           <a class="button_link before_button" href="checkin.php">Race Check-In</a>
-          <a class="button_link left before_button" href="photo-thumbs.php?repo=head"><b>Racer</b><br/>Photos</a>
-          <a class="button_link right before_button" href="photo-thumbs.php?repo=car"><b>Car</b><br/>Photos</a>
+          <a class="button_link before_button" href="photo-thumbs.php">Photos</a>
           <a class="button_link during_button" href="coordinator.php">Race Dashboard</a>
           <a class="button_link during_button" href="kiosk-dashboard.php">Kiosk Dashboard</a>
           <a class="button_link during_button" href="judging.php">Judging</a>
@@ -98,8 +97,7 @@ fi
 
 cat >racecrew.index.tmp <<EOF
         <a class="button_link before_button" href="checkin.php">Race Check-In</a>
-          <a class="button_link left before_button" href="photo-thumbs.php?repo=head"><b>Racer</b><br/>Photos</a>
-          <a class="button_link right before_button" href="photo-thumbs.php?repo=car"><b>Car</b><br/>Photos</a>
+          <a class="button_link before_button" href="photo-thumbs.php">Photos</a>
         <a class="button_link during_button" href="judging.php">Judging</a>
         <a class="button_link during_button" href="ondeck.php">Race Schedule</a>
         <a class="button_link during_button" href="racer-results.php">Results By Racer</a>
