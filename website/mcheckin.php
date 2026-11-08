@@ -57,30 +57,42 @@ $(function() {
 
 <div id="camera-div" class='hidden'>
   <div id="device-picker-div">
+    <button type="button" id="list-button" class="btn btn-secondary btn-sm"
+            onclick="on_done_click();">&#x2039; Racers</button>
     <select id="device-picker" ><option>Please wait</option></select>
   </div>
 
   <div id="preview-container">
-    <video id="preview" autoplay muted playsinline onclick="on_preview_click()"> </video>
+    <video id="preview" autoplay muted playsinline> </video>
     <div id="preview-overlay">
       <div id="preview-overlay-content">
-         Orient barcode like this.
+         Point at a racer's barcode
       </div>
     </div>
   </div>
 </div>
 
 <div id="racer-list">
+  <div id="racer-filter-bar">
+    <input type="search" id="racer-filter" placeholder="Find a racer: name, car number or group"
+           autocomplete="off" oninput="filter_racer_list();"/>
+  </div>
   <ul class="mlistview"></ul>
-  <div id="switch-to-camera-button" onclick="on_switch_to_camera_cllicked();">Switch to Camera</div>
+  <p id="racer-list-empty" class="hidden">No racers match.</p>
+  <div id="switch-to-camera-button" onclick="on_switch_to_camera_cllicked();">Scan a Barcode</div>
 </div>
 
 <audio id="beep" src="img/barcode.mp3"></audio>
 <div id="flash-overlay"></div>
 
+<!-- The chosen racer: their photos and check-in, over the camera -->
 <div id="slide-in">
   <div id="slide-in-inner">
-    <div id="racer-div"></div>
+    <div id="racer-head">
+      <div id="racer-div"></div>
+      <button type="button" id="done-button" class="btn btn-sm"
+              onclick="on_done_click();">Done</button>
+    </div>
     <div id="controls">
       <div id="controls-inner">
 
@@ -88,12 +100,9 @@ $(function() {
           <div class="thumbnail-carrier" >
             <img class="thumbnail" src="img/photo-headshot.png"/>
           </div>
-        </div>
-        <div id="autocrop-button" class="escutcheon passed" onclick="on_autocrop_button_click();">
-          <div id="autocrop-holder">
-            <img src="img/autocrop.png"/>
-            <div id="autocrop-overlay"></div>
-          </div>
+          <div class="escutcheon-label">Racer photo</div>
+          <div id="autocrop-button" title="Crop racer photos to the face"
+               onclick="event.stopPropagation(); on_autocrop_button_click();">Crop: Off</div>
         </div>
 
         <div id="checkin-button" class="escutcheon" onclick="on_checkin_button_click();">
@@ -104,6 +113,7 @@ $(function() {
           <div class="thumbnail-carrier">
             <img class="thumbnail" src="img/photo-car.png"/>
           </div>
+          <div class="escutcheon-label">Car photo</div>
         </div>
       </div>
     </div>

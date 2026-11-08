@@ -1,3 +1,24 @@
+/* Mobile Check-In: a racer list, a camera that reads racers' barcodes, and a
+   panel for the chosen racer (photos and check-in) that slides in over the
+   camera -- up from the bottom in portrait, in from the right in landscape.
+
+   mcheckin.js animates #slide-in's height (portrait) or width (landscape)
+   out to #slide-in-inner's, and sizes the video to fit #camera-div.
+
+   slide-in
+     slide-in-inner
+       racer-head: racer-div, done-button
+       controls
+         controls-inner
+           head-button .escutcheon (+ autocrop-button)
+           checkin-button .escutcheon
+           car-button .escutcheon
+ */
+:root {
+  --mc-panel-height: clamp(230px, 36vh, 320px);   /* portrait */
+  --mc-panel-width: clamp(260px, 36vw, 380px);    /* landscape */
+}
+
 /* In landscape mode, show a logo "bug" in the lower right
    instead of trying to squeeze in a banner along the top. */
 #logo-bug {
@@ -23,7 +44,7 @@
 }
 #step1 {
   font-weight: bold;
-}  
+}
 #greetings img {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -32,41 +53,69 @@
   margin-top: 50px;
 }
 
+/* Problems (no camera, a failed upload), across the top */
 #trouble {
   position: fixed;
-  left: 0px;
-  right: 0px;
-  top: 150px;
-  min-height: 200px;
-  font-size: 3vh;
-  z-index: 100;
-
+  left: var(--space-3);
+  right: var(--space-3);
+  top: calc(var(--banner-height) + var(--space-3));
+  padding: var(--space-4);
+  font-size: 1.1rem;
+  z-index: 400;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   background: var(--color-danger);
   color: white;
   text-align: center;
 }
-
-#announce-hover {
-  position: fixed;
-  left: 0px;
-  right: 0px;
-  top: 50%;
-  font-size: 3vh;
-  text-align: center;
-  z-index: 100;
-  background: white;
-
-  display: inline-fixed;
-  margin-left: auto;
-  margin-right: auto;
+#trouble a {
+  color: white;
 }
 
+/* A brief note ("Crop is ON"), mid-screen */
+#announce-hover {
+  position: fixed;
+  left: 50%;
+  top: 40%;
+  transform: translateX(-50%);
+  max-width: 90vw;
+  padding: var(--space-3) var(--space-5);
+  font-size: 1.15rem;
+  font-weight: var(--weight-semibold);
+  text-align: center;
+  z-index: 400;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  background: var(--color-surface);
+}
+
+/* ***************************** Camera ***************************** */
 #camera-div { /* portrait */
   position: fixed;
-  top: 60px; /* Banner height */
+  top: var(--banner-height);
   left: 0px;
-  height: calc(75vh - 60px);  /* Leaves room for 25vh #slide-in at bottom */
+  height: calc(100vh - var(--banner-height) - var(--mc-panel-height));
   width: 100vw;
+  background: #111;
+}
+
+/* "Racers" (back to the list) and the camera picker */
+#device-picker-div {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 1rem;
+}
+#list-button {
+  flex: none;
+}
+#device-picker-div .mselect {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
 }
 
 #preview-container {
@@ -77,29 +126,30 @@ video#preview {
   margin-left: auto;
   margin-right: auto;
 }
+/* Where to hold the barcode */
 #preview-overlay {
   position: absolute;
   top: 50%;
-  margin-top: -20px;
   left: 50%;
-  width: 400px;
-  margin-left: -200px;
-  height: 58px;
+  transform: translate(-50%, -50%);
+  width: min(320px, 85%);
   text-align: center;
-  background-color: white;
-  opacity: 20%;
+  pointer-events: none;
 }
 #preview-overlay-content {
-  border: var(--color-danger) solid 2px;
-  color: var(--color-danger);
-  padding-top: 14px;
-  text-align: center;
-  font-weight: bold;
+  height: 64px;
+  padding-top: 6px;
+  box-sizing: border-box;
+  border: 2px dashed rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-md);
+  background-color: rgba(0, 0, 0, 0.25);
   background-image: url(../img/barcode.png);
   background-repeat: no-repeat;
-  background-position: bottom center;
-  height: 40px;
-  line-height: 0px;
+  background-position: bottom 6px center;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: var(--weight-semibold);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 div#flash-overlay {
@@ -113,165 +163,258 @@ div#flash-overlay {
   background: white;
 }
 
-#device-picker-div {
-  left: 0px;
-  right: 0px;
-  font-size: 30px;
-}
-#device-picker-div .mselect {
-  margin-top: 0px;
-}
-
-/* show_slide_in from bottom animates #slide-in height to #slide-in-inner height.
-   show_slide_in from side animates #slide-in width to #slide-in-inner width.
-
-   slide-in
-     slide-in-inner
-       racer-div
-       controls
-         controls-inner
-           head-button .escutcheon
-             div.thumbnail-carrier
-               img.thumnail
-           autocrop-button
-             autocrop-holder
-               autocrop-overlay
-           checkin-button
-           car-button .escutcheon
- */
+/* ************************ The racer's panel ************************ */
 #slide-in {  /* portrait */
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 0px; /* initially */
-  background: var(--color-brand);
+  overflow: hidden;
+  z-index: 50;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg, 12px) var(--radius-lg, 12px) 0 0;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
 }
 
-#slide-in-inner {
-  height: 25vh;
-}
-#racer-div {  /* portrait */
-  font-size: 4vh;
-  height: 5vh;
-  overflow-y: hidden;
-  text-align: center;
-  color: white;
-}
-#controls {  /* portrait */
-  height: 20vh;
+#slide-in-inner {  /* portrait */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  box-sizing: border-box;
+  height: var(--mc-panel-height);
+  width: 100vw;
+  padding: var(--space-3);
 }
 
+/* Name and details, and Done */
+#racer-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+}
+#racer-div {
+  flex: 1;
+  min-width: 0;
+}
+#racer-div .racer-name {
+  font-size: 1.25rem;
+  font-weight: var(--weight-bold, 700);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#racer-div .racer-details {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#done-button {
+  flex: none;
+  min-width: 84px;
+}
+
+#controls {
+  flex: 1;
+  min-height: 0;
+}
+/* Racer photo, check-in, car photo, side by side */
 #controls-inner {
-  display: inline-block;
-}
-
-.escutcheon {  /* portrait */
-  display: inline-block;
-  vertical-align: top;
-  text-align: center;
-  background: white;
-  height: 17vh; /* Placed from the top of #slide-in-inner */
-  width: 30vw;
-  padding: 4px;
-  margin-left: 2vw;
-  margin-top: 2px;
-  margin-bottom: 2px;
-  border-radius: 0.4em 0.4em 0.4em 0.4em;
-  cursor: pointer;
-  position: relative;
-}
-.escutcheon#head-button {
-  margin-left: 0px;
-  margin-right: 0px;
-}
-
-.escutcheon#autocrop-button {
-  text-align: center;
-  width: 5vw;
-  margin-left: 0px;
-
-  position: relative;
-}
-#autocrop-holder {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-block;
-}
-.escutcheon#autocrop-button img {
-  max-width: 5vw;
-  max-height: 17vh;
-}
-#autocrop-overlay {  /* portrait */
-  position: absolute;
-  top: 0px;
-  left: 0px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
   height: 100%;
-  width: 100%;
-  z-index: 10;
-  background: red;
-  background: linear-gradient(to top left,
-                              transparent, calc(50% - 3px),
-                              red, calc(50% - 3px),
-                              red, calc(50% + 3px),
-                              transparent, calc(50% + 3px),
-                              transparent );
-}
-.passed #autocrop-overlay {
-  background: transparent; /* Turn off red slash */
 }
 
-.escutcheon#checkin-button {
-  width: 120px;
-  font-size: 16px;
+.escutcheon {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: var(--space-2);
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken, #f5f3f0);
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.escutcheon:active {
+  transform: scale(0.98);
+}
+.escutcheon div.thumbnail-carrier {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.escutcheon img.thumbnail {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-sm, 4px);
+}
+/* Until there's a photo, the stand-in picture is faded */
+.escutcheon:not(.has-photo) img.thumbnail {
+  opacity: 0.55;
+}
+.escutcheon-label {
+  flex: none;
+  margin-top: var(--space-1);
+  font-size: 0.85rem;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+/* Crop racer photos to the face: a small switch on the racer photo */
+#autocrop-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong, #bbb);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: var(--weight-semibold);
+  z-index: 2;
+}
+#autocrop-button.on {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: var(--color-text-on-brand);
+}
+
+/* Checked in: green; not yet: a plain tile asking to be tapped */
+#checkin-button {
+  border-width: 2px;
 }
 #checkin-button-text {
-  margin-top: 2vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--color-text-muted);
 }
-.checked-in-status {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--color-danger);
+#checkin-button .checked-in-mark {
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--color-text-muted);
 }
-.passed .checked-in-status {
+#checkin-button .checked-in-status {
+  font-size: 1rem;
+  font-weight: var(--weight-bold, 700);
+  color: var(--color-text);
+  line-height: 1.15;
+}
+#checkin-button .checked-in-hint {
+  font-size: 0.75rem;
+}
+#checkin-button.passed {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+}
+#checkin-button.passed .checked-in-mark,
+#checkin-button.passed .checked-in-status {
   color: var(--color-success);
-}
-
-.escutcheon div.thumbnail-carrier {  /* portrait */
-  position: absolute;
-  bottom: 0;
-  width: 30vw;
-  text-align: center;
-}
-
-.escutcheon img { /* portrait */
-  vertical-align: middle;
-  max-height: 15vh;
-  margin-bottom: 1vh;
-}
-
-.escutcheon .flipswitch {
-  margin-left: 7px;
 }
 
 #canvas {
   display: none;
 }
 
+/* ************************** Racer list ************************** */
 div#racer-list {
-  z-index: 300;
-  background: white;
+  background: var(--color-page);
   width: 100%;
-  height: 100vh;
-  overflow-y: scroll;
+  min-height: calc(100vh - var(--banner-height));
 }
 
-#racer-list li {
-  min-height: 10vh;
-  border-color: var(--gray-200);
-  font-size: 4vh;
+/* Search, staying at the top while the list scrolls */
+#racer-filter-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-page);
+  border-bottom: 1px solid var(--color-border);
+}
+#racer-filter {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px var(--space-3);
+  font-size: 1rem;   /* 16px or more, so phones don't zoom in */
+  border: 1px solid var(--color-border-strong, #bbb);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+#racer-list ul.mlistview {
+  /* Room for "Scan a Barcode" at the bottom */
+  padding: var(--space-2) var(--space-3) calc(64px + var(--space-4)) var(--space-3);
+}
+/* One card per racer: name, car and group, and whether they're checked in */
+#racer-list ul.mlistview > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name status" "details status";
+  align-items: center;
+  column-gap: var(--space-3);
+  margin-bottom: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--gray-300, #ccc);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
   white-space: normal;  /* Cancel the nowrap from mobile.css */
+  cursor: pointer;
+}
+#racer-list ul.mlistview > li.passed {
+  border-left-color: var(--color-success);
+}
+#racer-list ul.mlistview > li.hidden {
+  display: none;
+}
+#racer-list ul.mlistview > li:active {
+  background: var(--color-surface-sunken, #f5f3f0);
+}
+#racer-list li .racer-name {
+  grid-area: name;
+  font-size: 1.1rem;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+#racer-list li .racer-details {
+  grid-area: details;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+#racer-list li .racer-status {
+  grid-area: status;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: var(--weight-semibold);
+  background: var(--gray-100, #eee);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+#racer-list li.passed .racer-status {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+#racer-list-empty {
+  text-align: center;
+  color: var(--color-text-muted);
 }
 
 #switch-to-camera-button {
@@ -279,10 +422,10 @@ div#racer-list {
   bottom: 0px;
   left: 0px;
   right: 0px;
-  height: 10vh;
-  font-size: 5vh;
+  height: 64px;
+  font-size: 1.25rem;
   font-weight: var(--weight-semibold);
-  line-height: 10vh;
+  line-height: 64px;
   background: var(--color-brand);
   color: var(--color-text-on-brand);
   text-align: center;
@@ -290,7 +433,6 @@ div#racer-list {
   cursor: pointer;
 }
 
-/* TODO @media (min-aspect-ratio: 8/5) { ... } */
 /* *********************** Landscape *********************** */
 @media screen and (orientation: landscape) {
 
@@ -302,8 +444,19 @@ div#racer-list {
   display: block;
   position: fixed;
   bottom: 1vh;
-  right: 1vw;
+  left: 1vw;
   max-height: 7vh;
+}
+
+#trouble {
+  top: var(--space-3);
+}
+
+#camera-div { /* landscape */
+  top: 0px;
+  left: 0px;
+  height: 100vh;
+  width: calc(100vw - var(--mc-panel-width));
 }
 
 #slide-in { /* landscape */
@@ -313,87 +466,26 @@ div#racer-list {
   top: 0;
   height: 100%;
   width: 0px; /* initially */
+  border-radius: var(--radius-lg, 12px) 0 0 var(--radius-lg, 12px);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.2);
 }
 
-#slide-in-inner {
+#slide-in-inner { /* landscape */
   height: 100vh;
-  width: 20vw;
+  width: var(--mc-panel-width);
 }
 
-#camera-div { /* landscape */
-  top: 0px;
-  left: 0px;
-  height: 100vh;
-  width: 80vw;
-}
-
-#racer-div { /* landscape */
-  font-size: 4vh;
-  text-align: center;
-  color: white;
-}
-#controls {
-  height: auto;
-}
-
-/* $("#controls-inner").css({'margin-left': ($(window).width() - $("#controls-inner").width()) / 2}); */
-
+/* Racer photo and car photo side by side, check-in below them */
 #controls-inner {
-  display: inline-block;
-  margin-left: auto;
-  margin-right: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr) auto;
 }
-
-.escutcheon { /* landscape */
-  height: 25vh;
-  width: 16vw;
-  
-  margin-left: 2vw;
-  margin-top: 2vh;
-  margin-bottom: 2vh;
+#head-button { grid-column: 1; grid-row: 1; }
+#car-button { grid-column: 2; grid-row: 1; }
+#checkin-button {
+  grid-column: 1 / span 2;
+  grid-row: 2;
+  padding: var(--space-3);
 }
-
-.escutcheon img { /* landscape */
-  max-height: 20vh;
-  margin-bottom: 2.5vh;
-}
-
-.escutcheon#head-button {
-  margin-left: 2vw;
-  margin-bottom: 0;
-}
-
-.escutcheon#autocrop-button { /* landscape */
-  margin-top: 0;
-  margin-left: 2vw;
-  height: 5vh;
-  width: 16vw;
-  font-size: 3vh;
-}
-#autocrop-holder {
-  position: relative;
-  display: inline-block;
-}
-.escutcheon#autocrop-button img {
-  max-height: 5vh;
-}
-
-.escutcheon#checkin-button {
-  width: 16vw;
-  height: 10vh;
-}
-
-.escutcheon .flipswitch {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-
-.escutcheon div.thumbnail-carrier {
-  width: 16vw;
-}
-
-
-
 
 }

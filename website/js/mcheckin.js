@@ -200,8 +200,13 @@ function set_current_racer(json) {
     report_trouble('No racer identified');
   } else {
     var racer = json['racers'][0];
-    $("#racer-div").text(racer.firstname + " " + racer.lastname +
-                         "  " + racer.carnumber + " " + racer.carname);
+    var details = [];
+    if (racer.carnumber) details.push('Car ' + racer.carnumber);
+    if (racer.carname) details.push(racer.carname);
+    if (racer.partition) details.push(racer.partition);
+    $("#racer-div").empty()
+      .append($("<div class='racer-name'/>").text(racer.firstname + " " + racer.lastname))
+      .append($("<div class='racer-details'/>").text(details.join(' · ')));
     update_thumbnail('head', racer.headshot);
     update_checked_in(racer.passed);
     update_thumbnail('car',  racer.carphoto);
@@ -217,7 +222,8 @@ function dismiss_greetings() {
 var g_autocrop = false;
 function on_autocrop_button_click() {
   g_autocrop = ! g_autocrop;
-  $("#autocrop-button").toggleClass('passed', g_autocrop);
+  $("#autocrop-button").toggleClass('on', g_autocrop)
+    .text(g_autocrop ? 'Crop: On' : 'Crop: Off');
   announce_hover('Autocrop is ' + (g_autocrop ? "ON" : "OFF"));
 }
 
@@ -290,15 +296,22 @@ function update_thumbnail(repo, url) {
   }
 
   $("#" + repo + "-button img.thumbnail").remove();
-  $("<img/>").addClass('thumbnail').attr('src', url).appendTo($("#" + repo + "-button div"));
+  $("<img/>").addClass('thumbnail').attr('src', url)
+    .appendTo($("#" + repo + "-button .thumbnail-carrier"));
+  // The stand-in pictures say "no photo yet"
+  $("#" + repo + "-button").toggleClass('has-photo', url.indexOf('img/photo-') != 0);
 }
 
 function update_checked_in(passed) {
   $("#checkin-button").toggleClass('passed', passed);
   $("#checkin-button-text")
     .html(passed
-          ? "Racer has<br/><span class='checked-in-status'>PASSED</span><br/>inspection"
-          : "Racer has<br/><span class='checked-in-status'>NOT PASSED</span><br/>inspection");
+          ? "<span class='checked-in-mark'>&#x2714;</span>"
+            + "<span class='checked-in-status'>Checked in</span>"
+            + "<span class='checked-in-hint'>Tap to undo</span>"
+          : "<span class='checked-in-mark'>&#x25CB;</span>"
+            + "<span class='checked-in-status'>Not checked in</span>"
+            + "<span class='checked-in-hint'>Tap to check in</span>");
 }
 
 function on_checkin_button_click() {
@@ -336,15 +349,35 @@ function refresh_racer_list() {
             $("#racer-list ul").empty();
             for (var ri = 0; ri < json['racers'].length; ++ri) {
               var r = json['racers'][ri];
-              var entry = r['firstname'] + " " + r['lastname'];
-              if (r['carnumber']) {
-                entry += ', ' + r['carnumber'];
-              }
-              entry += ', ' + r['partition'];
-              $("<li>").text(entry).attr('racerid', r['racerid']).appendTo("#racer-list ul")
-                .on('click', function(event) { on_racer_chosen_from_list($(event.target).attr('racerid')); });
+              var details = [];
+              if (r['carnumber']) details.push('Car ' + r['carnumber']);
+              if (r['partition']) details.push(r['partition']);
+              var li = $("<li>").attr('racerid', r['racerid'])
+                  .toggleClass('passed', r['passed'])
+                  .append($("<span class='racer-name'/>").text(r['firstname'] + " " + r['lastname']))
+                  .append($("<span class='racer-details'/>").text(details.join(' · ')))
+                  .append($("<span class='racer-status'/>")
+                          .text(r['passed'] ? 'Checked in' : 'Not checked in'))
+                  .appendTo("#racer-list ul")
+                  .on('click', function(event) {
+                    on_racer_chosen_from_list($(event.currentTarget).attr('racerid'));
+                  });
             }
+            filter_racer_list();
           }});
+}
+
+// Shows only the racers matching the search box (name, car number or group)
+function filter_racer_list() {
+  var words = $("#racer-filter").val().toLowerCase().split(/\s+/).filter(w => w != '');
+  var shown = 0;
+  $("#racer-list li").each(function() {
+    var text = $(this).text().toLowerCase();
+    var match = words.every(w => text.indexOf(w) >= 0);
+    $(this).toggleClass('hidden', !match);
+    if (match) ++shown;
+  });
+  $("#racer-list-empty").toggleClass('hidden', shown > 0);
 }
 
 function on_racer_chosen_from_list(racerid) {
@@ -379,11 +412,25 @@ function on_switch_to_camera_cllicked() {
 }
 
 
-function on_preview_click() {
-  hide_slide_in();
+// Done (or "Racers" above the camera): back to the racer list.  The camera
+// is turned off while the list is showing.
+function on_done_click() {
+  if ($("#slide-in").is(':visible')) {
+    hide_slide_in();
+  }
+  g_current_racer = {};
+  stop_camera();
 
   refresh_racer_list();
   show_racer_list();
+}
+
+function stop_camera() {
+  var stream = document.getElementById("preview").srcObject;
+  if (stream != null) {
+    stream.getTracks().forEach(function(track) { track.stop(); });
+    document.getElementById("preview").srcObject = null;
+  }
 }
 
 
