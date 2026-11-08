@@ -1,178 +1,245 @@
+/* Racing Groups (racing-groups.php).  Two cards side by side: the race rules
+   (how groups are formed, labels, award counts) and the race structure (the
+   groups, subgroups and their dens, which js/racing-groups.js builds and
+   makes draggable).  Groups, subgroups and dens each have their own tint,
+   which the "Drag [] groups to reorder" hints use as a key. */
+
+#below-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-4);
+  max-width: 1000px;
+  margin: var(--space-5) auto;
+  padding: 0 var(--space-4);
+}
+div#race-rules,
+div#race-structure {
+  box-sizing: border-box;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+div#race-rules {
+  flex: 0 1 420px;
+  border-left: 6px solid var(--stage-before);
+}
+div#race-structure {
+  flex: 1 1 400px;
+  min-width: 0;
+  border-left: 6px solid var(--stage-before);
+}
+
 /* global.css sets a specific size */
 .block_buttons h3 span {
   font-size: 1em;
 }
-
-ul#aggregate-groups {
-  margin-top: 10px;  
-  margin-left: 10px;
+#race-rules h3 {
+  margin: var(--space-4) 0 var(--space-2) 0;
+  font-size: var(--text-lg);
 }
-div#race-rules, ul#all-groups {
-  width: 400px;
-  margin-left: 10px;
+#race-rules label,
+#race-rules div.labels {
+  font-size: var(--text-base);
 }
-
-div.labels {
-  font-size: 18px;
+div.switch {
+  margin: var(--space-3) 0;
 }
-
-div.block_buttons input.modest-button {
-  width: auto;
-  padding: 5px 10px;
-  font-size: large;
-  margin-top: 10px;
-}
-
 div.switch label {
-  width: 285px;
+  width: 240px;
   display: inline-block;
 }
-div#race-rules .flipswitch {
-  /* float: right; */
+div.labels input[type='text'] {
+  width: 8em;
 }
+div.n_default_trophies {
+  margin-top: var(--space-2);
+}
+div.n_default_trophies input[type='number'] {
+  width: 4em;
+  margin-right: var(--space-2);
+}
+#pack_agg_div {
+  margin: var(--space-3) 0 var(--space-2) var(--space-4);
+  color: var(--color-text-muted);
+}
+#pack_agg_div label {
+  color: var(--color-text);
+}
+#pack_agg_div span.group-name {
+  font-weight: bold;
+}
+
+/* ---------------- Groups ---------------- */
 
 p.instructions {
-  margin-left: 25px;
-}
-
-li#new-group {
-  font-style: italic;
-  text-align: center;
+  margin: 0 0 var(--space-1) 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
 
 ul#all-groups, ul#all-groups ul,
 ul#aggregate-groups, ul#aggregate-groups ul {
   list-style-type: none;
-  padding-inline-start: 10px;
+  margin: 0;
+  padding-inline-start: 0;
+}
+ul#all-groups {
+  margin-top: var(--space-3);
+}
+ul#aggregate-groups {
+  margin-top: var(--space-3);
+}
+li.group ul.subgroups,
+li.aggregate > ul {
+  padding: 0 var(--space-2) var(--space-1) var(--space-3);
 }
 
 li.group, li.aggregate {
-  border: 2px #404040 solid;
-  padding: 0px;
-  margin-top: 4px;
+  margin: 0 0 var(--space-2) 0;
+  padding: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
-
 li.subgroup {
-  border: 1px #808080 solid;
-  padding: 0px;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  margin-right: 2px;
+  margin: var(--space-1) 0;
+  padding: 0;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm, 4px);
+  overflow: hidden;
 }
-
 li.partition {
-  margin-top: 10px;
-  margin-bottom: 5px;
+  margin: 2px 0;
 }
 
+li.group p, li.aggregate p {
+  margin: 0;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-base);
+}
+li.subgroup p {
+  margin: 0;
+  padding: 2px var(--space-2);
+  font-size: var(--text-sm);
+}
+
+/* The key colors: group, subgroup, den */
 .group-color, .subgroup-color, .partition-color {
   display: inline-block;
   width: 1em;
-  border: 1px #404040 solid;
-  margin-top: 2px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 2px;
+  vertical-align: middle;
 }
-
 li.group > p, .group-color {
-  background-color: #8da5c6;
-}
-li.group > ul.subgroups {
-  min-height: 20px;
+  background-color: #DCE6F3;
+  font-weight: var(--weight-semibold);
+  color: var(--color-brand-strong);
 }
 li.aggregate > p {
-  background-color: #72c5ac;
+  background-color: #D7EFE6;
+  font-weight: var(--weight-semibold);
 }
-li.group p, li.aggregate p {
-  font-size: inherit;
-  padding: 3px;
-  margin: 0px;
+li.subgroup > p, .subgroup-color {
+  background-color: #FFF4CC;
+}
+li.partition > p, .partition-color {
+  background-color: var(--gray-200);
+}
+li.partition p {
+  margin-right: var(--space-2);
+  padding: 2px var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  border-radius: var(--radius-sm, 4px);
+}
+/* A den split across more than one subgroup */
+li.incomplete > p {
+  background: linear-gradient(to right, var(--gray-200), var(--gray-200) 50%, transparent);
 }
 
-li.subgroup > p, .subgroup-color {
-  background-color: #e8eb63;
-}
-li.subgroup p {
-  margin: 0px;
+li.group > ul.subgroups {
+  min-height: 20px;
 }
 li.new-subgroup p {
   text-align: center;
   font-style: italic;
+  color: var(--color-text-muted);
 }
-  
-li.partition > p, .partition-color {
-  background-color: #939191;
-}
-
-/* For partitions that are "incompletely" part of a subgroup,
-  i.e., a partition that's split across more than one subgroup. */
-li.incomplete > p {
-  /* border: dashed black 1px; */
-  background: linear-gradient(to right,
-                              rgb(147, 145, 145, 1),
-                              rgb(147, 145, 145, 1) 50%,
-                              rgb(147, 145, 145, 0));
-}
-
-li.partition p {
-  color: white;
-  padding-left: 10px;
-  margin-right: 10px;
-}
-
-li.constituent {
-}
-li.constituent p {
-}
-
 li#new-group {
-    min-height: 50px;
+  min-height: 44px;
+  font-style: italic;
+  text-align: center;
+  color: var(--color-text-muted);
+  background: transparent;
+  border-style: dashed;
+  box-shadow: none;
 }
+div#new-group {
+  margin-left: 1.2em;
+}
+
+/* Drop target under a dragged group or den */
 li.ui-droppable-hover, p.ui-droppable-hover, div.ui-droppable-hover,
 li.ui-droppable-hover p {
-  background-color: #ffcccc;
-  /* border: #ff0000 4px solid; */
+  background-color: #E8EFF8;
+  outline: 2px solid var(--color-brand);
 }
 
 span.label, span.count {
   float: right;
-  margin-right: 5px;
+  margin-right: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: normal;
   font-variant: small-caps;
+  color: var(--color-text-muted);
   text-align: right;
 }
 
+/* Edit, on each group and subgroup */
 input.edit-button {
   float: right;
-  /* display: inline-block; */
-  background: black;
-  color: white;
-  border-radius: 0.4em;
-  text-decoration: none;
-  line-height: 1.0;
-  font-size: inherit;
-  margin: 0px;
-  border: none;
+  margin: 0;
+  padding: 1px 8px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: 1.4;
+  color: var(--color-brand);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
 }
-
-/* li's for subgroups don't extend quite as far to the right as li's for groups;
-   adding some margin for the group edit buttons helps line them up with edit buttons
-   for subgroups. */
+input.edit-button:hover {
+  border-color: var(--color-brand);
+}
 p[data-classid] input.edit-button {
   margin-right: 2px;
 }
 
-
-/* This forms two columns; disabling (as on a phone) makes just one column of 400px */
-div#race-rules {
-  float: left;
-  height: 100%;
+/* Add Den, Add Aggregate */
+div.add_button {
+  margin-top: var(--space-3);
 }
-
-div#race-structure {
-  margin-left: 410px;
-  height: 100%;
-  width: 420px;
+div.block_buttons input.modest-button {
+  width: auto;
+  min-height: 40px;
+  padding: var(--space-1) var(--space-4);
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--color-brand);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
-div#new-group {
-  margin-left: 1.2em;
+div.block_buttons input.modest-button:hover {
+  background-color: var(--color-surface-sunken);
+  border-color: var(--color-brand);
 }
 
 /* ************* Modal for Add Class/Add Aggregate ****************/
@@ -274,19 +341,3 @@ div#new-group {
   font-weight: bold;
 }
 
-div.n_default_trophies {
-  margin-top: 10px;
-}
-
-#pack_agg_div {
-  margin-top: 15px;
-  margin-left: 25px;
-}
-
-#pack_agg_div span.group-name {
-  font-weight: bold;
-}
-
-div.add_button {
-  margin-top: 20px;
-}
