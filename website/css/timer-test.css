@@ -187,3 +187,10 @@ table#lanes td.time {
   width: 49%;
 }
 
+
+/* Under "Number lanes in reverse": when to tick it */
+p.reverse-lanes-hint {
+  margin: var(--space-1) 0 var(--space-2) 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-muted);
+}

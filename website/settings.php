@@ -115,16 +115,25 @@ if (read_raceinfo('max-runs-per-car', 0) != 0) {
         <p>
           <span id="lanes-in-use"></span>
         </p>
+        <p class="settings-hint">Click a lane to take it out of use (a damaged
+          lane, say): heats won't put racers in it, and the timer ignores it.</p>
       </div>
       <p>
         <input id="reverse-lanes" name="reverse-lanes" class="not-mobile"
                type="checkbox"<?php if (read_raceinfo_boolean('reverse-lanes')) echo ' checked="checked"';?>/>
         <label for="reverse-lanes">Number lanes in reverse</label>
+      </p>
+      <p class="settings-hint">Only for the timer: tick this if it reports lane 1's
+        time for the lane marked 4 on the track (check with a test heat on the
+        Timer page).  The screens always use the track's lane numbers.</p>
+      <p>
         <a href="#" class="small-button"
              onclick="on_set_lane_colors_click(); return false;">Set Lane Colors</a>
         <input type="hidden" id="lane-colors" name="lane-colors"
            value="<?php echo read_raceinfo('lane-colors', ''); ?>"/>
       </p>
+      <p class="settings-hint">The color of each lane on the Race Schedule and Now
+        Racing screens, to match the track.</p>
       <p>
         <input id="track-length" name="track-length" type="number" min="0" max="999"
                class="not-mobile"

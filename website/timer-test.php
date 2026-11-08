@@ -83,6 +83,8 @@ $(function() {
     <input id="reverse-lanes" name="reverse-lanes" class="not-mobile"
            type="checkbox"<?php if (read_raceinfo_boolean('reverse-lanes')) echo ' checked="checked"';?>/>
     <label id="reverse-lanes-label" for="reverse-lanes">Number lanes in reverse</label>
+    <p class="reverse-lanes-hint">Tick this if a test heat's lane 1 time shows up
+      under the lane marked 4 on the track (the timer numbers lanes the other way).</p>
   </div>
 
   <input type="hidden" id="unused-lane-mask" name="unused-lane-mask"
