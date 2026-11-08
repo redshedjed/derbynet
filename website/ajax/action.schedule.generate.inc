@@ -4,7 +4,13 @@
 //
 
 $roundid = $_POST['roundid'];
-$n_times_per_lane = isset($_POST['n_times_per_lane']) ? $_POST['n_times_per_lane'] : 1;
+// How many times each racer runs in each lane: as asked, or the setting
+// (Settings, Racing and Scoring), normally 1
+$n_times_per_lane = isset($_POST['n_times_per_lane']) ? intval($_POST['n_times_per_lane'])
+                    : intval(read_raceinfo('n-times-per-lane', 1));
+if ($n_times_per_lane < 1) {
+  $n_times_per_lane = 1;
+}
 
 $trace = !isset($_POST['trace']) ? false : array('trace');
 

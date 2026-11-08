@@ -1382,27 +1382,16 @@ puppeteer.launch({devtools: debugging, slowMo: 200}).then(async browser => {
   
   // =============================== Schedule a new round by clicking buttons =====================================
   await fakeAjax.testForJson(async () => {
-    // Click control group to expose schedule button
-    await open_scheduling_control_group(".control_group[data-roundid='5']");
-    // Click Schedule button to open schedule modal
+    // Schedule is on the round's card, without opening it, and schedules
+    // right away; the number of runs per lane comes from Settings, on the
+    // server, so isn't sent.
     await page.evaluate(() => {
       $(".control_group[data-roundid='5'] input[type='button'][value='Schedule']").click();
     });
-    // Wait for the modal to appear
-    await page.waitForFunction(() => {
-      var schedule_modal = $("#schedule_modal");
-      return !schedule_modal.hasClass('hidden') && schedule_modal.css('opacity') >= 1;
-    });
-    // Click the Schedule + Race button
-    var dialog_schedule_and_race =
-        await page.waitForSelector("#schedule_modal input[type='submit'][data-race='true']",
-                                   {visible: true});
-    await dialog_schedule_and_race.click();
   },
                        {'type': 'POST',
                         'data': {'action': 'schedule.generate',
-                                 'roundid': 5,
-                                 'n_times_per_lane': '1' } },
+                                 'roundid': 5 } },
                          false);  // No xml response
 
   // ================================= Simulated poll =============================================================

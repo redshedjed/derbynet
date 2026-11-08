@@ -159,29 +159,6 @@ $warn_no_timer = warn_no_timer();
 
 <?php require_once('inc/ajax-failure.inc'); ?>
 
-<div id='schedule_modal' class="modal_dialog hidden block_buttons">
-  <form>
-    <p>How many times should each racer appear in each lane?</p>
-    <select id="schedule_num_rounds">
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
-        <option>5</option>
-        <option>6</option>
-    </select>
-
-    <input id="schedule-and-race"
-           type="submit" value="Schedule + Race"
-           data-race="true" onclick='mark_clicked($(this));'/>
-    <input id="schedule-only"
-           type="submit" value="Schedule Only"
-           data-race="false" onclick='mark_clicked($(this));'/>
-    <input type="button" value="Cancel"
-           onclick='close_modal("#schedule_modal");'/>
-  </form>
-</div>
-
 <div id='manual_results_modal' class="modal_dialog hidden block_buttons">
   <form>
     <input type="hidden" name="action" value="result.write"/>

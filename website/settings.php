@@ -316,6 +316,19 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
       <p class="settings-hint">Shown at the top of the Race Schedule page.  Leave it
          empty to hide it.</p>
       <p>
+        <label for="n-times-per-lane">Times each racer runs in each lane</label>
+        <select id="n-times-per-lane" name="n-times-per-lane" class="not-mobile">
+<?php
+  $n_times = intval(read_raceinfo('n-times-per-lane', 1));
+  for ($n = 1; $n <= 6; ++$n) {
+    echo '          <option'.($n == $n_times ? ' selected="selected"' : '').'>'.$n."</option>\n";
+  }
+?>
+        </select>
+      </p>
+      <p class="settings-hint">When a round is scheduled on the Race Dashboard.  A
+         Rounds Playlist sets this for each of its rounds.</p>
+      <p>
         <input id="use-master-sched" name="use-master-sched" class="not-mobile" type="checkbox"<?php
             if ($use_master_sched) echo ' checked="checked"';?>/>
         <label>Interleave heats from different <?php echo group_label_lc(); ?>s</label>

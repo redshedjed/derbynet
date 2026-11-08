@@ -251,14 +251,24 @@ function generate_scheduling_control_group(round, current, timer_state) {
                  ? "<div class='bar1'></div>"
                  : "")
               + '</div>')
+      // The round's next step (Schedule, Race, Adjust Schedule), on the card
+      // without opening it; the rest of its buttons show when it's opened
+      .append($("<div data-name=\"actions\" class=\"block_buttons round_actions\"/>"))
       .append($("<div data-name=\"buttons\" class=\"block_buttons collapsible\"/>"));
+  // Where the round stands, also without opening it
+  control_group.find('h3.roundclass')
+    .after('<p class="round_status" data-name="round_status"></p>');
 
   if (round['next-round']) {
     control_group.find('h3.roundclass').append('<div class="next_tag">NEXT</div>');
   }
 
   control_group.find(".collapsible").hide();
-  control_group.on('click', function() {
+  control_group.on('click', function(event) {
+    // Pressing one of the round's buttons doesn't open or close it
+    if ($(event.target).closest('input, a, .late-arrival-prompt').length > 0) {
+      return;
+    }
     var closed = control_group.find(".collapsible").css("display") == "none";
     // Don't want the current round to collapse like this...
 
@@ -318,11 +328,26 @@ function inject_into_scheduling_control_group(round, current, timer_state) {
   inject_progress_text(control_group, round);
   inject_progress_bars(control_group, round);
 
+  // One line on where the round stands
+  var status;
+  if (round.heats_scheduled == 0) {
+    status = (round.passed || 0) + ' of ' + (round.roster_size || 0) + ' checked in';
+  } else if (round.heats_run == round.heats_scheduled) {
+    status = 'All ' + round.heats_scheduled + ' heats run';
+  } else {
+    status = round.heats_run + ' of ' + round.heats_scheduled + ' heats run';
+  }
+  control_group.find("[data-name=round_status]").text(status);
+
+  // actions: the round's next step, on the card; buttons: the rest, shown
+  // when the card is opened.  The current round's all go at the top.
   var buttons = control_group.find("[data-name=buttons]");
+  var actions = control_group.find("[data-name=actions]");
   if (round.roundid == current.roundid && round.roundid > 0) {
-    buttons = $("#now-racing-group-buttons");
+    buttons = actions = $("#now-racing-group-buttons");
   }
   buttons.empty();
+  actions.empty();
   buttons.parent().removeClass('adjustment-needed');
 
   if (round.roundid == -1) {
@@ -331,14 +356,17 @@ function inject_into_scheduling_control_group(round, current, timer_state) {
   } else {
     if (round.heats_scheduled > 0 && round.heats_run == 0) {
       if (round.adjustments && round.adjustments.length > 0) {
-        buttons
+        actions
           .append($('<div class="late-arrival-prompt"></div>')
                   .append('<p>The race schedule needs to be regenerated because:</p>')
                   .append(reason_for_schedule_change(round))
                   .append('<p>Start by removing the existing race schedule.</p>'))
         .parent().addClass('adjustment-needed');
       }
-      buttons.append('<input type="button"'
+      // On the card when the schedule has to be redone (the prompt above
+      // says to start by removing it); otherwise with the other buttons
+      (round.adjustments && round.adjustments.length > 0 ? actions : buttons)
+        .append('<input type="button"'
                      + ' onclick="handle_unschedule_button(' + round.roundid
                      + ', \'' + String(round['class']).replace(/"/g, '&quot;').replace(/'/, "\\'") + '\', '
                      + round.round + ')"'
@@ -346,18 +374,19 @@ function inject_into_scheduling_control_group(round, current, timer_state) {
     }
     if (round.heats_scheduled == 0 && round.unscheduled > 0) {
       if (timer_state.lanes != '' && timer_state.lanes > 0) {
-        buttons.append('<input type="button"'
-                       + ' onclick="show_schedule_modal(' + round.roundid + ')"'
+        // Each racer runs in each lane as many times as Settings says
+        actions.append('<input type="button"'
+                       + ' onclick="handle_schedule_submit(' + round.roundid + ')"'
                        + ' value="Schedule"/>');
       } else {
-        buttons.append("<p>Can't schedule heats, because the number of lanes hasn\'t" +
+        actions.append("<p>Can't schedule heats, because the number of lanes hasn\'t" +
                        " been determined.<br/>" +
                        "Enter the number of lanes on the " +
                        "<a href='settings.php'>Settings</a> page.</p>");
       }
     }
     if (round.adjustments && round.adjustments.length > 0 && round.heats_run > 0) {
-      buttons
+      actions
         .append($('<div class="late-arrival-prompt"></div>')
                 .append('<p>The race schedule needs to be adjusted because:</p>')
                 .append(reason_for_schedule_change(round)))
@@ -384,7 +413,7 @@ function inject_into_scheduling_control_group(round, current, timer_state) {
                        + ' onclick="handle_make_changes_button(' + round.roundid + ')"'
                        + ' value="Make Changes"/>');
       } else if (round.heats_scheduled > 0 && round.heats_run < round.heats_scheduled) {
-        buttons.append('<input type="button"'
+        actions.append('<input type="button"'
                        + ' onclick="handle_race_button(' + round.roundid + ')"'
                        + ' value="Race"/>');
       }
@@ -577,9 +606,9 @@ function update_next_step(json) {
   } else if (current_has_heats) {
     next = "Turn <b>Racing</b> on (the switch at the left) to run the heats." + simulate;
   } else if (to_race.length > 0) {
-    next = "Click a scheduled round at the right, then press <b>Race</b>.";
+    next = "Press <b>Race</b> on a scheduled round at the right.";
   } else if (to_schedule.length > 0) {
-    next = "Click a round at the right, then press <b>Schedule</b> to make its heats"
+    next = "Press <b>Schedule</b> on a round at the right to make its heats"
       + ($("#playlist-start").is(':visible')
          ? ", or press <b>Start Playlist</b> to run the rounds in playlist order."
          : ".");
@@ -645,16 +674,9 @@ function process_coordinator_poll_json(json) {
     } else {
       inject_into_scheduling_control_group(totals, json['current-heat'], json['timer-state']);
     }
-    $("#schedule-and-race").addClass('hidden');
-    $("#schedule-only").val("Make Schedule");
   } else {
     $("#master-schedule-group").empty();
-    $("#schedule-and-race").removeClass('hidden');
-    $("#schedule-only").val("Schedule Only");
   }
-  // The "Schedule + Race" option from the #schedule_modal shouldn't be offered
-  // if we're in interleaved heats:
-  $("#schedule-and-race").toggleClass('hidden', json['current-heat'].use_master_sched);
 
   var layout = {'now-racing': [],
                 'ready-to-race': [],

@@ -551,3 +551,20 @@ input.lane-time::-webkit-outer-spin-button {
   background-color: var(--color-danger-bg);
   border-color: var(--color-danger);
 }
+
+/* A round's card, closed: its name, where it stands ("8 of 9 checked in",
+   "4 of 12 heats run") and its next step (Schedule, Race, ...) */
+.scheduling_control .round_status {
+  margin: 2px 0 0 22px;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-muted);
+}
+.scheduling_control .round_actions:empty {
+  display: none;
+}
+.scheduling_control .round_actions {
+  margin: var(--space-2) 0 0 0;
+}
+.scheduling_control .round_actions input[type='button'] {
+  margin: 0;
+}

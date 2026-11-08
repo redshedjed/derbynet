@@ -175,33 +175,19 @@ function handle_discard_results_button() {
 
 // Controls for racing rounds
 
-function show_schedule_modal(roundid) {
-  show_modal("#schedule_modal", function(event) {
-    handle_schedule_submit(roundid,
-                           $("#schedule_num_rounds").val(),
-                           $("input[clicked='true']",
-                             $(event.target)).attr("data-race") == 'true');
-    return false;
-  });
-}
-
-// There are two different submit buttons for the schedule_modal, depending on
-// whether we want to start racing immediately or not.  mark_clicked() runs as an
-// onclick handler so we can distinguish between the two submit buttons.
-function mark_clicked(submit_js) {
-  $("input[type=submit]", submit_js.parents("form")).removeAttr("clicked");
-  submit_js.attr("clicked", "true");
-  return true;  // Control now passes to show_schedule_modal's callback,
-                // and then handle_schedule_submit
-}
-
+// Schedule (on a round's card): makes the round's heats right away.  How many
+// times each racer runs in each lane comes from Settings (Racing and
+// Scoring), unless n_times_per_lane is given.  then_race: and make it the
+// round being raced.
 function handle_schedule_submit(roundid, n_times_per_lane, then_race) {
-    close_modal("#schedule_modal");
+    var data = {action: 'schedule.generate',
+                roundid: roundid};
+    if (n_times_per_lane) {
+      data.n_times_per_lane = n_times_per_lane;
+    }
     $.ajax(g_action_url,
            {type: 'POST',
-            data: {action: 'schedule.generate',
-                   roundid: roundid,
-                   n_times_per_lane: n_times_per_lane},
+            data: data,
             success: function(data) {
               if (data.outcome.summary != 'success') {
                 alert("Unsuccessful scheduling: " + data.outcome.description);

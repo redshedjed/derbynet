@@ -65,6 +65,7 @@ if (have_permission(SET_UP_PERMISSION)) {
     'photo-dir' => array('setting' => 'photo-directory'),
     'photos-on-now-racing' => array('setting' => 'photos-on-now-racing'),
     'race-start-time' => array('setting' => 'race-start-time'),
+    'n-times-per-lane' => array('setting' => 'n-times-per-lane', 'type' => 'int'),
     'racing_scene' => array('setting' => 'racing_scene'),
     'replay-num-showings' => array('setting' => 'replay-num-showings', 'type' => 'int'),
     'replay-rate' => array('setting' => 'replay-rate', 'type' => 'number'),
