@@ -117,7 +117,9 @@ function preferred_urls($use_https = false) {
 
     // IIS apparently doesn't set REQUEST_URI.
     if (isset($_SERVER['REQUEST_URI'])) {
-      $uri = dirname($_SERVER['REQUEST_URI']);
+      // The folder of the page, without its query (which may contain a /,
+      // e.g. kiosk.php?page=kiosks/join-wifi.kiosk)
+      $uri = dirname(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
       if ($uri == "/" || $uri == "\\") {
         $uri = "";
       }

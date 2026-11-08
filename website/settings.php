@@ -393,6 +393,28 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
       </p>
     </div>
   </section>
+
+  <!-- The network visitors join to vote and follow the race; shown on the
+       Join Wi-Fi kiosk page (kiosks/join-wifi.kiosk) -->
+  <section class="settings_group card card-accent accent-before" id="visitor-wifi-group">
+    <h2 class="card-title">Visitor Wi-Fi</h2>
+    <div class="settings_group_settings">
+      <p>
+        <label for="visitor-wifi-name"><b>Network name</b></label>
+        <input id="visitor-wifi-name" name="visitor-wifi-name" type="text" class="not-mobile"
+               value="<?php echo htmlspecialchars(read_raceinfo('visitor-wifi-name', ''), ENT_QUOTES, 'UTF-8'); ?>"/>
+      </p>
+      <p>
+        <label for="visitor-wifi-password"><b>Password</b></label>
+        <input id="visitor-wifi-password" name="visitor-wifi-password" type="text" class="not-mobile"
+               autocomplete="off"
+               value="<?php echo htmlspecialchars(read_raceinfo('visitor-wifi-password', ''), ENT_QUOTES, 'UTF-8'); ?>"/>
+      </p>
+      <p class="settings-hint">Shown on the <b>Join Wi-Fi</b> kiosk page (choose it on
+        the Kiosk Dashboard), with a QR code that joins phones to the network and one
+        that opens DerbyNet.  Leave the password empty for an open network.</p>
+    </div>
+  </section>
 </form>
 </div>
 

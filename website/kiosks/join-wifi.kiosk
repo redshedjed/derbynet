@@ -1,0 +1,151 @@
+<?php
+// Join Wi-Fi: how visitors get on the race network to vote and follow the
+// race.  Step 1, join the visitor Wi-Fi (its name and password, and a QR code
+// phones can scan to join); step 2, a QR code for DerbyNet's home page, where
+// Vote! appears whenever a ballot is open.  The network is set in Settings,
+// Visitor Wi-Fi.
+
+require_once('inc/data.inc');
+require_once('inc/locked.inc');
+
+$wifi_name = read_raceinfo('visitor-wifi-name', '');
+$wifi_password = read_raceinfo('visitor-wifi-password', '');
+
+// The standard Wi-Fi QR code: WIFI:T:WPA;S:name;P:password;; (T:nopass for an
+// open network), with \ ; , : " escaped by a backslash
+function wifi_qr_escape($s) {
+  return preg_replace('/([\\\\;,:"])/', '\\\\$1', $s);
+}
+$wifi_qr = 'WIFI:T:'.($wifi_password === '' ? 'nopass' : 'WPA')
+    .';S:'.wifi_qr_escape($wifi_name).';'
+    .($wifi_password === '' ? '' : 'P:'.wifi_qr_escape($wifi_password).';')
+    .';';
+
+$urls = preferred_urls(/* use_https */ false);
+$site_url = $urls[0];
+
+function h($s) {
+  return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+}
+?><!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Join Wi-Fi</title>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
+<script type="text/javascript" src="js/qrcode.min.js"></script>
+<?php require('inc/kiosk-poller.inc'); ?>
+<?php require('inc/stylesheet.inc'); ?>
+<link rel="stylesheet" type="text/css" href="css/kiosks.css"/>
+<style type="text/css">
+/* Sized for a TV across the room: everything in viewport units */
+body {
+  background: var(--color-page);
+  overflow: hidden;
+}
+#join-wifi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: calc(100vh - var(--banner-height));
+  box-sizing: border-box;
+  padding: 2.5vh 4vw;
+}
+#join-wifi h1 {
+  margin: 0 0 3vh 0;
+  font-size: 5.5vh;
+  text-align: center;
+  color: var(--color-text);
+}
+#steps {
+  display: flex;
+  gap: 4vw;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  justify-content: center;
+}
+.step {
+  flex: 0 1 44vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3vh 2vw;
+  box-sizing: border-box;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border-left: 1.2vh solid var(--color-brand);
+  box-shadow: var(--shadow-card);
+}
+.step h2 {
+  margin: 0 0 2vh 0;
+  font-size: 4.2vh;
+  color: var(--color-brand);
+}
+.step .qr {
+  padding: 1.5vh;
+  background: white;
+  border-radius: var(--radius-md);
+}
+.step .qr img, .step .qr canvas {
+  display: block;
+}
+.step .detail {
+  margin: 2.5vh 0 0 0;
+  font-size: 3.4vh;
+  text-align: center;
+  line-height: 1.35;
+}
+.step .detail b {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 1.1em;
+}
+.step .note {
+  margin: 1vh 0 0 0;
+  font-size: 2.4vh;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+</style>
+<script type="text/javascript">
+$(function() {
+  // As large as the space allows: the step cards' height, less the text
+  var size = Math.round(Math.min(0.42 * window.innerHeight, 0.3 * window.innerWidth));
+  $(".qr[data-content]").each(function() {
+    new QRCode(this, {text: $(this).attr('data-content'), width: size, height: size});
+  });
+});
+</script>
+</head>
+<body>
+<?php
+require_once('inc/banner.inc');
+make_banner('', /* back_button */ false);
+?>
+<div id="join-wifi">
+  <h1>Vote for your favorite designs, and follow the race!</h1>
+  <div id="steps">
+<?php if ($wifi_name !== '') { ?>
+    <div class="step">
+      <h2>1. Join the Wi-Fi</h2>
+      <div class="qr" data-content="<?php echo h($wifi_qr); ?>"></div>
+      <p class="detail">Network <b><?php echo h($wifi_name); ?></b>
+<?php if ($wifi_password !== '') { ?>
+        <br/>Password <b><?php echo h($wifi_password); ?></b>
+<?php } ?>
+      </p>
+      <p class="note">Point your phone's camera at the code, and tap to join.</p>
+    </div>
+<?php } ?>
+    <div class="step">
+      <h2><?php echo $wifi_name !== '' ? '2. ' : ''; ?>Open DerbyNet</h2>
+      <div class="qr" data-content="<?php echo h($site_url); ?>"></div>
+      <p class="detail"><b><?php echo h($site_url); ?></b></p>
+      <p class="note">If the page won't load, turn off mobile data for a moment.</p>
+    </div>
+  </div>
+</div>
+<?php require('inc/ajax-failure.inc'); ?>
+</body>
+</html>

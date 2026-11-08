@@ -50,6 +50,8 @@ if (have_permission(SET_UP_PERMISSION)) {
     'do-use-subgroups' => array('setting' => 'use-subgroups', 'type' => 'checkbox'),
     'finish-formatting' => array('setting' => 'finish-formatting'),
     'home-banner-title' => array('setting' => 'home-banner-title'),
+    'visitor-wifi-name' => array('setting' => 'visitor-wifi-name'),
+    'visitor-wifi-password' => array('setting' => 'visitor-wifi-password'),
     'images-dir' => array('setting' => 'images-dir'),
     'lane-colors' => array('setting' => 'lane-colors'),
     'log-dir' => array('setting' => 'logs-directory'),
