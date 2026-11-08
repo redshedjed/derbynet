@@ -1,105 +1,176 @@
-.block_buttons span {
-  font-size: 1em;
+/* Awards Presentation (awards-presentation.php).
+
+   body.fill-page: a .page-toolbar (pack standings choice and the two
+   filters), then one .page-panel with the award list on the left and the
+   presenter on the right, each scrolling on its own.  Choosing an award
+   shows it on the award-presentation kiosks; the switch reveals the
+   recipient. */
+
+/* ---------------- Toolbar ---------------- */
+
+.presentation_toolbar {
+  align-items: flex-start;
+}
+.center-select {
+  width: 260px;
+}
+.center-select .mselect span {
+  font-size: var(--text-base);
 }
 
+/* "Pack standings: calculate normally / use a group" */
 .pack-awards {
-  float: left;
-  margin-left: 15px;    
-}  
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
 .pack-awards label {
-  font-size: 16px;
+  font-size: var(--text-sm);
+  color: var(--color-text);
 }
 .pack-awards label span.group-name {
   font-weight: bold;
 }
-.center-select .mselect-inner {
-  padding: .7em 1em;
-}
-.center-select .mselect span {
-  font-size: 24px;
-  line-height: 1.3;
-}
 
-.mlistview > li:last-child {
-  border-bottom-width: 1px;
-}
+/* ---------------- Award list ---------------- */
 
-.center-select {
-  width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.center-select h3 {
-  text-align: center;
-}
-
-.listview {
+.presentation_panel .listview {
   position: absolute;
-  top: 200px;
+  top: 0;
   bottom: 0;
   left: 0;
   width: 50%;
+  box-sizing: border-box;
+  padding: var(--space-3);
   overflow-x: hidden;
   overflow-y: auto;
+  background: var(--color-page);
+  border-right: 1px solid var(--gray-200);
 }
 
-.mlistview > li span {
-  font-size: 16px;
-  font-weight: bold;
+.presentation_panel .mlistview > li {
+  margin: 0 0 var(--space-2) 0;
+  padding: var(--space-2) 2.5em var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-left: 5px solid var(--stage-after);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  white-space: normal;
 }
-.mlistview > li p {
-  font-size: 12px;
+.presentation_panel .mlistview > li:hover {
+  border-color: var(--color-brand);
+  border-left-color: var(--stage-after);
+}
+/* The award now being presented */
+.presentation_panel .mlistview > li.chosen {
+  background: #E8EFF8;
+  border-color: var(--color-brand);
+  border-left-color: var(--color-brand);
+  box-shadow: 0 0 0 2px var(--color-brand);
+}
+.presentation_panel .mlistview > li span {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+.presentation_panel .mlistview > li p {
+  margin: 2px 0 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+/* Ad hoc awards (from Judging) */
+.presentation_panel .mlistview > li.adhoc {
+  border-left-color: var(--stage-other);
 }
 
 .mlistview > li.hidden {
-  height: 0px;
-  padding: 0px 0px 0px 0px;
-}
-li.hidden p {
-  margin: 0px;
+  display: none;
 }
 
-.mlistview > li.adhoc {
-    background-color: #f0f0f6;
-}
+/* ---------------- Presenter ---------------- */
 
-/* The presenter div covers the right half of the screen after the listview is
-   positioned absolutely along the left. */
 .presenter {
-  margin-left: 50%;
-  width: 50%;
-  font-size: x-large; /* 24px */
- }
-
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  right: 0;
+  box-sizing: border-box;
+  padding: var(--space-5) var(--space-4);
+  overflow-y: auto;
+  text-align: center;
+}
 .presenter h3 {
-    text-align: center;
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-xl);
 }
-
-.presenter h3:first-child {
-    margin-top: 100px;
+.presenter h3#awardname {
+  font-size: 1.75rem;
+  color: var(--color-brand-strong);
 }
-
-h3#recipient {
-    margin-top: 100px;
+.presenter h3#classname,
+.presenter h3#rankname {
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
 }
-
+.presenter h3#recipient {
+  margin-top: var(--space-5);
+  font-size: 1.75rem;
+}
+.presenter .detail {
+  margin: var(--space-1) 0;
+  color: var(--color-text-muted);
+}
 .presenter p.moot {
-    text-align: center;
+  color: var(--color-text-muted);
+}
+/* No kiosk is showing awards */
+#kiosk-summary h3 {
+  color: var(--color-warning);
 }
 
 .presenter-inner {
-  margin-left: auto;
-  margin-right: auto;
+  margin: var(--space-5) auto var(--space-3) auto;
   /* Flipswitch is 9.375em or 225px plus 2 * (5px padding + 1px border) = 237px */
   width: 237px;
- }
-
+  font-size: x-large;
+}
 .presenter .flipswitch {
-  /* Leaves a gap around the button within the flipswitch */
   padding: 5px;
   margin-left: 8px;
 }
+.presenter_buttons {
+  margin-top: var(--space-3);
+}
+.presenter_buttons .btn {
+  min-width: 160px;
+}
 
-.presenter .detail {
-  text-align: center;
+/* ---------------- Phones ---------------- */
+
+@media (max-width: 720px) {
+  .center-select {
+    width: 100%;
+  }
+  .presentation_panel .listview {
+    width: 50%;
+    padding: var(--space-2);
+  }
+  .presenter {
+    left: 50%;
+    padding: var(--space-3) var(--space-2);
+  }
+  .presenter h3#awardname,
+  .presenter h3#recipient {
+    font-size: var(--text-xl);
+  }
+  .presenter-inner {
+    transform: scale(0.8);
+  }
+}
+
+/* An award no one has been given yet */
+.presentation_panel .mlistview > li p.no_recipient {
+  font-style: italic;
 }

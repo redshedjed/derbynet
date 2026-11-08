@@ -1,107 +1,107 @@
-body {
-  background-color: #f9f9f9;
-  border-color: #bbb;
-  color: #333;
-  text-shadow: 0 1px 0 #f3f3f3;
+/* Awards Editor (awards-editor.php).  A toolbar (hint, New Award), then the
+   awards as cards with a gold edge, in award order: drag one to re-order,
+   click its gear to edit.  The list is built by js/awards-editor.js as an
+   .mlistview.has-alts (mobile.css): each li holds the award link and the
+   gear link. */
+
+.awards_toolbar {
+  margin: 0 0 var(--space-3) 0;
+}
+.awards_toolbar .instructions {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-text-muted);
 }
 
-.instructions-wrapper {
-    position: relative;  /* Establish a positioning context for center button */
-}
+/* ---------------- Award cards ---------------- */
 
-.instructions {
-    font-size: 16px;
-    font-style: italic;
-    margin-top: 30px;
+#all_awards > li {
+  position: relative;
+  margin: 0 0 var(--space-2) 0;
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-left: 5px solid var(--stage-after);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  cursor: grab;
 }
-
-.instructions-wrapper .left {
-    float: left;
-    width: 50%;
+#all_awards > li.ui-sortable-helper {
+  cursor: grabbing;
+  box-shadow: var(--shadow-card-hover);
 }
-
-.instructions-wrapper .left .instructions {
-    margin-right: 130px;
-    margin-left: 30px;
+/* The award: name, type, then who it's for and who has it */
+#all_awards > li > a:first-child {
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  color: var(--color-text);
+  background: transparent;
+  white-space: normal;
+  cursor: inherit;
 }
-
-.center-button-up {
-    position: absolute;
-    width: 260px;
-    top: 15px;
-    left: 50%;
-    margin-left: -130px;
+#all_awards > li > a:first-child p {
+  margin: 2px 0 0 0;
 }
-
-.instructions-wrapper .right {
-    float: right;
-    width: 50%;
-}
-
-.instructions-wrapper .right .instructions {
-    text-align: right;
-    margin-left: 130px;
-    margin-right: 40px;
-}
-
-.listview {
-  position: absolute; 
-  top: 160px;
-  bottom: 0;
-  left: 25%;
-  width: 50%;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
 .mlistview > li span {
-  font-size: 16px;
+  font-size: var(--text-sm);
+  font-weight: normal;
 }
-
 .mlistview > li span.awardname {
-    font-weight: bold;
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
 }
-.ui-listview > li p {
-    font-size: 12px;
+#all_awards span.awardtype {
+  font-style: italic;
+  color: var(--color-text-muted);
 }
-
+#all_awards span.rankname,
+#all_awards span.classname {
+  color: var(--color-text-muted);
+}
+/* Who has the award, as a green pill at the right */
 .mlistview span.recipient {
-    float: right;
+  float: right;
 }
-
-#all_awards li > a:first-child {
-    cursor: default;
+#all_awards span.recipient:not(:empty) {
+  padding: 1px 8px;
+  font-weight: var(--weight-semibold);
+  color: var(--color-success);
+  background: var(--color-success-bg);
+  border-radius: var(--radius-pill);
 }
-
-#all_awards li.award_recipient_hover a:first-child {
-    background-color: #ffffb4;
-}
-
-#all_awards li.unacceptable_hover a:first-child {
-    background-color: #ffb4b4;
-}
-
-#all_awards li.unacceptable_class_hover span.classname,
-#all_awards li.unacceptable_class_hover span.rankname {
-    color: #ff0000;
-}
-
-#all_awards li.unacceptable_hover span.recipient {
-    color: #ff0000;
-}
-
 #all_awards span.recipient img {
-    vertical-align: 5%;
-    height: 12px;
-    width: 12px;
-    margin-right: 5px;
+  vertical-align: 5%;
+  height: 12px;
+  width: 12px;
+  margin-right: 5px;
 }
 
-.ui-listview > li.hidden {
-  height: 0px;
-  padding: 0px 0px 0px 0px;
+/* The gear: edit this award */
+#all_awards > li > a + a {
+  border-left: 1px solid var(--gray-200);
+  background-color: var(--color-surface);
+}
+#all_awards > li > a + a:hover {
+  background-color: var(--color-surface-sunken);
+}
+
+/* Drag-and-drop feedback (assigning a racer to an award) */
+#all_awards li.award_recipient_hover a:first-child {
+  background-color: #E8EFF8;
+}
+#all_awards li.unacceptable_hover a:first-child {
+  background-color: var(--color-danger-bg);
+}
+#all_awards li.unacceptable_class_hover span.classname,
+#all_awards li.unacceptable_class_hover span.rankname,
+#all_awards li.unacceptable_hover span.recipient {
+  color: var(--color-danger);
+}
+
+.mlistview > li.hidden {
+  display: none;
 }
 li.hidden p {
   margin: 0px;
 }
-

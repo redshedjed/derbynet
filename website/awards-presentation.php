@@ -54,7 +54,7 @@ $name_style = read_name_style();
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
 <link rel="stylesheet" type="text/css" href="css/awards-presentation.css"/>
 </head>
-<body>
+<body class="fill-page">
 <?php make_banner('Awards Presentation', 'kiosk-dashboard.php');
 
 $use_subgroups = use_subgroups();
@@ -66,7 +66,7 @@ $pack_trophies = read_raceinfo('n-pack-trophies', 3);
 
 list($awards, $supergroup_awards, $awards_per_class, $awards_per_rank) = compute_awards_for_presentation();
 ?>
-<div class="block_buttons">
+<div class="toolbar page-toolbar presentation_toolbar">
 
 <?php if ($pack_trophies > 0 && count($agg_classes) > 0) { ?>
 <div id="pack_agg_div" class="pack-awards">
@@ -137,6 +137,9 @@ list($awards, $supergroup_awards, $awards_per_class, $awards_per_rank) = compute
     </select>
 </div>
 
+</div><!-- toolbar -->
+
+<div class="page-panel presentation_panel">
 <div class="listview">
 <ul class="mlistview">
 <?php
@@ -160,9 +163,14 @@ foreach ($awards as &$row) {
           ' data-rank="'.htmlspecialchars($ranks[$rankid]['rank'], ENT_QUOTES, 'UTF-8').'"')
         .'>';
     echo '<span>'.htmlspecialchars($row['awardname'], ENT_QUOTES, 'UTF-8').'</span>';
-    echo '<p><strong>'.$row['carnumber'].':</strong> ';
-    echo htmlspecialchars(mangled_name($row, $name_style), ENT_QUOTES, 'UTF-8');
-    echo '</p>';
+    if ($row['carnumber'] === null || $row['carnumber'] === '') {
+      // An award no one has been given yet
+      echo '<p class="no_recipient">Not yet awarded</p>';
+    } else {
+      echo '<p><strong>'.$row['carnumber'].':</strong> ';
+      echo htmlspecialchars(mangled_name($row, $name_style), ENT_QUOTES, 'UTF-8');
+      echo '</p>';
+    }
     echo '</li>';
 }
 ?>
@@ -202,8 +210,8 @@ foreach ($awards as &$row) {
         onchange="on_reveal();"/>
 </div>
 
-<div class="block_buttons">
-    <input type="button" value="Clear" onclick="on_clear_awards()"/>
+<div class="presenter_buttons">
+    <input type="button" class="btn btn-secondary" value="Clear" onclick="on_clear_awards()"/>
 </div>
 <?php
     if (false) {

@@ -39,17 +39,13 @@ maybe_populate_award_types();
 list($classes, $classseq, $ranks, $rankseq) = classes_and_ranks();
 ?>
 
-<div class="instructions-wrapper" style="position: relative;">
+<div class="page-content narrow awards_editor">
 
-<div class="left">
-<p class="instructions">Drag awards to re-order.</p>
-</div>
-
-<div class="center-button-up block_buttons">
-<input type="button" value="New Award"
-       onclick="handle_new_award();"/>
-</div>
-
+<div class="toolbar awards_toolbar">
+  <p class="instructions">Drag awards to re-order.  Click the gear to edit one.</p>
+  <span class="toolbar-spacer"></span>
+  <input type="button" class="btn" value="New Award"
+         onclick="handle_new_award();"/>
 </div>
 
 <div class="block_buttons">
@@ -64,6 +60,7 @@ list($classes, $classseq, $ranks, $rankseq) = classes_and_ranks();
 </div><!-- listview -->
 
 </div><!-- block_buttons -->
+</div><!-- page-content -->
 
 
 <div id="award_editor_modal" class="modal_dialog hidden block_buttons">

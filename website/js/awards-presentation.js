@@ -33,6 +33,9 @@ var g_changing_awards = false;
 
 function on_choose_award(list_item) {
   var item = $(list_item);
+  // Mark the award now being presented
+  $(".listview li.chosen").removeClass("chosen");
+  item.addClass("chosen");
   $.ajax(g_action_url,
          {type: 'POST',
           data: {action: 'award.present',
@@ -79,6 +82,7 @@ function on_clear_awards() {
   $("#carname").text('');
   $("#classname").text('');
   $("#rankname").text('');
+  $(".listview li.chosen").removeClass("chosen");
   $(".presenter-inner").addClass('hidden');
   $("#kiosk-summary").addClass('hidden');
 }

@@ -90,7 +90,8 @@ function update_awards(data) {
         $(this).attr("data-racerid", awards[i].racerid);
         $(this).find('.recipient')
           .empty()
-          .text(awards[i].firstname + " " + awards[i].lastname);
+          // Trimmed, so an award with no recipient leaves this empty
+          .text((awards[i].firstname + " " + awards[i].lastname).trim());
       }
     }
   });
