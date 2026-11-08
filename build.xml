@@ -573,8 +573,4 @@
         description="Builds prerequisites for building derbynet_server docker image">
 </target>
 
-<target name="demo" description="demo">
-    <ant dir="demo"/>
-</target>
-
 </project>

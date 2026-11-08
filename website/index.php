@@ -235,6 +235,8 @@ end_tile_group();
 begin_tile_group();
 make_link_button('About', 'about.php', -1, 'tile_black');
 if (@$_SESSION['role']) {
+  // The Quick Reference guide is for the people running the event
+  make_link_button('Quick Reference', 'quickref.php', -1, 'tile_black');
   make_link_button('Log out', 'login.php?logout', -1, 'tile_black');
   echo "<p class='logged_in_as'>Logged in as <b>"
       .htmlspecialchars($_SESSION['role'], ENT_QUOTES, 'UTF-8')."</b></p>";

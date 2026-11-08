@@ -5,6 +5,13 @@
     index index.php;
   }  
 
+  # Not for direct download: the configuration (role passwords, in
+  # derbynet/local), and the Quick Reference, which quickref.php gives only to
+  # people who are logged in.
+  location ~ derbynet/(local/|quickref\.pdf$) {
+    deny all;
+  }
+
   location ~ derbynet/.*\.php(/.*)?$ {
     client_max_body_size 16M;
     include snippets/fastcgi-php.conf;

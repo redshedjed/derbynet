@@ -67,6 +67,11 @@ server {
 
 	server_name _;
 
+    # Only quickref.php hands out the Quick Reference, to people logged in
+    location ~ /quickref\.pdf\$ {
+        deny all;
+    }
+
     location ~ /.*\.php(/.*)?$ {
         client_max_body_size 16M;
         include fastcgi.conf;
