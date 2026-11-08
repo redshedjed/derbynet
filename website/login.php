@@ -72,7 +72,7 @@ div.index_background {
 .tile-buttons .block_buttons .role_choice input[type='button'] {
   margin-bottom: var(--space-1);
 }
-.role_hint {
+.block_buttons p.role_hint {  /* (more specific than .block_buttons p in global.css) */
   margin: 0 auto;
   width: 270px;
   padding-left: var(--space-3);
@@ -119,7 +119,7 @@ var g_after_login = <?php
 // one: from config-roles.inc ('description'), or these for the usual roles
 $role_descriptions = array(
   'RaceCrew' => 'Check-in, photos, printables, judging',
-  'RaceCoordinator' => 'Runs the race: the Race and Kiosk Dashboards',
+  'RaceCoordinator' => 'Runs the race: dashboards, awards',
   'Administrator' => 'Set-up, settings, awards, export',
   'Timer' => 'The track timer program',
   'Photo' => 'The photo station',
