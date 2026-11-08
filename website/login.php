@@ -20,7 +20,6 @@ if (isset($_GET['logout'])) {
 session_write_close();
 require_once('inc/banner.inc');
 require_once('inc/permissions.inc');
-require_once('inc/locked.inc');
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -162,10 +161,6 @@ if (@$_SESSION['role']) {
   <input type="hidden" name="name" id="name_for_password" value=""/>
   <p>Enter password:</p>
   <p><input type="password" name="pw" id="pw_for_password"/></p>
-  <?php if (!locked_settings()) { ?>
-  <p>&nbsp;</p>
-  <p>Don't remember setting a password?  Consult the documentation.</p>
-  <?php } ?>
   <input type="submit" value="Submit"/>
   <input type="button" value="Cancel"
       onclick='close_modal("#password_modal");'/>
