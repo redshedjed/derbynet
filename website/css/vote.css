@@ -1,171 +1,270 @@
-#wrong-password {
-  color: red;
-  font-weight: bold;
-  text-align: center;
-  font-size: 1.1em;
-}
+/* Ballot (vote.php): voters, mostly on phones, tap an award, pick racers
+   from a grid of cars, and check Vote on a car's close-up.
+
+   The two dialogs are placed here, not by modal.js: it sets each dialog's
+   position, left and margin-left inline when it opens, so those are
+   overridden with !important.  modal.js also sets display inline, which is
+   why the racer picker's flex layout is on its inner .racers_frame. */
+
+/* ---------------- Award list ---------------- */
 
 #awards {
-  position: relative;
-  width: 250px;
-  top: 10px;
-  margin-left: auto;
-  margin-right: auto;
-  overflow-y: auto;
+  max-width: 480px;
+  margin: var(--space-5) auto;
+  padding: 0 var(--space-4);
 }
-
-#awards div.ballocode {
-  border: 2px black solid;
-}
-
-#ballot-code-status {
-  width: 30px;
-  margin-left: 30px;
-}
-
 #awards div.please-click {
-  margin-top: 20px;
+  margin: 0 0 var(--space-3) 0;
+  text-align: center;
+  color: var(--color-text-muted);
 }
 
+/* Each award: a card with a gold edge, like Vote! on the home page */
 #awards div.award {
-  min-height: 50px;
-  border: 2px black solid;
+  margin: 0 0 var(--space-3) 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-left: 6px solid var(--stage-after);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
   cursor: pointer;
+  transition: box-shadow 150ms ease, border-color 150ms ease;
 }
-
+#awards div.award:hover {
+  border-color: var(--color-brand);
+  border-left-color: var(--stage-after);
+  box-shadow: var(--shadow-card-hover);
+}
 #awards p.award-name {
-  font-weight: bold;
-  font-size: 18px;
-  margin-top: 2px;
-  margin-left: 2px;
-  text-align: center;
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+}
+#awards p.please-vote-for {
+  margin: 2px 0 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
 
-#awards div.award div.please-vote-for {
-  font-size: small;
-  text-align: center;
-}
-
+/* The cars already voted for, under the award and in the picker's header */
 div.selection {
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) var(--space-2) 0 0;
+  padding: 2px var(--space-3) 2px 2px;
+  background: #E8EFF8;
+  border: 1px solid var(--color-brand);
+  border-radius: var(--radius-pill);
 }
-
-#awards div.award div.selection {
-  display: block;
-}
-
-div.selection div.carno {
-  display: inline;
-  font-size: large;
-  font-weight: bold;
-  margin-left: 10px;
-}
-
 div.selection img {
-  vertical-align: middle;
-  margin-left: 20px;
-  max-height: 150px;
-  max-width: 150px;
+  height: 32px;
+  width: auto;
+  max-width: 64px;
+  border-radius: var(--radius-pill);
 }
+div.selection div.carno {
+  order: 2;
+  font-weight: bold;
+  color: var(--color-brand-strong);
+}
+
+#wrong-password {
+  color: var(--color-danger);
+  font-weight: bold;
+  text-align: center;
+}
+
+/* ---------------- Racer picker ---------------- */
 
 #racers_modal {
-  position: absolute;
-  top: 100px;
-  left: 100px;
-  right: 100px;
-  bottom: 100px;
-  padding-top: 5px;
+  position: fixed !important;
+  top: 2vh;
+  left: 50% !important;
+  margin-left: 0 !important;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  width: min(1000px, calc(100vw - 16px));
+  max-width: none;
+  height: 96vh;
+  padding: 0;
+  overflow: hidden;
+}
+.racers_frame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 #racers_modal_headline {
-  padding-top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--gray-200);
+}
+#racers_modal_headline .headline_text {
+  flex: 1;
+  min-width: 0;
+}
+.headline_award {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+}
+.headline_hint {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+#racers_modal_headline .btn {
+  min-height: 44px;
+  font-size: var(--text-base);
+}
+#selected_racers {
+  flex-basis: 100%;
+}
+#selected_racers:empty {
+  display: none;
+}
+#selected_racers div.selection {
+  margin-top: 0;
+  cursor: pointer;
 }
 
-#racers_modal_headline input[type=button] {
-  position: absolute;
-  right: 15px;
-  width: 100px;
-}
-
+/* The cars: a grid of tiles */
 #racers {
-    position: absolute;
-    left: 0px;
-    right: 0;
-    top: 100px;
-    bottom: 0;
-    overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--space-2);
+  align-content: start;
+  padding: var(--space-3);
+  background: var(--color-page);
 }
-
 .ballot_racer {
-    position: relative;
-    display: inline-block;
-    /* Default is vertical-align: baseline, which lines up the bottoms of the images. */
-    vertical-align: top;
-    width: 150px;
-    height: 200px;
-    /* background-image gets set by javascript for speed award winners */
-    /* background-image: url('../img/laurel.png'); */
-    background-image: none;
-    background-repeat: no-repeat;
+  position: relative;
+  padding: var(--space-2);
+  text-align: center;
+  background-color: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  /* background-image gets set by javascript for speed award winners */
+  background-image: none;
+  background-repeat: no-repeat;
 }
 .ballot_racer.hidden {
   display: none;
 }
-
 .ballot_racer img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 100px;
-    max-height: 100px;
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 80px;
 }
-
 .ballot_racer .carno {
-    text-align: center;
-    width: 100%;
-    font-size: 24px;
-    font-weight: bold;
+  font-size: var(--text-xl);
+  font-weight: bold;
 }
 .ballot_racer .racer_name,
 .ballot_racer .group_name,
 .ballot_racer .subgroup_name,
 .ballot_racer .rank_name {
-    text-align: center;
-    width: 100%;
-    font-size: 16px;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
+/* A car this voter chose for the award */
+.ballot_racer.voted {
+  background-color: #E8EFF8;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 2px var(--color-brand);
+}
+.ballot_racer.voted::after {
+  content: "\2713";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  font-weight: bold;
+  color: white;
+  background: var(--color-brand);
+  border-radius: 50%;
+}
+
+/* ---------------- One car, close up ---------------- */
 
 #racer_view_modal {
-  width: 800px;
-  padding-left: 0px;
+  position: fixed !important;
+  top: 50%;
+  left: 50% !important;
+  margin-left: 0 !important;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  width: min(640px, calc(100vw - 16px));
+  max-width: none;
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+  padding: var(--space-4);
+  text-align: center;
 }
-#racer_view_check {
-  position: absolute;
-  left: 0;
-  width: 110px;
-  font-size: xx-large;
-  font-weight: bold;
-}
-/* TODO Not sure this is doing anything */
-#racer_view_check img {
-  width: 109px;
+.racer_view_top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 #racer_view_carnumber {
-  position: absolute;
-  left: 20px;
-  top: 330px;
-  /* width: 110px; */
-  font-size: 60px;
+  font-size: 2.5rem;
   font-weight: bold;
+  line-height: 1;
+}
+#racer_view_carnumber::before {
+  content: "Car ";
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+}
+/* Vote: a big tappable box with the checkbox picture */
+#racer_view_check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+  font-size: var(--text-xl);
+  font-weight: bold;
+  color: var(--color-brand);
+  background: var(--color-surface);
+  border: 2px solid var(--color-brand);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  user-select: none;
+}
+#racer_view_check:hover {
+  background: #E8EFF8;
+}
+#racer_view_check img {
+  width: 40px;
+  height: 40px;
 }
 #racer_view_photo {
-  margin-left: 115px;
-  min-height: 300px;
-  max-height: 600px;
-  max-width: 600px;
+  display: block;
+  max-width: 100%;
+  max-height: 55vh;
+  margin: 0 auto var(--space-3) auto;
+  border-radius: var(--radius-md);
 }
-
 #full-ballot {
-  color: red;
-  text-align: center;
+  text-align: left;
+}
+#racer_view_modal .btn {
+  min-width: 160px;
+  min-height: 44px;
+  font-size: var(--text-base);
 }

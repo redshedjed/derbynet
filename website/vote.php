@@ -39,22 +39,10 @@ var g_racerid;
 <?php
 make_banner('Ballot');
 
-$order = '';
-if (isset($_GET['order']))
-  $order = $_GET['order'];  // Values are: name, class, car
-if (!$order)
-    $order = 'car';
-
-function link_for_ordering($key, $text) {
-  global $order;
-  echo "<a ";
-  if ($order == $key) {
-    echo 'class="current_sort"';
-  }
-  echo " href='ballot.php?order=".$key."'>";
-  echo $text;
-  echo "</a>";
-}
+// Order of the racers in the picker: car (default), name or class
+$order = 'car';
+if (isset($_GET['order']) && in_array($_GET['order'], ['name', 'class', 'car']))
+  $order = $_GET['order'];
 
 $racers = array();
 
@@ -88,14 +76,14 @@ foreach ($db->query($sql) as $rs) {
 ?>
 
 <div id="awards">
-  <div <?php if ($is_open) echo 'class="hidden"'; ?>>
-    <h3>Balloting is currently closed.</h3>
+  <div class="ballot_closed notice notice-info<?php if ($is_open) echo ' hidden'; ?>">
+    <b>Voting is closed right now.</b>  Check back when the race crew opens the ballot.
   </div>
-  <div id='no-awards' class='hidden'>
-    <h3>There are no awards available for voting.</h3>
+  <div id='no-awards' class='notice notice-info hidden'>
+    There are no awards to vote on.
   </div>
   <div class='please-click hidden'>
-    Please click on an award to vote.
+    Tap an award to vote.
   </div>
   <?php
   // This enumerates all awards, not just those that are ballotable.
@@ -113,19 +101,26 @@ foreach ($db->query($sql) as $rs) {
     echo " data-eligible-rankids='".implode(',', $award['eligible-rankids'])."'";
     echo " onclick='click_one_award($(this));'>";
     echo "<p class='award-name'>".htmlspecialchars($award['awardname'], ENT_QUOTES, 'UTF-8')."</p>";
-    echo "<p class='please-vote-for'>Please vote for no more than <span class='please-vote-count'>UNSET</span>.</p>";
+    echo "<p class='please-vote-for'>Vote for up to <span class='please-vote-count'>UNSET</span></p>";
     echo "</div>\n";
   }
   ?>
 </div>
 
 <div id="racers_modal" class="modal_dialog hidden">
-  <div id="racers_modal_headline" class="block_buttons">
-    <input type="button" value="Close" data-enhanced="true"
+<!-- The picker's layout is on this inner frame: modal.js sets the dialog's
+     own display and position. -->
+<div class="racers_frame">
+  <div id="racers_modal_headline">
+    <div class="headline_text">
+      <div class="headline_award" id="racer_view_award_name"></div>
+      <div class="headline_hint">Choose up to <span id="racer_view_max_votes"></span>.
+        Tap a car to see it.</div>
+    </div>
+    <input type="button" class="btn" value="Done" data-enhanced="true"
       onclick='close_modal("#racers_modal");'/>
-    <span>Please choose up to <span id="racer_view_max_votes"></span> for <span id="racer_view_award_name"></span></span>
-    <span id="selected_racers">
-    </span>
+    <div id="selected_racers">
+    </div>
   </div>
 <div id="racers">
 <?php
@@ -164,19 +159,21 @@ foreach ($db->query($sql) as $rs) {
   }
 ?>
 </div><!-- racers -->
+</div><!-- racers_frame -->
 </div><!-- racers_modal -->
 
-<div id='racer_view_modal' class='modal_dialog hidden block_buttons'>
-  <div id='racer_view_check' onclick='toggle_vote($(this));'>
-  Vote:
-    <img src="img/checkbox-with-check.png"/>
+<div id='racer_view_modal' class='modal_dialog hidden'>
+  <div class="racer_view_top">
+    <div id='racer_view_carnumber'></div>
+    <div id='racer_view_check' role="button" onclick='toggle_vote($(this));'>
+      <img src="img/checkbox-with-check.png" alt=""/>
+      <span>Vote</span>
+    </div>
   </div>
-  <div id='racer_view_carnumber'></div>
-
-  <img id='racer_view_photo'/>
-  <br/>
-  <p id="full-ballot">You already have <span id="full-ballot-max">UNSET</span> racer(s) chosen.</p>
-  <input type="button" value="Close" data-enhanced="true"
+  <img id='racer_view_photo' alt=""/>
+  <p id="full-ballot" class="notice notice-warning">You've already chosen
+     <span id="full-ballot-max">UNSET</span>.  Uncheck one to vote for this car.</p>
+  <input type="button" class="btn btn-secondary" value="Back" data-enhanced="true"
     onclick='close_secondary_modal("#racer_view_modal");'/>
 </div>
 

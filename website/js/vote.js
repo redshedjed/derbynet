@@ -55,9 +55,7 @@ function click_one_award(div) {
 
   var award_name = div.find(".award-name").text();
 
-  var ww = $(window).width();
-  var wh = $(window).height();
-  $("#racers_modal").width(ww - 200).height(wh - 200);
+  // (The picker's size is set in css/vote.css: nearly the whole window.)
   $("#racer_view_award_name").text(award_name);
 
   $("#racers div.ballot_racer").removeClass('hidden');
@@ -77,6 +75,11 @@ function write_racers_headline() {
   $("#selected_racers").empty();
 
   var award_ballot_votes = g_ballot[g_awardid]['votes'];
+  // Mark the racers voted for, in the picker's grid
+  $("#racers div.ballot_racer").removeClass('voted');
+  for (var v = 0; v < award_ballot_votes.length; ++v) {
+    $("#racers div.ballot_racer[data-racerid=" + award_ballot_votes[v] + "]").addClass('voted');
+  }
   for (var i = 0; i < award_ballot_votes.length; ++i) {
     var img = $("<img></img>")
         .attr('src', thumbnail_url_for_racerid(award_ballot_votes[i]));
