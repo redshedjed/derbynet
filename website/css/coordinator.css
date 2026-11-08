@@ -1,312 +1,457 @@
-.control_column {
-  display: inline-block;
-  vertical-align: top;
-  width: 485px;
-}
+/* Race Dashboard (coordinator.php).
 
-.double_control_column {
-  width: 975px;
-  margin-left: auto;
-  margin-right: auto;
-}
+   Top: the heat now racing (#now-racing-group), full width.  Below, two
+   columns: on the left the heat controls, the timer and the replay; on the
+   right the Rounds Playlist and a card per round (built by
+   js/coordinator-poll.js), grouped as master schedule, ready to race, not
+   yet scheduled, and done.  Cards are .control_group (styled as .card in
+   components.css). */
 
+.double_control_column,
 .control_column_container {
-  width: 975px;
+  max-width: 1100px;
   margin-left: auto;
   margin-right: auto;
+  padding: 0 var(--space-4);
+}
+.double_control_column {
+  margin-top: var(--space-4);
+}
+.control_column_container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 var(--space-4);
+  align-items: start;
+  margin-bottom: var(--space-5);
+}
+.control_column {
+  min-width: 0;
 }
 
-#now-racing-group div.heat-text {
-  display: inline-block;
-  width: 200px;
-}
-
-div.adjustment-needed {
-  background: #ffa500;
-}
-
-div.adjustment-needed div.late-arrival-prompt,
-div.adjustment-needed div.adjustment-in-progress-message {
-  color: white;
-  padding: 10px;
-  margin-bottom: 10px;
-  margin-top: 0px;
-  padding-top: 5px;
-  text-align: center;
-  font-size: 18px;
-  line-height: 1.1;
-}
-div.adjustment-needed div.adjustment-in-progress-message {
-  text-weight: bold;
-  font-size: 20px;  
-}
-
-div.adjustment-needed div.late-arrival-prompt p, 
-div.adjustment-needed div.late-arrival-prompt span {
-  font-size: 18px;
-}
-
-div.adjustment-needed div.late-arrival-prompt ul {
-  list-style-position: inside;
-  padding-left: 0px;
-}
-
-div.adjustment-needed input.late-arrival-button {
-  background: #ffa500;
-  border: solid 3px black;
-}
-div.adjustment-needed input.late-arrival-button[disabled] {
-  background: #808000;
-}
-
-.heat-lineup {
-  display: inline-block;
-  width: 730px;
-  margin-right: 0px;
-
-}
-.heat-lineup div.racing {
-  display: inline-block;
-}
-
-.heat-lineup div.now-racing-spacer {
-  display: inline-block;
-  width: 50px;
-}
-
-.heat-lineup div.staging {
-  display: inline-block;
-}
-
-.heat-lineup table {
-  width: 100%;
-}
-
-.heat-lineup td {
-  margin: 0px;
-  padding: 0px;
-  padding-left: 18px;
-  padding-right: 18px;
-}
-
-.heat-lineup td.racer-name {
-  max-width: 200px;
-}
-
-#now-racing-group input.stop-test {
-  float: right;
-  font-size: 18px;
-}
-
-/* Background, border, radius and shadow come from .card in components.css */
 .control_group {
-  margin: 8px 5px;
-  padding: 12px 14px;
- }
-
-.control_column .scheduling_control {
-  position: relative;
-  cursor: pointer;
+  margin: 0 0 var(--space-3) 0;
+  padding: var(--space-3) var(--space-4);
+}
+.control_group h3 {
+  margin: 0 0 var(--space-1) 0;
+  font-size: var(--text-lg);
+}
+.control_group p {
+  margin: var(--space-1) 0;
 }
 
-#master-schedule-group h3 {
-  color: #be2525;
-  border-bottom: solid black 2px;
-}
-
-/* The heat now running: a warm highlight with a gold edge */
-.current {
-  background-color: #FFF4CC;
-}
-.current.control_group {
-  border-color: #E8C65A;
-  border-left: 6px solid #E0B21B;
-}
-
-.timer_control_group div#timer-test {
-  float: right;
-  clear: right;
-  margin-top: 9px;
-}
-
-.timer_control_group div#timer-test a {
-  width: 98px;
-  height: 25px;
-  padding-top: 5px;
-  color: white;
-  display: inline-block;
-  margin-left: 6px;
-}
-
-#timer-testing-herald {
-  width: 100%;
-  padding-top: 20px;
-  text-align: center;
-  background-color: #ff0000;
-  color: white;
-  border: 3px solid black;
-  text-shadow: unset;
-  font-size: 24px;
-}
+/* ---------------- Warnings ---------------- */
 
 #not-racing-warning {
-  width: 960px;
-  margin: 5px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  margin: 0 0 var(--space-3) 0;
+  padding: var(--space-3) var(--space-4);
   text-align: center;
-  background-color: var(--color-danger);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
   color: white;
-  border: none;
+  background-color: var(--color-danger);
   border-radius: var(--radius-lg);
   box-shadow: 0 4px 14px rgba(179, 18, 31, 0.25);
-  text-shadow: unset;
-  font-size: 24px;
 }
 #not-racing-warning a {
   color: white;
-  font-weight: var(--weight-semibold);
 }
 
 #notifications {
-  margin: 5px;
-  border: none;
+  margin: 0 0 var(--space-3) 0;
+  padding: var(--space-2) var(--space-4);
   border-left: 6px solid var(--color-warning);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   background-color: var(--color-warning-bg);
   color: var(--color-warning);
-  font-size: 20px;
-  padding-left: 10px;
-  padding-right: 10px;
+  font-size: var(--text-base);
 }
 #notifications img {
   float: right;
-  margin-top: 10px;
+  margin-top: var(--space-1);
+  cursor: pointer;
 }
 
+/* "Simulated racing in progress", while timer-test's fake timer runs */
+#timer-testing-herald {
+  margin: 0 0 var(--space-2) 0;
+  padding: var(--space-2) var(--space-3);
+  text-align: center;
+  font-size: var(--text-lg);
+  color: white;
+  background-color: var(--color-danger);
+  border-radius: var(--radius-md);
+}
+#now-racing-group input.stop-test {
+  float: right;
+  font-size: var(--text-sm);
+}
+
+/* ---------------- The heat now racing ---------------- */
+
+/* The current round's card: a warm highlight with a gold edge */
+.current {
+  background-color: #FFF8E1;
+}
+.current.control_group {
+  border-color: #E8C65A;
+  border-left: 6px solid var(--stage-after);
+}
 .current.control_group h3 {
-  margin-top: 0px;
-  font-size: x-large;
-  margin-bottom: 0px;
+  margin: 0;
+  font-size: var(--text-xl);
 }
-
 .current.control_group p {
-  margin-top: 5px;
-  margin-bottom: 10px;
+  margin: var(--space-1) 0 var(--space-2) 0;
 }
 
-.new_round_control h3 {
-  margin-bottom: 0px;
+#now-racing-group .control_group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-2) var(--space-5);
 }
+#now-racing-group h3.roundclass {
+  flex-basis: 100%;
+}
+#now-racing-group div.heat-text {
+  flex: 0 0 200px;
+}
+#now-racing-group div.heat-text h3 {
+  font-size: var(--text-xl);
+}
+
+/* Lane | Car | Racer | Time, and the next heat while results hold */
+.heat-lineup {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+.heat-lineup div.racing,
+.heat-lineup div.staging {
+  min-width: 0;
+}
+.heat-lineup div.racing {
+  flex: 1;
+}
+.heat-lineup div.now-racing-spacer {
+  display: none;
+}
+.heat-lineup table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.heat-lineup th {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: left;
+  border-bottom: 2px solid var(--color-border);
+}
+.heat-lineup td {
+  padding: var(--space-1) var(--space-3);
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: var(--text-base);
+}
+.heat-lineup td.racer-name {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Late arrivals: a racer checked in after the schedule was made */
+div.adjustment-needed {
+  background: var(--color-warning-bg);
+  border-left-color: var(--color-warning);
+}
+div.adjustment-needed div.late-arrival-prompt,
+div.adjustment-needed div.adjustment-in-progress-message {
+  padding: var(--space-2) 0;
+  color: var(--color-warning);
+  font-size: var(--text-base);
+  line-height: 1.3;
+}
+div.adjustment-needed div.adjustment-in-progress-message {
+  font-weight: var(--weight-semibold);
+}
+div.adjustment-needed div.late-arrival-prompt p,
+div.adjustment-needed div.late-arrival-prompt span {
+  font-size: var(--text-base);
+}
+div.adjustment-needed div.late-arrival-prompt ul {
+  list-style-position: inside;
+  padding-left: 0px;
+}
+div.adjustment-needed input.late-arrival-button {
+  background: var(--color-warning);
+  border-color: var(--color-warning);
+  color: white;
+}
+div.adjustment-needed input.late-arrival-button[disabled] {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-bg);
+}
+
+/* ---------------- Heat controls ---------------- */
+
+.heat_control_group {
+  text-align: center;
+}
+#start_race_button_div {
+  margin-bottom: var(--space-3);
+}
+#start_race_button_div .btn {
+  width: 100%;
+}
+.centered_flipswitch {
+  width: 242px;
+  margin: 0 auto var(--space-3) auto;
+  font-size: x-large;
+}
+.heat_buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.heat_buttons .btn {
+  min-height: 48px;
+  font-size: var(--text-base);
+}
+.heat_buttons #manual_results_button,
+.heat_buttons #rerun-button {
+  flex: 0 1 220px;
+}
+.heat-arrow {
+  width: 56px;
+  padding: 0;
+}
+.heat-arrow svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* Buttons for the current round (Repeat Round, Add New Rounds, ...) */
+#supplemental-control-group {
+  text-align: center;
+}
+#supplemental-control-group.block_buttons input[type='button'] {
+  width: auto;
+  min-width: 220px;
+  margin: var(--space-1);
+}
+
+/* Round buttons added by js/coordinator-poll.js, in the round cards and
+   above: compact and white (like .btn-secondary), except the main next step
+   for a round (Race, Schedule, Next Up), which stays solid blue. */
+#supplemental-control-group.block_buttons input[type='button'],
+.scheduling_control .block_buttons input[type='button'] {
+  min-height: 40px;
+  height: auto;
+  padding: var(--space-1) var(--space-4);
+  font-size: var(--text-base);
+  color: var(--color-brand);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+#supplemental-control-group.block_buttons input[type='button']:hover,
+.scheduling_control .block_buttons input[type='button']:hover {
+  background-color: var(--color-surface-sunken);
+  border-color: var(--color-brand);
+}
+.scheduling_control .block_buttons input[type='button'][value='Race'],
+.scheduling_control .block_buttons input[type='button'][value='Schedule'],
+.scheduling_control .block_buttons input[type='button'][value='Next Up'] {
+  color: var(--color-text-on-brand);
+  background: var(--color-brand);
+  border-color: var(--color-brand-strong);
+}
+.scheduling_control .block_buttons input[type='button'][value='Race']:hover,
+.scheduling_control .block_buttons input[type='button'][value='Schedule']:hover,
+.scheduling_control .block_buttons input[type='button'][value='Next Up']:hover {
+  background-color: var(--color-brand-strong);
+}
+
+/* ---------------- Timer and replay ---------------- */
 
 .status_icon {
-   float: right;
+  float: right;
+}
+.status_icon img {
+  display: block;
+  width: 40px;
+  height: 40px;
+}
+.status_detail {
+  color: var(--color-text-muted);
+}
+.status_buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+p.last_contact {
+  font-size: var(--text-sm);
 }
 
-h3 {
-    margin-top: 0px;
+/* ---------------- Rounds ---------------- */
+
+#playlist-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3) 0;
+}
+#playlist-group .btn {
+  width: 100%;
 }
 
+.control_column .scheduling_control {
+  position: relative;
+  cursor: pointer;
+}
+.scheduling_control h3.roundclass img {
+  width: 12px;
+  margin-right: var(--space-2);
+  vertical-align: middle;
+}
+
+/* Round buttons (Schedule, Race, Make Changes, ...) */
+.scheduling_control .block_buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.scheduling_control .block_buttons input[type='button'] {
+  width: auto;
+  min-height: 40px;
+  margin: var(--space-2) 0 0 0;
+  padding: var(--space-1) var(--space-4);
+  font-size: var(--text-base);
+}
+div.block_buttons[data-name=buttons] {
+  margin-top: var(--space-1);
+}
+
+#master-schedule-group h3 {
+  color: var(--color-danger);
+  border-bottom: 2px solid var(--color-border);
+}
+.master_schedule_group .block_buttons input {
+  margin-top: 13px;
+}
+
+/* The next round to race */
 div.scheduling_control div.next_tag {
-  background-color: #cc0000;
-  color: white;
   position: absolute;
-  top: 1px;
-  right: 1px;
-  width: 55px;
-  text-align: center;
-  font-size: 16px;
+  top: var(--space-2);
+  right: var(--space-3);
+  padding: 1px 10px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  color: white;
+  background-color: var(--color-danger);
+  border-radius: var(--radius-pill);
 }
 
 div.scheduling_control div.master_heat_reminder {
   float: right;
 }
 div.scheduling_control div.master_heat_reminder .master_heat_msg {
-  background-color: #cc0000;
+  padding: 1px 8px;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
   color: white;
-  vertical-align: top;
+  background-color: var(--color-danger);
+  border-radius: var(--radius-pill);
+}
+
+.roundno {
+  float: right;
+  width: 30px;
+  font-size: var(--text-xl);
   font-weight: bold;
 }
 
-p.last_contact {
-    font-size: 18px;
+/* Progress, a thin bar under each round:
+     - not yet scheduled: gold = share of racers checked in, with blue inside
+       it for the share already in a schedule;
+     - scheduled: blue = share of heats run. */
+.progress {
+  height: 8px;
+  margin-top: var(--space-2);
+  overflow: hidden;
+  background: var(--gray-200);
+  border-radius: var(--radius-pill);
+}
+.progress .bar1 {
+  width: 0%;
+  height: 100%;
+  float: left;
+  background: var(--color-brand);
+}
+.progress .bar2 {
+  width: 0%;
+  height: 100%;
+  float: left;
+  background: #E8C65A;
 }
 
-#playlist-group a.button_link,
-#playlist-group input[type='button'] {
-  color: white;
-  height: 20px;
-  width: 440px;
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 1px;
-}
-#playlist-group input[type='button'] {
-  height: 40px;
-  width: 470px;
-  background: #006000;
-}
-
-.centered_flipswitch {
-  width: 242px;
-  margin-left: auto;
-  margin-right: auto;
+.new_round_control h3 {
   margin-bottom: 0px;
-  font-size: x-large;
+}
+.new_rounds_control_group .block_buttons {
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+}
+.new_rounds_control_group .block_buttons input {
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
-#prev_heat_button {
-  margin-left: 8px;
+/* ---------------- Modals ---------------- */
 
-  display: inline-block;
-  width: 75px;
-  position: relative;
-  top: 7px;
-  height: 41px;
-
-  padding-top: 10px;
+/* Manual results: one time per lane */
+#manual_results_modal {
+  width: 500px;
 }
-#prev_heat_button img {
-  width: 30px;
-  height: 30px;
-  position: relative;
-  left: 18px;
+#manual_results_modal table {
+  width: 100%;
 }
-
-#manual_results_button {
-  display: inline-block;
-  margin-left: 15px;
-  margin-right: 15px;
+input[type=number].lane-time {
+  -moz-appearance: textfield;
+  width: 105px;
+}
+input.lane-time::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input.lane-time::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-#skip_heat_button {
-  display: inline-block;
-  width: 75px;
-  position: relative;
-  top: 7px;
-  height: 41px;
-  padding-top: 10px;
-}
-
-#skip_heat_button img {
-  width: 30px;
-  height: 30px;
-  position: relative;
-  left: 23px;
-}
-
-#start_race_button_div input[type='button'] {
-  background: #008000;
-}
-
-/* Start #new-round-modal */
+/* New round */
 #new-round-modal label {
   display: inline-block;
   width: 180px;
   text-align: right;
 }
-
 #aggregate-by-div {
   margin-bottom: 20px;
 }
@@ -319,12 +464,10 @@ p.last_contact {
 #bucketed-div {
   margin-bottom: 20px;
 }
-
 #new-round-modal label[for=agg-classname] {
   text-align: left;
   width: 300px;
 }
-
 #constituent-clip {
   width: 500px;
   overflow-x: hidden;
@@ -339,100 +482,38 @@ p.last_contact {
   transition-duration: 0.5s;
   transition-property: margin-left;
 }
-
 #new-round-modal .aggregate-label {
-    display: inline-block;
-    width: 300px;
-    margin-right: 1em;
-    text-align: right;
-    font-size: 16px;
-    font-weight: bold;
+  display: inline-block;
+  width: 300px;
+  margin-right: 1em;
+  text-align: right;
+  font-size: 16px;
+  font-weight: bold;
 }
 #new-round-modal input[type=submit] {
   margin-top: 20px;
 }
-/* End of #new-round-modal */
 
-#manual_results_modal {
-  width: 500px;
-}
-
-#manual_results_modal table {
-  width: 100%;
-}
-
-.roundno {
-  width: 30px;
-  float: right;
-  font-size: 24px;
-  font-weight: bold;
-  display: inline-block;
-  vertical-align: top;
-}
-
-.progress {
-    width: 450px;
-    height: 15px;
-    border: 1px solid black;
-    overflow: hidden;
-    background: rgba(255,255,255,0.5);
-}
-
-.progress .bar1 {
-    width: 0%;
-    height: 100%;
-    float: left;
-    border-right: 1px solid #000000;
-    background: var(--color-brand);
-}
-
-.progress .bar2 {
-    width: 0%;
-    height: 100%;
-    float: left;
-    border-right: 1px solid #000000;
-    background: #F7D117;
-}
-
-div.block_buttons[data-name=buttons] {
- margin-top: 20px;
-}
-
-.new_rounds_control_group .block_buttons {
-    padding-bottom: 0px;
-    margin-bottom: 0px;
-}
-.new_rounds_control_group .block_buttons input {
-    margin-top: 0px;
-    margin-bottom: 0px;
-}
-
-.master_schedule_group .block_buttons input {
-    margin-top: 13px;
-}
-
+/* Purge results: a striped red frame, since this deletes race results */
 #purge_modal {
-  background: #cb5a5e;
+  padding: 10px;
+  background: var(--color-danger);
   background: repeating-linear-gradient(
     -45deg,
-    #cb5a5e,
-    #cb5a5e 12px,
-    #ffffff 10px,
+    var(--color-danger),
+    var(--color-danger) 12px,
+    #ffffff 12px,
     #ffffff 23px
   );
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-
-  padding: 10px;
 }
-
 #purge_modal p {
   text-align: center;
 }
-
 #purge_modal h3 {
   text-align: center;
-  font-size: 24px
+  font-size: 24px;
 }
 #purge_modal_inner {
   position: relative;
@@ -440,12 +521,32 @@ div.block_buttons[data-name=buttons] {
   padding: 10px;
   background: #ffffff;
 }
-@media(max-width: 900px) {
-    .double_control_column,
-    .control_column_container {
-      width: 490px;
-    }
-    #not-racing-warning {
-        width: 480px;
-    }
+
+/* ---------------- Narrow screens ---------------- */
+
+@media (max-width: 900px) {
+  .control_column_container {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .double_control_column,
+  .control_column_container {
+    padding: 0 var(--space-2);
+  }
+  #now-racing-group div.heat-text {
+    flex-basis: 100%;
+  }
+  .heat-lineup td.racer-name {
+    max-width: 140px;
+  }
+}
+
+/* Delete Round removes the round's schedule and results */
+.scheduling_control .block_buttons input[type='button'][value='Delete Round'] {
+  color: var(--color-danger);
+}
+.scheduling_control .block_buttons input[type='button'][value='Delete Round']:hover {
+  background-color: var(--color-danger-bg);
+  border-color: var(--color-danger);
 }

@@ -44,22 +44,6 @@ $warn_no_timer = warn_no_timer();
       mobile_select_refresh('#replay-rate');
     });
 </script>
-<style>
-
-input[type=number].lane-time {
-  -moz-appearance: textfield;
-  width: 105px;
-}
-
-input.lane-time::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
-input.lane-time::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-</style>
 </head>
 <body>
 <?php make_banner('Race Dashboard'); ?>
@@ -82,8 +66,8 @@ input.lane-time::-webkit-outer-spin-button {
 <div class="control_column">
 
   <div class="control_group heat_control_group">
-    <div id="start_race_button_div" class="block_buttons hidden">
-      <input type="button" value="Start Race" onclick="handle_start_race_button()"/>
+    <div id="start_race_button_div" class="hidden">
+      <input type="button" class="btn btn-success" value="Start Race" onclick="handle_start_race_button()"/>
     </div>
     <div class="centered_flipswitch">
       <input type="checkbox" class="flipswitch" name="is-currently-racing" id="is-currently-racing"
@@ -91,20 +75,25 @@ input.lane-time::-webkit-outer-spin-button {
         data-on-text="Racing" data-off-text="Not Racing"/>
     </div>
 
-    <div class="block_buttons">
-
-      <div id="prev_heat_button" class="button_link" onclick="handle_previous_heat_button()">
-        <img src="img/left-white-60.png"/>
+    <!-- Previous heat | Manual Results | Next heat, then Re-Run -->
+    <div class="heat_buttons">
+      <div id="prev_heat_button" class="btn btn-secondary heat-arrow" role="button"
+           title="Previous heat" onclick="handle_previous_heat_button()">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
       </div>
 
-      <input type="button" id="manual_results_button" value="Manual Results"
+      <input type="button" id="manual_results_button" class="btn btn-secondary" value="Manual Results"
         onclick="on_manual_results_button_click(<?php echo !$warn_no_timer ? "true" : "false"; ?>)" />
 
-      <div id="skip_heat_button" class="button_link" onclick="handle_skip_heat_button()">
-        <img src="img/right-white-60.png"/>
+      <div id="skip_heat_button" class="btn btn-secondary heat-arrow" role="button"
+           title="Next heat" onclick="handle_skip_heat_button()">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
       </div>
-
-      <input type="button" id="rerun-button" value="Re-Run"
+    </div>
+    <div class="heat_buttons">
+      <input type="button" id="rerun-button" class="btn btn-secondary" value="Re-Run"
              data-rerun="none"
              onclick="handle_rerun(this);"/>
     </div>
@@ -125,15 +114,13 @@ input.lane-time::-webkit-outer-spin-button {
     <div class="status_icon">
       <img id="timer_status_icon" src="img/status/unknown.png"/>
     </div>
-
-    <div id='timer-test' class="block_buttons">
-      <a class="button_link" onclick="open_timer_window();">Timer</a>
-      <a class='button_link' href='timer-test.php'>Test</a>
-    </div>
-
-    <h3>Timer Status</h3>
+    <h3>Timer</h3>
     <p><b id="timer_status_text">Timer status not yet updated</b></p>
-    <p>The track has <span id="lane_count">an unknown number of</span> lane(s).</p>
+    <p class="status_detail">The track has <span id="lane_count">an unknown number of</span> lane(s).</p>
+    <div id='timer-test' class="status_buttons">
+      <a class="btn btn-secondary btn-sm" href="#" onclick="open_timer_window(); return false;">Timer</a>
+      <a class='btn btn-secondary btn-sm' href='timer-test.php'>Test</a>
+    </div>
    <?php } ?>
   </div>
 
@@ -141,13 +128,13 @@ input.lane-time::-webkit-outer-spin-button {
     <div class="status_icon">
       <img id="replay_status_icon" src="img/status/unknown.png"/>
     </div>
-    <h3>Replay Status</h3>
+    <h3>Replay</h3>
     <p><b id="replay_status">Remote replay status not yet updated</b></p>
-    <div id="test_replay" class="block_buttons">
-      <input type="button" value="Trigger Replay" onclick="handle_test_replay();"/>
-    </div>
-    <div class="block_buttons">
-      <input type="button" value="Replay Settings" onclick="show_replay_settings_modal();"/>
+    <div class="status_buttons">
+      <span id="test_replay">
+        <input type="button" class="btn btn-secondary btn-sm" value="Trigger Replay" onclick="handle_test_replay();"/>
+      </span>
+      <input type="button" class="btn btn-secondary btn-sm" value="Replay Settings" onclick="show_replay_settings_modal();"/>
     </div>
   </div>
 
@@ -155,10 +142,10 @@ input.lane-time::-webkit-outer-spin-button {
 
 <div class="control_column">
 
-  <div id="playlist-group" class="block_buttons">
-    <a class='button_link' href='playlist.php'>Rounds Playlist</a>
+  <div id="playlist-group">
+    <a class='btn btn-secondary' href='playlist.php'>Rounds Playlist</a>
     <div id="playlist-start">
-      <input type="button" value="Start Playlist" onclick="handle_start_playlist();"/>
+      <input type="button" class="btn btn-success" value="Start Playlist" onclick="handle_start_playlist();"/>
     </div>
   </div>
 
