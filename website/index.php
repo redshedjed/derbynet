@@ -32,16 +32,22 @@ $show_voting_button =
 function make_link_button($label, $link, $permission, $button_class) {
   if (have_permission($permission)) {
     echo "<a class='button_link ".$button_class."' href='".$link."'>".$label."</a>\n";
-    echo "<br/>\n";
     return true;
   } else {
     return false;
   }
 }
 
-function make_spacer_if($cond) {
-  if ($cond) {
-    echo "<div class='index_spacer'>&nbsp;</div>\n";
+// The menu is in groups (before, during and after the race, then the
+// rest): tiles in a group sit close together, with more space between
+// groups.  A group with no buttons for this user isn't shown at all.
+function begin_tile_group() {
+  ob_start();
+}
+function end_tile_group() {
+  $tiles = ob_get_clean();
+  if (trim($tiles) !== '') {
+    echo "<div class='tile_group'>\n".$tiles."</div>\n";
   }
 }
 
@@ -55,8 +61,21 @@ function make_spacer_if($cond) {
 <script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/modal.js"></script>
 <style type="text/css">
-div.index_spacer {
-  height: 40px;
+/* A group of tiles (before, during, after the race, the rest): tiles close
+   together, groups apart (44px, the space the tiles used to have) */
+div.tile_group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+div.tile_group + div.tile_group {
+  margin-top: 44px;
+}
+div.tile_group a.button_link,
+div.tile_group div.double {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 div.index_background {
@@ -89,13 +108,11 @@ div.index_background {
   height: 30px;
 }
 
-/* Vote!: twice as tall as the other tiles, with large centered text, set
-   apart from the list below it by space and a rule */
+/* Vote!: a gold tile twice as tall as the others, with large centered
+   text, the same space above the menu as between its groups */
 .vote_feature {
-  margin: 0 auto var(--space-5) auto;
-  padding-bottom: var(--space-5);
+  margin: 0 auto 44px auto;
   max-width: 320px;
-  border-bottom: 1px solid var(--gray-200);
 }
 .tile-buttons .vote_feature.block_buttons a.button_link.vote_button {
   display: flex;
@@ -132,7 +149,7 @@ echo "<div class='index_background tile-buttons'>\n";
 if ($show_voting_button && !have_permission(SET_UP_PERMISSION)
     && have_permission(VIEW_RACE_RESULTS_PERMISSION)) {
   echo "<div class='vote_feature block_buttons'>\n";
-  echo "<a class='button_link during_button vote_button' href='vote.php'>Vote!</a>\n";
+  echo "<a class='button_link after_button vote_button' href='vote.php'>Vote!</a>\n";
   echo "</div>\n";
 }
 
@@ -143,8 +160,9 @@ if ($two_columns) {
 echo "<div class='block_buttons'>\n";
 
 // *********** Before ***************
-$need_spacer = make_link_button('Set-Up', 'setup.php', SET_UP_PERMISSION, 'before_button');
-$need_spacer = make_link_button('Race Check-In', 'checkin.php', CHECK_IN_RACERS_PERMISSION, 'before_button') || $need_spacer;
+begin_tile_group();
+make_link_button('Set-Up', 'setup.php', SET_UP_PERMISSION, 'before_button');
+make_link_button('Race Check-In', 'checkin.php', CHECK_IN_RACERS_PERMISSION, 'before_button');
 if (have_permission(ASSIGN_RACER_IMAGE_PERMISSION)) {
   if ($schema_version > 1) {
     echo "<div class='double'>";
@@ -152,25 +170,23 @@ if (have_permission(ASSIGN_RACER_IMAGE_PERMISSION)) {
     echo "<a class='button_link right before_button' href='photo-thumbs.php?repo=car'><b>Car</b><br/>Photos</a>\n";
     echo "</div>";
   } else {
-    $need_spacer = make_link_button('Edit Racer Photos', 'photo-thumbs.php?repo=head', ASSIGN_RACER_IMAGE_PERMISSION, 'before_button') || $need_spacer;
+    make_link_button('Edit Racer Photos', 'photo-thumbs.php?repo=head', ASSIGN_RACER_IMAGE_PERMISSION, 'before_button');
   }
 }
-
-make_spacer_if($need_spacer);
+end_tile_group();
 
 // *********** During ***************
-$need_spacer = make_link_button('Race Dashboard', 'coordinator.php', SET_UP_PERMISSION, 'during_button');
-$need_spacer = make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', SET_UP_PERMISSION, 'during_button') || $need_spacer;
-$need_spacer = make_link_button('Judging', 'judging.php', JUDGING_PERMISSION, 'during_button') || $need_spacer;
+// (Vote! is shown above the list, by itself; see the top of the page.)
+begin_tile_group();
+make_link_button('Race Dashboard', 'coordinator.php', SET_UP_PERMISSION, 'during_button');
+make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', SET_UP_PERMISSION, 'during_button');
+make_link_button('Judging', 'judging.php', JUDGING_PERMISSION, 'during_button');
+make_link_button('Racers On Deck', 'ondeck.php', -1, 'during_button');
+make_link_button('Results By Racer', 'racer-results.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button');
 if (!have_permission(SET_UP_PERMISSION)) {
-  $need_spacer = make_link_button('Slideshow', 'slideshow.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button') || $need_spacer;
-  // (Vote! is shown above the list, by itself; see the top of the page.)
+  make_link_button('Slideshow', 'slideshow.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button');
 }
-
-// *********** During, part 2 ***************
-$need_spacer = make_link_button('Racers On Deck', 'ondeck.php', -1, 'during_button') || $need_spacer;
-$need_spacer = make_link_button('Results By Racer', 'racer-results.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button')
-    || $need_spacer;
+end_tile_group();
 
 // end first column default set-up
 
@@ -184,26 +200,26 @@ if ($two_columns) {
 
 // *********** After ***************
 // Present Awards is on the Kiosk Dashboard, since it drives the awards kiosk.
-$need_spacer = make_link_button('Standings', 'standings.php', VIEW_AWARDS_PERMISSION, 'after_button');
+begin_tile_group();
+make_link_button('Standings', 'standings.php', VIEW_AWARDS_PERMISSION, 'after_button');
 // Anyone can view results, but the anonymous home menu stays short for
 // visitors: exporting is offered once someone has logged in.
 if (@$_SESSION['role']) {
-  $need_spacer = make_link_button('Export Results', 'export.php', VIEW_RACE_RESULTS_PERMISSION, 'after_button') || $need_spacer;
+  make_link_button('Export Results', 'export.php', VIEW_RACE_RESULTS_PERMISSION, 'after_button');
 }
-
-$need_spacer = make_link_button('Retrospective', 'history.php', SET_UP_PERMISSION, 'after_button') || $need_spacer;
-
-make_spacer_if($need_spacer);
+make_link_button('Retrospective', 'history.php', SET_UP_PERMISSION, 'after_button');
+end_tile_group();
 
 // *********** Other ***************
+begin_tile_group();
 make_link_button('Printables', 'print.php', ASSIGN_RACER_IMAGE_PERMISSION, 'other_button');
 make_link_button('About', 'about.php', -1, 'other_button');
-
 if (@$_SESSION['role']) {
   make_link_button('Log out', 'login.php?logout', -1, 'other_button');
 } else {
   make_link_button('Log in', 'login.php', -1, 'other_button');
 }
+end_tile_group();
 
 echo "</div>\n";  // block_buttons
 if ($two_columns) {

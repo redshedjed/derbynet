@@ -3,9 +3,9 @@ BASE_URL=$1
 set -e -E -o pipefail
 source `dirname $0`/common.sh
 cat >anonymous.index.tmp <<EOF
-        <a class="button_link during_button" href="slideshow.php">Slideshow</a>
         <a class="button_link during_button" href="ondeck.php">Racers On Deck</a>
         <a class="button_link during_button" href="racer-results.php">Results By Racer</a>
+        <a class="button_link during_button" href="slideshow.php">Slideshow</a>
         <a class="button_link other_button" href="about.php">About</a>
         <a class="button_link other_button" href="login.php">Log in</a>
 EOF
@@ -102,9 +102,9 @@ cat >racecrew.index.tmp <<EOF
           <a class="button_link left before_button" href="photo-thumbs.php?repo=head"><b>Racer</b><br/>Photos</a>
           <a class="button_link right before_button" href="photo-thumbs.php?repo=car"><b>Car</b><br/>Photos</a>
         <a class="button_link during_button" href="judging.php">Judging</a>
-        <a class="button_link during_button" href="slideshow.php">Slideshow</a>
         <a class="button_link during_button" href="ondeck.php">Racers On Deck</a>
         <a class="button_link during_button" href="racer-results.php">Results By Racer</a>
+        <a class="button_link during_button" href="slideshow.php">Slideshow</a>
         <a class="button_link after_button" href="standings.php">Standings</a>
         <a class="button_link after_button" href="export.php">Export Results</a>
         <a class="button_link other_button" href="print.php">Printables</a>
