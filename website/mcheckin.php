@@ -55,7 +55,7 @@ $(function() {
 </script>
 </head>
 <body>
-<?php make_banner('Mobile Check-In', 'checkin.php'); ?>
+<?php make_banner('Mobile Check-In', 'index.php'); ?>
 
 <div id="greetings-background" class="hidden"><!-- Added "hidden" as an experiment -->
   <div id="greetings" class="block_buttons">
@@ -81,7 +81,7 @@ $(function() {
   </div>
 
   <div id="preview-container">
-    <video id="preview" autoplay muted playsinline> </video>
+    <video id="preview" autoplay="autoplay" muted="muted" playsinline="playsinline"> </video>
     <div id="preview-overlay">
       <div id="preview-overlay-content">
          Point at a racer's barcode
@@ -97,6 +97,7 @@ $(function() {
   </div>
   <ul class="mlistview"></ul>
   <p id="racer-list-empty" class="hidden">No racers match.</p>
+  <p id="full-table-link"><a href="checkin.php?full=1">Full check-in table</a></p>
   <div id="switch-to-camera-button" onclick="on_switch_to_camera_cllicked();">Scan a Barcode</div>
 </div>
 

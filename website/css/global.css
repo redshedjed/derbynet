@@ -372,7 +372,8 @@ tbody {
 .tile_blue   { --tile-accent: var(--stage-before); }
 .tile_red    { --tile-accent: var(--stage-during); }
 .tile_gold   { --tile-accent: var(--stage-after); }
-.tile_silver { --tile-accent: var(--stage-other); }
+.tile_silver { --tile-accent: var(--tile-silver); }
+.tile_black  { --tile-accent: var(--tile-black); }
 
 .block_buttons input.mini {
   padding: 5px;

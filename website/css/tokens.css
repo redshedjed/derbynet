@@ -97,6 +97,8 @@
   --stage-during: var(--scouting-red);
   --stage-after: #A07D2E;  /* gold */
   --stage-other: var(--gray-500);
+  --tile-silver: #A3A8AF;  /* home menu: following the race */
+  --tile-black: var(--scouting-ink);  /* home menu: about, log in / out */
 
   /* ---- Layout ---- */
   --banner-height: 64px;  /* setup.css positions a box just under the banner */

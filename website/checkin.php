@@ -57,6 +57,26 @@ function column_header($text, $o) {
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<script type="text/javascript">
+// On a phone, check in with Mobile Check-In, which is laid out for it.  Its
+// "Full check-in table" link comes back here with ?full, which is remembered
+// for the rest of the visit.  (screen.width: the page itself is drawn wider
+// than a phone, since it has no viewport tag.)
+(function() {
+  try {
+    if (location.search.indexOf('full') >= 0) {
+      sessionStorage.setItem('checkin-full-table', '1');
+    }
+    // (Written without less-than or double ampersand, which would break the
+    // XML check the tests run on this page)
+    if (700 > screen.width) {
+      if (!sessionStorage.getItem('checkin-full-table')) {
+        location.replace('mcheckin.php');
+      }
+    }
+  } catch (e) {}
+})();
+</script>
 <title>Check-In</title>
 <link rel="stylesheet" type="text/css" href="css/dropzone.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>

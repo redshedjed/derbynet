@@ -115,6 +115,13 @@ div.index_background {
   display: flow-root;
 }
 
+/* Who's logged in, under Log out */
+p.logged_in_as {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
 /* Home menu tiles: the tile look and the colors (tile_blue, ...)
    are shared, in global.css under "Tile buttons". */
 .block_buttons a.button_link {
@@ -169,13 +176,13 @@ if ($show_voting_button && !have_permission(SET_UP_PERMISSION | CONTROL_RACE_PER
 }
 
 // The menu, in color groups:
-//   blue:   the everyday pages -- check-in, photos, printables, and what
-//           everyone follows during the race
-//   red:    running the race (the dashboards) and its standings
-//   gold:   the back end -- export, retrospective, set-up
-//   silver: about, and logging in or out
-// With two columns (for those who run the race), blue is on the left and the
-// rest on the right.
+//   blue:   the crew's jobs -- check-in, photos, printables, judging
+//   silver: following the race -- schedule, results, standings
+//   red:    running the race (the dashboards)
+//   gold:   the back end -- set-up, export, retrospective
+//   black:  about, and logging in or out
+// With two columns (for those who run the race), blue and silver are on the
+// left and the rest on the right.
 if ($two_columns) {
   echo "<div class='index_column'>\n";
 }
@@ -184,13 +191,19 @@ echo "<div class='block_buttons'>\n";
 
 // *********** Blue ***************
 begin_tile_group();
+// On a phone, Race Check-In goes on to Mobile Check-In (see checkin.php)
 make_link_button('Race Check-In', 'checkin.php', CHECK_IN_RACERS_PERMISSION, 'tile_blue');
 // Racer and car photos are one page, with a Racer / Car switch
 make_link_button('Photos', 'photo-thumbs.php', ASSIGN_RACER_IMAGE_PERMISSION, 'tile_blue');
 make_link_button('Printables', 'print.php', ASSIGN_RACER_IMAGE_PERMISSION, 'tile_blue');
-make_link_button('Race Schedule', 'ondeck.php', -1, 'tile_blue');
 make_link_button('Judging', 'judging.php', JUDGING_PERMISSION, 'tile_blue');
-make_link_button('Results By Racer', 'racer-results.php', VIEW_RACE_RESULTS_PERMISSION, 'tile_blue');
+end_tile_group();
+
+// *********** Silver ***************
+begin_tile_group();
+make_link_button('Race Schedule', 'ondeck.php', -1, 'tile_silver');
+make_link_button('Results By Racer', 'racer-results.php', VIEW_RACE_RESULTS_PERMISSION, 'tile_silver');
+make_link_button('Standings', 'standings.php', VIEW_AWARDS_PERMISSION, 'tile_silver');
 end_tile_group();
 
 if ($two_columns) {
@@ -207,24 +220,26 @@ if ($two_columns) {
 begin_tile_group();
 make_link_button('Race Dashboard', 'coordinator.php', CONTROL_RACE_PERMISSION, 'tile_red');
 make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', CONTROL_RACE_PERMISSION, 'tile_red');
-make_link_button('Standings', 'standings.php', VIEW_AWARDS_PERMISSION, 'tile_red');
 end_tile_group();
 
 // *********** Gold ***************
 // The back end, for the Administrator
 begin_tile_group();
+make_link_button('Set-Up', 'setup.php', SET_UP_PERMISSION, 'tile_gold');
 make_link_button('Export Results', 'export.php', SET_UP_PERMISSION, 'tile_gold');
 make_link_button('Retrospective', 'history.php', SET_UP_PERMISSION, 'tile_gold');
-make_link_button('Set-Up', 'setup.php', SET_UP_PERMISSION, 'tile_gold');
 end_tile_group();
 
-// *********** Silver ***************
+// *********** Black ***************
+// Under Log out, who's logged in, since devices get passed around
 begin_tile_group();
-make_link_button('About', 'about.php', -1, 'tile_silver');
+make_link_button('About', 'about.php', -1, 'tile_black');
 if (@$_SESSION['role']) {
-  make_link_button('Log out', 'login.php?logout', -1, 'tile_silver');
+  make_link_button('Log out', 'login.php?logout', -1, 'tile_black');
+  echo "<p class='logged_in_as'>Logged in as <b>"
+      .htmlspecialchars($_SESSION['role'], ENT_QUOTES, 'UTF-8')."</b></p>";
 } else {
-  make_link_button('Log in', 'login.php', -1, 'tile_silver');
+  make_link_button('Log in', 'login.php', -1, 'tile_black');
 }
 end_tile_group();
 

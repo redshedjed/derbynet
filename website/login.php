@@ -53,6 +53,22 @@ div.index_background {
   margin-bottom: var(--space-4);
 }
 
+/* Each role: its button, then a line on what it's for */
+.role_choice {
+  margin-bottom: var(--space-4);
+}
+.tile-buttons .block_buttons .role_choice input[type='button'] {
+  margin-bottom: var(--space-1);
+}
+.role_hint {
+  margin: 0 auto;
+  width: 270px;
+  padding-left: var(--space-3);
+  box-sizing: border-box;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-muted);
+}
+
 #login-logout {
   margin-top: var(--space-6);
   padding-top: var(--space-5);
@@ -87,13 +103,30 @@ var g_after_login = <?php
 
 <div class="accent-brand">
 <?php
+// A line under each role saying what it's for, so helpers pick the right
+// one: from config-roles.inc ('description'), or these for the usual roles
+$role_descriptions = array(
+  'RaceCrew' => 'Check-in, photos, printables, judging',
+  'RaceCoordinator' => 'Runs the race: the Race and Kiosk Dashboards',
+  'Administrator' => 'Set-up, settings, awards, export',
+  'Timer' => 'The track timer program',
+  'Photo' => 'The photo station',
+);
 foreach ($roles as $name => $details) {
   if (empty($name)) {
     // "Logged out" role: no name, no password
   } else if (isset($details['interactive']) && !$details['interactive'] && !isset($_GET['all'])) {
     // Ignore logins intended for robots
   } else {
-    echo '<input type="button" value="'.$name.'" onclick=\'show_password_form("'.$name.'");\'/>'."\n";
+    $description = isset($details['description']) ? $details['description']
+                   : (isset($role_descriptions[$name]) ? $role_descriptions[$name] : '');
+    echo '<div class="role_choice">';
+    echo '<input type="button" value="'.htmlspecialchars($name, ENT_QUOTES, 'UTF-8').'"'
+        .' onclick=\'show_password_form('.htmlspecialchars(json_encode($name), ENT_QUOTES, 'UTF-8').');\'/>';
+    if ($description) {
+      echo '<p class="role_hint">'.htmlspecialchars($description, ENT_QUOTES, 'UTF-8').'</p>';
+    }
+    echo "</div>\n";
   }
 }
 ?>

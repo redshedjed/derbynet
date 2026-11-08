@@ -359,8 +359,8 @@ div#racer-list {
 }
 
 #racer-list ul.mlistview {
-  /* Room for "Scan a Barcode" at the bottom */
-  padding: var(--space-2) var(--space-3) calc(64px + var(--space-4)) var(--space-3);
+  /* (The link below the list leaves room for "Scan a Barcode") */
+  padding: var(--space-2) var(--space-3);
 }
 /* One card per racer: name, car and group, and whether they're checked in */
 #racer-list ul.mlistview > li {
@@ -488,4 +488,12 @@ div#racer-list {
   padding: var(--space-3);
 }
 
+}
+
+/* Below the racer list: the desktop check-in table, for what this page
+   doesn't do (adding or editing racers) */
+#full-table-link {
+  margin: 0 0 calc(64px + var(--space-4)) 0;
+  text-align: center;
+  font-size: 0.9rem;
 }
