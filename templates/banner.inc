@@ -20,20 +20,10 @@ function make_banner($banner_title, $back_button = 'index.php') {
 
   echo "<div class=\"banner_title\">".htmlspecialchars($banner_title, ENT_QUOTES, 'UTF-8')."</div>\n";
 
-  echo "<div class=\"banner_tools\">\n";
-  if (isset($_SESSION['role']) && $_SESSION['role']) {
-    echo "<a class=\"help\" href=\"quickref.pdf\" target=\"derbynet_help\" rel=\"noreferrer noopener\""
-        ." title=\"Quick reference\">";
-    echo "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\""
-        ." stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">"
-        ."<circle cx=\"12\" cy=\"12\" r=\"10\"/>"
-        ."<path d=\"M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.6-3 4.5\"/>"
-        ."<circle cx=\"12\" cy=\"17.5\" r=\"0.6\" fill=\"currentColor\"/></svg>";
-    echo "<span class=\"help_version\">@BRANCH@</span>";
-    echo "</a>\n";
-  }
-  echo "<img class=\"logo\" src=\"img/derbynet.png\" alt=\"DerbyNet\"/>\n";
-  echo "</div>\n";
+  // The right-hand column is kept, empty, so the title stays centered between
+  // it and the back button.  (It held the help link, the version and the
+  // DerbyNet logo.)
+  echo "<div class=\"banner_tools\"></div>\n";
 
   echo "</div>\n";
 }

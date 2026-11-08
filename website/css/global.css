@@ -108,51 +108,17 @@ a {
   height: 1.4em;
 }
 
+/* Empty right-hand column: balances the back button so the title stays
+   centered */
 .banner .banner_tools {
   grid-area: tools;
-  justify-self: end;
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.banner .help {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  color: var(--color-text-on-brand);
-  text-decoration: none;
-  line-height: 1;
-}
-.banner .help svg {
-  width: 32px;
-  height: 32px;
-}
-.banner .help .help_version {
-  margin-top: 2px;
-  font-size: var(--text-xs);
-  color: var(--color-text-on-brand-muted);
-}
-
-.banner img.logo {
-  display: block;
-  height: calc(var(--banner-height) - 8px);
-  width: auto;
 }
 
 @media (max-width: 480px) {
-  /* Too little room for the logo beside a title on a phone */
-  .banner img.logo {
-    display: none;
-  }
+  /* On a phone the back button is just the arrow */
   .banner .back_button span {
     display: none;
   }
-}
-
-div.banner_version {
-  position: absolute;
-  right: 10px;
 }
 
 /* ---------------- Tables ---------------- */
