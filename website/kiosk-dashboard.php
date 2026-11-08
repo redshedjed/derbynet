@@ -66,7 +66,6 @@ var g_standings_choices = <?php
   </div>
   <span class="toolbar-spacer"></span>
   <input id="new_kiosk_window_button" type="button" class="btn btn-secondary" value="New Kiosk Window"/>
-  <a class="btn btn-secondary" href="awards-presentation.php">Present Awards</a>
   <?php if (have_permission(SET_UP_PERMISSION)) { /* editing scenes is set-up */ ?>
   <a class="btn btn-secondary" href="scenes.php">Scene Editor</a>
   <?php } ?>

@@ -306,11 +306,12 @@ if ($two_columns) {
 }
 
 // *********** Red ***************
-// Present Awards is on the Kiosk Dashboard, since it drives the awards kiosk;
-// the slideshow runs only on kiosks, also set from there.
+// Running the event: the race, the screens, and the awards ceremony.  (The
+// slideshow runs only on kiosks, set from the Kiosk Dashboard.)
 begin_tile_group();
 make_link_button('Race Dashboard', 'coordinator.php', CONTROL_RACE_PERMISSION, 'tile_red');
 make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', CONTROL_RACE_PERMISSION, 'tile_red');
+make_link_button('Present Awards', 'awards-presentation.php', PRESENT_AWARDS_PERMISSION, 'tile_red');
 end_tile_group();
 
 // *********** Gold ***************

@@ -75,6 +75,7 @@ cat >admin.index.tmp <<EOF
           <a class="button_link tile_silver" href="standings.php">Standings</a>
           <a class="button_link tile_red" href="coordinator.php">Race Dashboard</a>
           <a class="button_link tile_red" href="kiosk-dashboard.php">Kiosk Dashboard</a>
+          <a class="button_link tile_red" href="awards-presentation.php">Present Awards</a>
           <a class="button_link tile_gold" href="setup.php">Set-Up</a>
           <a class="button_link tile_gold" href="export.php">Export Results</a>
           <a class="button_link tile_gold" href="history.php">Retrospective</a>
@@ -102,6 +103,7 @@ cat >coordinator.index.tmp <<EOF
           <a class="button_link tile_silver" href="standings.php">Standings</a>
           <a class="button_link tile_red" href="coordinator.php">Race Dashboard</a>
           <a class="button_link tile_red" href="kiosk-dashboard.php">Kiosk Dashboard</a>
+          <a class="button_link tile_red" href="awards-presentation.php">Present Awards</a>
           <a class="button_link tile_black" href="about.php">About</a>
           <a class="button_link tile_black" href="quickref.php">Quick Reference</a>
           <a class="button_link tile_black" href="login.php?logout">Log out</a>
