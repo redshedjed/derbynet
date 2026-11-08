@@ -62,15 +62,21 @@ function end_tile_group() {
 <script type="text/javascript" src="js/modal.js"></script>
 <style type="text/css">
 /* A group of tiles (before, during, after the race, the rest): tiles close
-   together, groups apart (44px, the space the tiles used to have) */
+   together, groups apart.  The two spacings are set here once; everything
+   that separates groups below (Vote!, the stacked columns, the bottom of the
+   page) uses --tile-group-gap. */
+div.index_background {
+  --tile-gap: 10px;
+  --tile-group-gap: 44px;  /* the space the tiles used to have */
+}
 div.tile_group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: var(--tile-gap);
 }
 div.tile_group + div.tile_group {
-  margin-top: 44px;
+  margin-top: var(--tile-group-gap);
 }
 div.tile_group a.button_link {
   margin-top: 0;
@@ -96,7 +102,7 @@ div.index_column {
   }
   /* The second column (After, Other) starts a new group under the first */
   div.index_column + div.index_column {
-    margin-top: 44px;
+    margin-top: var(--tile-group-gap);
   }
 }
 
@@ -105,7 +111,7 @@ div.index_background {
   /* Room below the last button (Log in / Log out), the same as between
      groups.  flow-root makes it hold the floated columns of the two-column
      menu, so the padding comes after them. */
-  padding-bottom: 44px;
+  padding-bottom: var(--tile-group-gap);
   display: flow-root;
 }
 
@@ -119,7 +125,7 @@ div.index_background {
 /* Vote!: a gold tile twice as tall as the others, with large centered
    text, the same space above the menu as between its groups */
 .vote_feature {
-  margin: 0 auto 44px auto;
+  margin: 0 auto var(--tile-group-gap) auto;
   max-width: 320px;
 }
 .tile-buttons .vote_feature.block_buttons a.button_link.vote_button {
