@@ -38,6 +38,7 @@ $(function() {
 </head>
 <body>
 <?php make_banner('Timer Testing', 'coordinator.php'); ?>
+<div class="timer_test_page">
 
 <div id="log_outer">
   <div class="test-control">
@@ -107,7 +108,8 @@ $(function() {
     <a class="button_link" href="fake-timer.php" target="_blank">Fake Timer</a>
   </div>
 
-</div>
+</div><!-- now-racing -->
+</div><!-- timer_test_page -->
 
 <div id='timer_settings_modal' class='modal_dialog wide_modal hidden block_buttons'>
   <div id='timer_settings_port_and_device'>

@@ -98,10 +98,11 @@ $(function() {
 
 <div id="main">
 
-  <div id="queue">
+  <div id="queue" class="card card-accent accent-during">
+    <h2 class="card-title">Playlist</h2>
 
     <div id="racing-scene-div">
-      <label for="racing-scene">Racing scene:</label>
+      <label for="racing-scene">Racing scene</label>
       <select id="racing-scene">
       </select>
       <p id='racing-scene-psa' class='hidden'>
@@ -114,8 +115,9 @@ $(function() {
     </ul>
   </div>
 
-  <div id="rounds-div">
-    <p>Available rounds:</p>
+  <div id="rounds-div" class="card card-accent accent-before">
+    <h2 class="card-title">Available Rounds</h2>
+    <p class="rounds-hint">Click a round to add it to the playlist.</p>
     <ul class="mlistview" id="rounds-ul">
     </ul>
   </div>

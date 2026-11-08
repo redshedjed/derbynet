@@ -1,105 +1,181 @@
+/* Timer Testing (timer-test.php).  Two columns: on the left the timer's
+   status, Simulate Racing, and the lanes (with Timer Settings, Start Race
+   and Fake Timer); on the right the timer log, which js/timer-test.js sizes
+   to reach the bottom of the window. */
+
+.timer_test_page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "status log"
+                       "sim    log"
+                       "lanes  log";
+  grid-template-rows: auto auto 1fr;
+  gap: var(--space-3) var(--space-4);
+  align-items: start;
+  max-width: 1200px;
+  margin: var(--space-4) auto;
+  padding: 0 var(--space-4);
+}
+#log_outer                     { grid-area: log; }
+div#timer_summary              { grid-area: status; }
+.timer_test_page > .test-control { grid-area: sim; }
+div#now-racing                 { grid-area: lanes; }
+
+/* Cards */
+#log_outer,
+div#timer_summary,
+div#now-racing,
+.timer_test_page > .test-control {
+  box-sizing: border-box;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+div#timer_summary,
+.timer_test_page > .test-control,
+div#now-racing {
+  border-left: 6px solid var(--stage-during);
+}
 #log_outer {
-  float: right;
-  width: 50%;
+  border-left: 6px solid var(--stage-other);
 }
-#log_outer .test-control {
-  font-size: 14px;
-  margin-bottom: 0px;
-}
-#log_outer .test-control label {
-  font-size: 18px;
-}
-#log_container {
-  border: 2px solid black;
-  overflow-y: scroll;
-  margin: 10px;
-  margin-top: 0px;
-  margin-bottom: 10px;
-}
+
+/* ---------------- Timer status ---------------- */
 
 div#timer_summary {
-  margin-left: 50px;
-  margin-top: 50px;
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
 }
 img#timer_summary_icon {
-  float: left;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-div#timer_summary_text {
-  display: inline-block;
+  width: 48px;
+  height: 48px;
 }
 div#timer_summary h3 {
-  margin-top: 0px;
-  margin-bottom: 5px;
+  margin: 0 0 var(--space-1) 0;
+  font-size: var(--text-lg);
 }
 div#timer_summary p {
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin: 2px 0;
 }
 div#timer-details p {
-  margin-top: 0px;
-  margin-bottom: 0px;
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
 }
+
+/* ---------------- Switches: Simulate racing, Remote logging ---------------- */
 
 div.test-control {
- font-size: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  font-size: var(--text-base);
 }
 div.test-control label {
-  display: inline-block;
-  margin-left: 45px;
-  width: 150px;
+  font-weight: var(--weight-semibold);
 }
 div.test-control #log-location {
-  margin-left: 30px;
-  font-size: 18px;
+  flex-basis: 100%;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  word-break: break-all;
 }
+
+/* ---------------- Lanes ---------------- */
 
 #n-lanes-label {
-  font-size: 18px;
-  margin-left: 50px;
-  margin-right: 20px;
+  margin-right: var(--space-2);
+  font-size: var(--text-base);
 }
 #n-lanes {
-  line-height: 1.3;
-  font-family: sans-serif;
-  font-size: 24px;
+  width: 4em;
+  font-size: var(--text-lg);
 }
 #reverse-lanes {
-  margin-left: 50px;
+  margin: var(--space-2) var(--space-1) 0 0;
 }
 #reverse-lanes-label {
-  font-size: 18px;
+  font-size: var(--text-base);
 }
 
-#timer_settings_button_div,
-#start_race_button_div,
-#fake_timer_div {
-  width: 550px;
-}
-#start_race_button_div input[type='button'] {
-  background: #008000;
-}
-
-
-div#now-racing {
-  margin-top: 20px;
-}
 table#lanes {
-  margin-left: 20px;
-  margin-top: 10px;
-  margin-bottom: 20px;
-  font-size: 24px;
- }
-
+  margin: var(--space-3) 0;
+  border-collapse: collapse;
+  background: transparent;
+  font-size: var(--text-lg);
+}
+table#lanes th {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--color-border);
+}
 table#lanes td {
   min-width: 80px;
+  padding: var(--space-1) var(--space-3);
+  border: 0;
+  border-bottom: 1px solid var(--gray-200);
+  font-variant-numeric: tabular-nums;
 }
 table#lanes td.time {
   text-align: right;
 }
 
+/* Timer Settings, Start Race, Fake Timer */
+#timer_settings_button_div,
+#start_race_button_div,
+#fake_timer_div {
+  margin: var(--space-2) 0 0 0;
+}
+#timer_settings_button_div input[type='button'],
+#fake_timer_div a.button_link {
+  width: 220px;
+  min-height: 44px;
+  font-size: var(--text-base);
+  color: var(--color-brand);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+#start_race_button_div input[type='button'] {
+  width: 220px;
+  min-height: 44px;
+  font-size: var(--text-base);
+  background: var(--color-success);
+  border-color: var(--color-success);
+}
+
+/* ---------------- Log ---------------- */
+
+#log_outer .test-control {
+  margin-bottom: var(--space-2);
+}
+#log_container {
+  margin: 0;
+  overflow-y: scroll;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+}
+#log_text {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+}
+
+@media (max-width: 900px) {
+  .timer_test_page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "status" "sim" "lanes" "log";
+  }
+}
 
 #timer_settings_modal {
   top: 10px;
