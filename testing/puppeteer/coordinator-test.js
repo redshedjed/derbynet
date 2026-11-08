@@ -50,10 +50,14 @@ puppeteer.launch({devtools: debugging, slowMo: 200}).then(async browser => {
   async function open_scheduling_control_group(selector) {
     await page.evaluate((selector) => { $(selector).click(); }, selector);
     
-    // Wait for control group to open
+    // Wait for control group to open: its collapsible parts (progress text and
+    // buttons) shown, and done sliding open.  (This used to wait for the group
+    // to be taller than 150px, which depended on the page's styling.)
     await page.waitForFunction((selector) => {
-      console.log(selector + " height = " +  $(selector).height());
-      return $(selector).height() > 150;
+      var collapsible = $(selector).find('.collapsible');
+      return collapsible.length > 0 &&
+             collapsible.filter(':visible').length == collapsible.length &&
+             collapsible.filter(':animated').length == 0;
     },
                                {}, selector);
   }
