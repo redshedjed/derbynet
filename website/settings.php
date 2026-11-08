@@ -340,9 +340,17 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
   <!-- The "Our Pack" card on the About page (inc/about-pack.inc).  Saved in
        the database like every setting here. -->
   <section class="settings_group card card-accent accent-other" id="about-pack-group">
-    <h2 class="card-title">About Page</h2>
+    <h2 class="card-title">Home and About Pages</h2>
     <div class="settings_group_settings">
-      <p><label for="about-pack-html"><b>Our Pack</b></label></p>
+      <p>
+        <label for="home-banner-title"><b>Home page title</b></label>
+        <input id="home-banner-title" name="home-banner-title" type="text" class="not-mobile"
+               value="<?php echo htmlspecialchars(read_raceinfo('home-banner-title', 'DerbyNet'),
+                                                  ENT_QUOTES, 'UTF-8'); ?>"/>
+      </p>
+      <p class="settings-hint">Shown in the banner at the top of the home page.</p>
+
+      <p><label for="about-pack-html"><b>About page: Our Pack</b></label></p>
       <p class="settings-hint">HTML for the first card on the <a href="about.php">About</a>
          page, which anyone can see.  Leave it empty to hide the card.</p>
       <textarea id="about-pack-html" name="about-pack-html" rows="6" class="not-mobile"

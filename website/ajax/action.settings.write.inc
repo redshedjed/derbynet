@@ -49,6 +49,7 @@ if (have_permission(SET_UP_PERMISSION)) {
     'car-photo-dir' => array('setting' => 'car-photo-directory'),
     'do-use-subgroups' => array('setting' => 'use-subgroups', 'type' => 'checkbox'),
     'finish-formatting' => array('setting' => 'finish-formatting'),
+    'home-banner-title' => array('setting' => 'home-banner-title'),
     'images-dir' => array('setting' => 'images-dir'),
     'lane-colors' => array('setting' => 'lane-colors'),
     'log-dir' => array('setting' => 'logs-directory'),

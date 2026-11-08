@@ -92,7 +92,8 @@ div.index_background {
 </head>
 <body>
 <?php
-  make_banner('', /* back_button */ false);
+  // The home page title is a setting (Settings > Home and About Pages)
+  make_banner(read_raceinfo('home-banner-title', 'DerbyNet'), /* back_button */ false);
 
  $need_spacer = false;
 
