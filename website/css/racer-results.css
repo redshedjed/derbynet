@@ -242,3 +242,14 @@ td.heat_winner {
     font-size: var(--text-xs);
   }
 }
+
+/* A racer's extra rows of times (when they run a lane more than once):
+   same stripe, no rule between, so they read as one racer */
+tr.more_runs td {
+  border-top: 0;
+}
+tr.d0:has(+ tr.more_runs) td,
+tr.d1:has(+ tr.more_runs) td,
+tr.more_runs:has(+ tr.more_runs) td {
+  border-bottom: 0;
+}

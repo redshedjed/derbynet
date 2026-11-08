@@ -145,13 +145,15 @@ function write_rr($racer_label, $roundid, $racer_cells, $nrows) {
   global $nlanes;
   global $row;  // read and written
 
-  $rrow = '<tr class="d'.($row & 1).'" data-roundid="'.$roundid.'">'
+  // One stripe per racer: when a racer runs a lane more than once, all of
+  // their rows share it, so the extra rows don't look like another racer's
+  $stripe = 'd'.($row & 1);
+  $rrow = '<tr class="'.$stripe.'" data-roundid="'.$roundid.'">'
          .'<th rowspan="'.$nrows.'" class="nrows'.$nrows.'">'.$racer_label.'</th>';
   ++$row;
   for ($r = 0; $r < $nrows; ++$r) {
     if ($r > 0) {
-      $rrow .= '</tr><tr class="d'.($row & 1).'">';
-      ++$row;
+      $rrow .= '</tr><tr class="'.$stripe.' more_runs">';
     }
     foreach ($racer_cells as $cols) {
       if (count($cols) <= $r) {
