@@ -211,3 +211,17 @@ p.parameters {
     font-size: 1.125rem;
   }
 }
+
+/* ---------------- Set Up the Displays ---------------- */
+
+#set_up_displays {
+  margin: var(--space-5) 0 0 0;
+}
+#set_up_displays .toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+#set_up_displays p {
+  margin: var(--space-2) 0 0 0;
+}

@@ -169,8 +169,10 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
       <a class="button_link" href="kiosk-dashboard.php">Kiosk Dashboard</a>
     </div>
     <div class="step_details">
-      <p>Optional: what the TVs and screens show.  Set them up ahead of time
-        with the <a href="scenes.php?back=setup.php">Scene Editor</a>.</p>
+      <p>Optional: what the TVs and screens show.  Set them up ahead of time:
+        where they are in the <a href="kiosk-editor.php?back=setup.php">Kiosk Editor</a>,
+        and what each one shows in the
+        <a href="scenes.php?back=setup.php">Scene Editor</a>.</p>
     </div>
   </div>
 </section>

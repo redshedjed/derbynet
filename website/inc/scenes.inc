@@ -60,7 +60,7 @@ function all_scenes() {
 
 // Returns a sorted array of kiosk names ('Main', 'Aux1', etc.) that appear in
 // any scene definition.
-function all_scene_kiosk_names() {
+function scene_kiosk_names_in_use() {
   global $db;
   try {
     $stmt = $db->prepare('SELECT DISTINCT kiosk_name FROM SceneKiosk ORDER BY '
@@ -80,6 +80,38 @@ function all_scene_kiosk_names() {
       echo $p;
     }
   }
+}
+
+// Kiosk locations: the places a display can be ('Main' -- the TV by the
+// track, 'Lobby', ...), defined on the Kiosk Editor page.  Scenes say what
+// each location shows; on the Kiosk Dashboard, each display is given a
+// location as its name.  Kept in RaceInfo as JSON, [{name:, note:}, ...], in
+// order; any name a scene uses that isn't on the list is added at the end.
+function kiosk_locations() {
+  $locations = json_decode(read_raceinfo('kiosk-locations', '[]'), true);
+  if (!is_array($locations)) {
+    $locations = array();
+  }
+  $known = array();
+  foreach ($locations as $loc) {
+    $known[strtolower($loc['name'])] = true;
+  }
+  foreach (scene_kiosk_names_in_use() as $name) {
+    if (!isset($known[strtolower($name)])) {
+      $locations[] = array('name' => $name, 'note' => '');
+      $known[strtolower($name)] = true;
+    }
+  }
+  return $locations;
+}
+
+function write_kiosk_locations($locations) {
+  write_raceinfo('kiosk-locations', json_encode(array_values($locations)));
+}
+
+// The location names, in order: what scenes and the Kiosk Dashboard offer
+function all_scene_kiosk_names() {
+  return array_map(function($loc) { return $loc['name']; }, kiosk_locations());
 }
 
 function apply_scene($sceneid) {

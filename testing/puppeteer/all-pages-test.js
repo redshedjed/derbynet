@@ -32,6 +32,7 @@ var all_uris = [
   "index.php",
   "judging.php",
   "kiosk-dashboard.php",
+  "kiosk-editor.php",
   "login.php",
   "ondeck.php",
   "photo-thumbs.php",

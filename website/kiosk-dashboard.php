@@ -64,16 +64,28 @@ var g_standings_choices = <?php
     </div>
     <div id="scenes-status-message"></div>
   </div>
-  <span class="toolbar-spacer"></span>
-  <input id="new_kiosk_window_button" type="button" class="btn btn-secondary" value="New Kiosk Window"/>
-  <?php if (have_permission(SET_UP_PERMISSION)) { /* editing scenes is set-up */ ?>
-  <a class="btn btn-secondary" href="scenes.php">Scene Editor</a>
-  <?php } ?>
 </div>
 
 <div class="kiosk_page">
 <div id="kiosk_control_group" class="kiosk_control_group">
 </div>
+
+<!-- Setting up the displays: another kiosk window on this computer, and (for
+     the Administrator) the kiosk locations and the scenes -->
+<section id="set_up_displays" class="card card-accent accent-other">
+  <h2 class="card-title">Set Up the Displays</h2>
+  <div class="toolbar">
+    <input id="new_kiosk_window_button" type="button" class="btn btn-secondary" value="New Kiosk Window"/>
+    <?php if (have_permission(SET_UP_PERMISSION)) { /* locations and scenes are set-up */ ?>
+    <a class="btn btn-secondary" href="kiosk-editor.php">Kiosk Editor</a>
+    <a class="btn btn-secondary" href="scenes.php">Scene Editor</a>
+    <?php } ?>
+  </div>
+<?php if (have_permission(SET_UP_PERMISSION)) { ?>
+  <p class="text-muted">The Kiosk Editor lists the locations a display can be (the TV by
+    the track, the lobby, ...); the Scene Editor sets what each location shows.</p>
+<?php } ?>
+</section>
 
 <section id="start_display" class="card card-accent accent-other tile-buttons">
   <h2 class="card-title">Make this device a display</h2>

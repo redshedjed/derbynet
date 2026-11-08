@@ -77,8 +77,8 @@ var g_standings_choices = <?php echo json_encode($oracle->standings_choices_for_
     </select>
   </div>
   <span class="toolbar-spacer"></span>
-  <input type="button" id="add_kiosk_button" class="btn btn-secondary" value="Add Kiosk Name"
-         onclick='on_add_kiosk()'/>
+  <a class="btn btn-secondary" href="kiosk-editor.php?back=scenes.php"
+     title="Add, rename or remove kiosk locations">Kiosk Editor</a>
   <input type="button" id="delete_scene_button" class="btn btn-danger" value="Delete Scene"
          onclick='on_delete_scene()'/>
 </div>
