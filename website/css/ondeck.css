@@ -181,3 +181,19 @@ th.nrows4 img {
     text-align: center;
   }
 }
+
+/* The winner of each finished heat (marked by js/ondeck.js) */
+td.heat_winner {
+  box-shadow: inset 0 0 0 3px var(--color-danger);
+}
+
+/* "Racing starts at 10:00 AM", from Settings, under the banner */
+p.race_start {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  font-size: clamp(1rem, 1.6vw, 2rem);
+  text-align: center;
+  color: var(--color-brand-strong);
+  background: #E8EFF8;
+  border-bottom: 1px solid var(--gray-200);
+}

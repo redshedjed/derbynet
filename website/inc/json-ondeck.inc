@@ -67,6 +67,10 @@ function json_ondeck(&$now_running) {
                                   : ($use_points
                                      ? 'z'.ordinal($row['finishplace'])
                                      : 'z'.sprintf($time_format, $row['finishtime']))),
+                     // Finishing place, for marking each heat's winner (null
+                     // until the heat is run, or if the timer gave no places)
+                     'place' => empty($row['completed']) || $row['finishplace'] === null
+                                ? null : intval($row['finishplace']),
                      'carphoto' => $render->url_elements_for_row($row)
       );
   }

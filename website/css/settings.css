@@ -140,7 +140,7 @@ p.photo_dir_status_message:empty {
   border-radius: var(--radius-md);
   resize: vertical;
 }
-#about-pack-group .settings-hint {
+.settings_group .settings-hint {
   color: var(--color-text-muted);
 }
 

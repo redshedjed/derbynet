@@ -278,7 +278,7 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
         echo $photos_on_now_racing == "car" ? ' checked="checked"' : '';
         ?>/><label for="now-racing-photos-car">Car photos</label>
       </p>
-      <p><b>On Deck</b> display:<br/>&nbsp;&nbsp;
+      <p><b>Race Schedule</b> display:<br/>&nbsp;&nbsp;
         <input id="show-car-photos-on-deck" name="show-car-photos-on-deck" class="not-mobile"
                type="checkbox"<?php if ($show_car_photos_on_deck) echo ' checked="checked"';?>/>
         <label>Car photos</label>
@@ -307,6 +307,14 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
   <section class="settings_group card card-accent accent-ink">
     <h2 class="card-title">Racing and Scoring</h2>
     <div class="settings_group_settings">
+      <p>
+        <label for="race-start-time">Race start time</label>
+        <input id="race-start-time" name="race-start-time" type="text" class="not-mobile"
+               placeholder="e.g. 10:00 AM"
+               value="<?php echo htmlspecialchars(read_raceinfo('race-start-time', ''), ENT_QUOTES, 'UTF-8'); ?>"/>
+      </p>
+      <p class="settings-hint">Shown at the top of the Race Schedule page.  Leave it
+         empty to hide it.</p>
       <p>
         <input id="use-master-sched" name="use-master-sched" class="not-mobile" type="checkbox"<?php
             if ($use_master_sched) echo ' checked="checked"';?>/>

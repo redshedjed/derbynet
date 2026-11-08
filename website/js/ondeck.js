@@ -179,6 +179,8 @@ function repopulate_schedule(json) {
     $("table#schedule tr#heat_" + json['ondeck']['next']['roundid'] +
       '_' + json['ondeck']['next']['heat']).addClass('nextheat');
   }
+
+  mark_heat_winners(json['ondeck']['chart']);
 }
 
 function preload_images_for_tallest_aspect(imgs_jquery, ondone) {
@@ -334,6 +336,35 @@ function animate_next_heat() {
 }
 
 
+// Outlines the winner of each finished heat: the lane that placed first, or,
+// if the timer didn't report places, the fastest time.  (Ties are all
+// outlined.)
+function mark_heat_winners(chart) {
+  var heats = {};
+  for (var i = 0; i < chart.length; ++i) {
+    var c = chart[i];
+    if (!c['result']) continue;
+    var key = c['roundid'] + '_' + c['heat'];
+    (heats[key] = heats[key] || []).push(c);
+  }
+  $("table#schedule td.heat_winner").removeClass('heat_winner');
+  for (var key in heats) {
+    var cells = heats[key];
+    var winners = cells.filter(function(c) { return c['place'] == 1; });
+    if (winners.length == 0) {
+      var best = Math.min.apply(null, cells.map(function(c) {
+        return parseFloat(c['result'].substring(1));
+      }));
+      winners = cells.filter(function(c) {
+        return parseFloat(c['result'].substring(1)) == best;
+      });
+    }
+    for (var w = 0; w < winners.length; ++w) {
+      $("table#schedule td.resultid_" + winners[w]['resultid']).addClass('heat_winner');
+    }
+  }
+}
+
 function update_schedule(json, current_heat, next_heat) {
   if (current_heat &&
       json['current-heat']['use_master_sched'] == current_heat['use_master_sched'] &&
@@ -351,9 +382,12 @@ function update_schedule(json, current_heat, next_heat) {
     for (var res = 0; res < chart.length; ++res) {
       if (chart[res]['roundid'] == cur_roundid &&
           chart[res]['heat'] == cur_heat) {
-        $(".curheat .resultid_" + chart[res]['resultid'] + " .time").text(chart[res]['result'].substring(1));
+        $(".curheat .resultid_" + chart[res]['resultid'] + " .time")
+          .text(chart[res]['result'].substring(1))
+          .css('display', chart[res]['result'] ? 'block' : 'none');
       }
     }
+    mark_heat_winners(chart);
     animate_next_heat();
   } else {
     repopulate_schedule(json);

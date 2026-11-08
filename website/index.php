@@ -181,7 +181,7 @@ begin_tile_group();
 make_link_button('Race Dashboard', 'coordinator.php', SET_UP_PERMISSION, 'during_button');
 make_link_button('Kiosk Dashboard', 'kiosk-dashboard.php', SET_UP_PERMISSION, 'during_button');
 make_link_button('Judging', 'judging.php', JUDGING_PERMISSION, 'during_button');
-make_link_button('Racers On Deck', 'ondeck.php', -1, 'during_button');
+make_link_button('Race Schedule', 'ondeck.php', -1, 'during_button');
 make_link_button('Results By Racer', 'racer-results.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button');
 if (!have_permission(SET_UP_PERMISSION)) {
   make_link_button('Slideshow', 'slideshow.php', VIEW_RACE_RESULTS_PERMISSION, 'during_button');

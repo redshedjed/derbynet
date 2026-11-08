@@ -45,14 +45,23 @@ require_once('inc/schema_version.inc');
   echo "body { overflow: hidden; }\n";
   echo "</style>\n";
 }?>
-<title>Racers On Deck</title>
+<title>Race Schedule</title>
 <?php require('inc/stylesheet.inc'); ?>
 <link rel="stylesheet" type="text/css" href="css/kiosks.css"/>
 <link rel="stylesheet" type="text/css" href="css/lane-colors.css"/>
 <link rel="stylesheet" type="text/css" href="css/ondeck.css"/>
 </head>
 <body>
-<?php make_banner('Racers On Deck', isset($as_kiosk) ? '' : 'index.php'); ?>
+<?php make_banner('Race Schedule', isset($as_kiosk) ? '' : 'index.php'); ?>
+
+<?php
+// The scheduled start, from Settings (Racing and Scoring); shown only if set
+$race_start_time = trim(read_raceinfo('race-start-time', ''));
+if ($race_start_time !== '') {
+  echo '<p class="race_start">Racing starts at <b>'
+      .htmlspecialchars($race_start_time, ENT_QUOTES, 'UTF-8').'</b></p>'."\n";
+}
+?>
 
 <table id="schedule" class="main_table curgroup">
 </table>
