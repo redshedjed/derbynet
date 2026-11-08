@@ -11,6 +11,7 @@ require_once('inc/classes.inc');
 require_once('inc/partitions.inc');
 require_once('inc/locked.inc');
 require_once('inc/checkin-table.inc');
+require_once('inc/mobile-checkin-key.inc');
 
 require_permission(CHECK_IN_RACERS_PERMISSION);
 
@@ -71,6 +72,10 @@ var g_order = '<?php echo $order; ?>';
 var g_action_on_barcode = "<?php
   echo isset($_SESSION['barcode-action']) ? $_SESSION['barcode-action'] : "locate";
 ?>";
+
+// The secret in the Mobile Check-In QR code: a phone that scans it can check
+// racers in without logging in
+var g_mobile_checkin_key = <?php echo json_encode(mobile_checkin_key()); ?>;
 
 var g_preferred_urls = <?php echo json_encode(preferred_urls(/*use_https=*/true),
                                               JSON_HEX_TAG | JSON_HEX_AMP | JSON_PRETTY_PRINT); ?>;
@@ -421,10 +426,16 @@ mobile_select_refresh($("#bulk_who"));
 <div id="qrcode_settings_modal" class="modal_dialog wide_modal hidden block_buttons">
   <form id="mobile-checkin-form">
     <h2>Mobile Check-In</h2>
-    <div id="mobile-checkin-qrcode" style="width: 256px; margin-left: 122px;"></div>
-    <div id="mobile-checkin-title" style="text-align: center; font-size: 1.5em; font-weight: bold; margin-bottom: 25px; margin-top: 10px;"></div>
+    <p class="mobile-checkin-hint">Scan with a phone's camera to check racers in
+      and take their photos from the phone.  Anyone who scans this code can do
+      that without logging in, so show it only to helpers.</p>
+    <div id="mobile-checkin-qrcode"></div>
+    <div id="mobile-checkin-title"></div>
     <input id="mobile-checkin-url" name="mobile-checkin-url" type="text" />
 
+    <input type="button" value="New Code" class="btn-secondary"
+           title="Stop the phones that scanned the old code from checking racers in"
+           onclick="on_new_mobile_checkin_key();"/>
     <a id="mcheckin-link" class="button_link" href="mcheckin.php">Mobile Check-In &gt;</a>
     <input type="button" value="Close" onclick="close_modal('#qrcode_settings_modal');"/>
   </form>

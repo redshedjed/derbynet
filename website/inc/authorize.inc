@@ -17,7 +17,8 @@ if (isset($_SESSION['setting_up'])) {
 // This only works where a header can appear...
 function require_permission($perm) {
   if (($_SESSION['permissions'] & $perm) == 0) {
-    header('Location: login.php');
+    // After logging in, come back to this page
+    header('Location: login.php?next='.urlencode(basename($_SERVER['SCRIPT_NAME'])));
     exit(0);
   }
 }

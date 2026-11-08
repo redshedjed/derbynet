@@ -317,3 +317,22 @@ p.warning a.ui-link {
 div.delete-extension {
   margin-top: 40px;
 }
+
+/* Mobile Check-In QR code dialog */
+#qrcode_settings_modal .mobile-checkin-hint {
+  max-width: 440px;
+  margin: 0 auto var(--space-4) auto;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+#mobile-checkin-qrcode {
+  width: 256px;
+  margin: 0 auto;
+}
+#mobile-checkin-title {
+  margin: var(--space-2) 0 var(--space-4) 0;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: var(--weight-semibold);
+  overflow-wrap: anywhere;
+}

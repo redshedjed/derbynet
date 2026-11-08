@@ -64,6 +64,9 @@ if ($in_json) {
 
 if (substr($inc, -7) != '.nodata') {
   require_once('inc/data.inc');
+  // A phone let in by an old Mobile Check-In QR code loses those rights
+  require_once('inc/mobile-checkin-key.inc');
+  drop_stale_mobile_checkin();
   // We can close the session for writing except for these three that might
   // perform some write to $_SESSION.
   if (strstr($inc, 'ballot.get') === false &&

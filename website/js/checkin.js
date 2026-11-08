@@ -468,14 +468,31 @@ function on_barcode_handling_change() {
 function update_qrcode() {
   $("#mobile-checkin-qrcode").empty();
   $("#mobile-checkin-title").text($("#mobile-checkin-url").val());
+  // The code carries the key, so whoever scans it doesn't have to log in
+  var url = $("#mobile-checkin-url").val();
+  url += (url.indexOf('?') < 0 ? '?' : '&') + 'key=' + encodeURIComponent(g_mobile_checkin_key);
   new QRCode(document.getElementById('mobile-checkin-qrcode'),
-             {text: $("#mobile-checkin-url").val(),
+             {text: url,
               width: 256,
               height: 256});
 }
 function handle_qrcode_button_click() {
   update_qrcode();
   show_modal("#qrcode_settings_modal");
+}
+// A new key: phones that scanned the old code can't check racers in any more
+// (unless someone logged in on them)
+function on_new_mobile_checkin_key() {
+  $.ajax(g_action_url,
+         {type: 'POST',
+          data: {action: 'mobile-checkin.new-key'},
+          success: function(json) {
+            if (json.outcome.summary == 'success') {
+              g_mobile_checkin_key = json.key;
+              update_qrcode();
+            }
+          }
+         });
 }
 function on_mobile_checkin_submit() {
   console.log('on_mobile_checkin_submit');

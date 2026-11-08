@@ -9,7 +9,8 @@ function handle_login(role, pwd) {
               if (data.hasOwnProperty('outcome') &&
                   data.outcome.hasOwnProperty('summary') &&
                   data.outcome.summary === 'success') {
-			    window.location.href = 'index.php';
+			    window.location.href = (typeof g_after_login == 'undefined' || role == '')
+                  ? 'index.php' : g_after_login;
               } else if (data.hasOwnProperty('outcome') &&
                          data.outcome.hasOwnProperty('summary') &&
                          data.outcome.summary === 'failure') {

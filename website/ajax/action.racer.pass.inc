@@ -51,7 +51,12 @@ function pass_racer($racerid, $value) {
 }
 
 
-if (pass_racer($racerid, $value)) {
+// Checking racers in takes the check-in permission -- or photo upload, which
+// the photo station has: it can check a racer in as it photographs them.
+// (Undoing a check-in also takes REVERT_CHECK_IN_PERMISSION, above.)
+if (!have_permission(CHECK_IN_RACERS_PERMISSION | PHOTO_UPLOAD_PERMISSION)) {
+  json_not_authorized();
+} else if (pass_racer($racerid, $value)) {
   json_success();
   if ($value) {
     $details = read_single_row('SELECT class, firstname, lastname'

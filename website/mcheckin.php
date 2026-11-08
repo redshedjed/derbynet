@@ -2,8 +2,26 @@
 require_once('inc/banner.inc');
 require_once('inc/authorize.inc');
 
+require_once('inc/data.inc');
+require_once('inc/mobile-checkin-key.inc');
+
+// Who can use Mobile Check-In: someone logged in who can check racers in, or
+// a phone that scanned the QR code on Race Check-In, whose link carries the
+// secret key.  The key is taken off the address once it has been accepted.
+if (isset($_GET['key'])) {
+  if (is_mobile_checkin_key($_GET['key'])) {
+    grant_mobile_checkin($_GET['key']);
+    session_write_close();
+    header('Location: mcheckin.php');
+    exit(0);
+  }
+  // A key from an old QR code: they'll have to log in, or scan the new one
+}
+drop_stale_mobile_checkin();
+require_permission(CHECK_IN_RACERS_PERMISSION);
+
+// Mobile check-in also takes photos, and can undo a check-in
 $_SESSION['permissions'] |=
-    CHECK_IN_RACERS_PERMISSION |
     REVERT_CHECK_IN_PERMISSION |
     PHOTO_UPLOAD_PERMISSION
 ;

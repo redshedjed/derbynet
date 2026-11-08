@@ -66,6 +66,13 @@ div.index_background {
 <script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/ajax-setup.js"></script>
 <script type="text/javascript" src="js/modal.js"></script>
+<script type="text/javascript">
+// Where to go after logging in: the page that asked for it (?next=), or home
+var g_after_login = <?php
+  echo json_encode(isset($_GET['next']) && preg_match('/^[a-z0-9_-]+\.php$/i', $_GET['next'])
+                   ? $_GET['next'] : 'index.php');
+?>;
+</script>
 <script type="text/javascript" src="js/login.js"></script>
 </head>
 <body<?php if (isset($_GET['logout'])) echo ' onload="handle_logout()"'; ?>>
