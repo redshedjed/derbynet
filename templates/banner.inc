@@ -8,8 +8,11 @@
 function make_banner($banner_title, $back_button = 'index.php') {
   echo "<div class=\"banner\">\n";
 
+  // The pages Back may go to (a ?back= parameter is checked against these)
   if ($back_button && in_array($back_button, ['index.php', 'setup.php', 'checkin.php',
-                                              'kiosk-dashboard.php', 'coordinator.php'])) {
+                                              'kiosk-dashboard.php', 'coordinator.php',
+                                              'kiosk-editor.php', 'scenes.php',
+                                              'racing-groups.php'])) {
     echo "<a class=\"back_button\" href=\"".$back_button."\">";
     echo "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\""
         ." stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\">"
