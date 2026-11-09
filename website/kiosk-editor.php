@@ -64,9 +64,6 @@ function h($s) {
   flex: 0 1 200px;
   font-weight: var(--weight-semibold);
 }
-.location input[name=note] {
-  flex: 1 1 260px;
-}
 .location input[type=text],
 #add-location input[type=text] {
   box-sizing: border-box;
@@ -129,8 +126,7 @@ function location_row(button) {
 function on_save(button) {
   var row = location_row(button);
   kiosk_location({op: 'edit', name: row.attr('data-name'),
-                  new_name: row.find('input[name=name]').val(),
-                  note: row.find('input[name=note]').val()});
+                  new_name: row.find('input[name=name]').val()});
 }
 function on_delete(button) {
   var row = location_row(button);
@@ -148,11 +144,11 @@ function on_move(button, delta) {
   kiosk_location({op: 'order', names: names.join(',')});
 }
 function on_add() {
-  kiosk_location({op: 'add', name: $("#new-name").val(), note: $("#new-note").val()});
+  kiosk_location({op: 'add', name: $("#new-name").val()});
   return false;
 }
 $(function() {
-  // Save appears once a location's name or note is changed
+  // Save appears once a location's name is changed
   $(".location input").on('input', function() {
     $(this).closest('.location').addClass('changed');
   });
@@ -177,9 +173,7 @@ $(function() {
   <div class="location" data-name="<?php echo h($loc['name']); ?>">
     <div class="fields">
       <input type="text" name="name" value="<?php echo h($loc['name']); ?>"
-             aria-label="Location name"/>
-      <input type="text" name="note" value="<?php echo h($loc['note']); ?>"
-             placeholder="Where it is, e.g. TV by the track" aria-label="Note"/>
+             placeholder="Kiosk Name" aria-label="Kiosk Name"/>
     </div>
     <div class="shown-on">
 <?php if (count($here) > 0) { ?>
@@ -200,10 +194,8 @@ $(function() {
 <?php } ?>
 
   <form id="add-location" onsubmit="return on_add();">
-    <input type="text" id="new-name" placeholder="New location, e.g. Lobby"
-           aria-label="New location name"/>
-    <input type="text" id="new-note" placeholder="Where it is (optional)"
-           aria-label="Note for the new location"/>
+    <input type="text" id="new-name" placeholder="Kiosk Name"
+           aria-label="Kiosk Name"/>
     <input type="submit" class="btn btn-sm" value="Add Location"/>
   </form>
   <p id="message"></p>
