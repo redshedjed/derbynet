@@ -36,13 +36,29 @@ function address_for_current_kiosk() {
   return $addr;
 }
 
-// A short number for a display that hasn't been given a name yet: "Kiosk 427".
-// The same display always gets the same number (it comes from the display's
-// address), and the identify page shows it on the screen, to match a screen
-// to its row on the Kiosk Dashboard.  (The name is historical: this used to be
-// a made-up two-word name.)
+// Each display's number, for one that hasn't been given a name yet: "Kiosk 3".
+// A display is known by its address -- a Raspberry Pi's serial number (from
+// extras/scripts/kiosk.sh), or a browser's address and port, kept for its
+// session.  The first time an address is seen it gets the next number, kept
+// in RaceInfo (kiosk-numbers, JSON {address: number}), so the number is the
+// display's own: never shared, and the same each time the device reconnects.
+function kiosk_number($addr) {
+  $numbers = json_decode(read_raceinfo('kiosk-numbers', '{}'), true);
+  if (!is_array($numbers)) {
+    $numbers = array();
+  }
+  if (!isset($numbers[$addr])) {
+    $numbers[$addr] = count($numbers) == 0 ? 1 : max($numbers) + 1;
+    write_raceinfo('kiosk-numbers', json_encode($numbers));
+  }
+  return $numbers[$addr];
+}
+
+// The identify screen shows this, to match a screen to its row on the Kiosk
+// Dashboard.  (The name is historical: this used to be a made-up two-word
+// name.)
 function madlib_string($addr) {
-  return 'Kiosk '.(100 + abs(crc32($addr)) % 900);
+  return 'Kiosk '.kiosk_number($addr);
 }
 
 // Splits $row['page'] into separate ['page'] and ['parameters'] fields.  Since
