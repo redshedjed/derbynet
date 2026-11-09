@@ -113,13 +113,13 @@ a {
 .banner .banner_tools {
   grid-area: tools;
   justify-self: end;
-  min-width: 0;
 }
 
-/* With the scene at the right, the title is centered in the space left
-   between it and the back button (rather than on the page) */
+/* With the scene at the right, the title stays centered on the page while
+   there's room, and moves left when the scene needs more: the side columns
+   share the width equally, but neither gets less than its contents need. */
 .banner:has(.banner_scene) {
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: 1fr minmax(0, max-content) 1fr;
 }
 
 /* The current scene, at the right of the banner (inc/banner.inc): a dropdown
@@ -128,14 +128,12 @@ a {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  min-width: 0;
   color: var(--color-text-on-brand);
 }
 .banner .banner_scene_label {
-  font-size: var(--text-xs, 0.75rem);
+  font-size: var(--text-sm, 0.875rem);
   font-weight: var(--weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  white-space: nowrap;
   color: var(--color-text-on-brand-muted);
 }
 .banner .banner_scene_name {
@@ -146,7 +144,6 @@ a {
 }
 .banner #banner-scene-select {
   max-width: 220px;
-  min-width: 0;
   padding: 6px 34px 6px 12px;
   font: inherit;
   font-size: var(--text-sm, 0.875rem);

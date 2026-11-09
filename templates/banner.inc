@@ -46,10 +46,10 @@ function banner_scene_control() {
   }
   if (count($scenes) == 0) return '';
 
-  $out = "<div class=\"banner_scene\"><span class=\"banner_scene_label\">Scene</span>";
+  $out = "<div class=\"banner_scene\"><span class=\"banner_scene_label\">Kiosk Scene:</span>";
   if (have_permission(CONTROL_RACE_PERMISSION)) {
     // not-mobile: left as a plain dropdown by js/mobile.js, styled in global.css
-    $out .= "<select id=\"banner-scene-select\" class=\"not-mobile\" aria-label=\"Scene\""
+    $out .= "<select id=\"banner-scene-select\" class=\"not-mobile\" aria-label=\"Kiosk scene\""
         ." onchange=\"banner_scene_change(this);\">";
     $out .= "<option value=\"-1\">(No scene)</option>";
     foreach ($scenes as $scene) {
