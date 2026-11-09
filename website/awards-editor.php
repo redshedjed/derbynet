@@ -89,10 +89,10 @@ function award_group_options() {
   type or group in place.  Add a new one in the last row.</p>
 <?php } ?>
 
-<!-- One row per award: handle, name, type, group, winner, Edit (built by
+<!-- One row per award: handle, name, type, group, Edit (built by
      js/awards-editor.js) -->
 <div class="card-list-head" aria-hidden="true">
-  <span></span><span>Award</span><span>Type</span><span>For</span><span>Winner</span><span></span>
+  <span></span><span>Award</span><span>Type</span><span>For</span><span></span>
 </div>
 <ul id="all_awards" class="card-grid card-list<?php if ($awards_locked) echo ' locked'; ?>"
     data-locked="<?php echo $awards_locked ? 1 : 0; ?>">
@@ -111,7 +111,6 @@ function award_group_options() {
   <select id="quick_award_group" class="award-group not-mobile" aria-label="Award for">
 <?php award_group_options(); ?>
   </select>
-  <span class="award-winner"></span>
   <span class="row-buttons">
     <input type="submit" class="btn btn-success btn-sm" value="Add"/>
   </span>

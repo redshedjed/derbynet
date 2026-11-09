@@ -1,6 +1,6 @@
 // Awards Editor (awards-editor.php): one row per award, in award order --
-// a drag handle, the name (a text box), type and group (dropdowns), the
-// winner, and Edit.  The boxes are locked until Edit, which unlocks them in
+// a drag handle, the name (a text box), type and group (dropdowns), and
+// Edit.  The boxes are locked until Edit, which unlocks them in
 // place and offers Save, Cancel and Delete.  The add row below the list is
 // in the same format.  While voting is open (#all_awards[data-locked=1])
 // nothing can be changed.
@@ -41,7 +41,6 @@ function make_award_row() {
   row.append($('<select class="award-group not-mobile" disabled="disabled"/>')
              .attr('aria-label', 'Award for')
              .html($("#quick_award_group").html()));
-  row.append('<span class="award-winner"><span class="badge badge-success"></span></span>');
   var buttons = $('<span class="row-buttons"/>').appendTo(row);
   if (!awards_locked()) {
     buttons.append($('<input type="button" class="btn btn-secondary btn-sm edit-button" value="Edit"/>')
@@ -68,8 +67,6 @@ function fill_award_row(row, award, data) {
   row.find('.award-name').val(award.awardname);
   row.find('.award-type').val(award.awardtypeid);
   row.find('.award-group').val(class_and_rank_value(award));
-  var recipient = (award.firstname + ' ' + award.lastname).trim();
-  row.find('.award-winner .badge').text(recipient).toggleClass('hidden', recipient == '');
 }
 
 function update_awards(data) {

@@ -1,13 +1,12 @@
 /* Awards Editor (awards-editor.php): one row per award (.card-list and
    .card-row, components.css) with a gold edge, in award order -- a drag
-   handle, the name, type and group (locked until Edit), the winner, and the
-   buttons -- then the add row in the same columns.  Rows are built by
+   handle, the name, type and group (locked until Edit), and the buttons -- then the add row in the same columns.  Rows are built by
    js/awards-editor.js. */
 
 .awards_editor {
-  /* handle, name, type, group, winner, buttons */
-  --card-row-columns: 28px minmax(160px, 2fr) minmax(130px, 1fr) minmax(130px, 1fr)
-                      minmax(110px, 1fr) 210px;
+  /* handle, name, type, group, buttons: the three fields share what's
+     left after the handle and the buttons (room for Save, Cancel, Delete) */
+  --card-row-columns: 28px minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) 210px;
 }
 .awards_editor .instructions {
   margin: 0 0 var(--space-3) 0;
@@ -24,10 +23,6 @@
   --card-accent: var(--stage-after);
 }
 
-.award-winner .badge.hidden {
-  display: none;
-}
-
 #awards_message {
   min-height: 1.4em;
   margin: var(--space-2) 0 0 0;
@@ -35,7 +30,7 @@
 }
 
 /* On a narrow screen, the fields stack under the name */
-@media (max-width: 760px) {
+@media (max-width: 700px) {
   .awards_editor {
     --card-row-columns: 24px minmax(0, 1fr);
   }
