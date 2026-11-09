@@ -483,8 +483,100 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
   border-radius: var(--radius-md);
   background: var(--color-surface);
 }
+/* .card-list: the same cards one per line, each a .card-row whose fields
+   line up in columns (set --card-row-columns, e.g. on the page's list), with
+   an optional .card-list-head above giving the columns' names.  Its fields
+   are text boxes and dropdowns, shown locked (readonly / disabled) until the
+   row is being edited (.editing). */
+.card-grid.card-list {
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+.card-row,
+.card-list-head {
+  display: grid;
+  grid-template-columns: var(--card-row-columns, 28px minmax(0, 1fr) auto);
+  align-items: center;
+  column-gap: var(--space-3);
+}
+.grid-card.card-row {
+  min-height: 0;
+  padding: var(--space-2) var(--space-3);
+  cursor: default;
+}
+.card-list-head {
+  padding: 0 calc(var(--space-3) + 1px) var(--space-1) calc(var(--space-3) + 5px);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.card-row .drag-handle {
+  color: var(--color-text-muted);
+  font-size: 18px;
+  letter-spacing: -4px;
+  text-align: center;
+  cursor: grab;
+  user-select: none;
+}
+.card-row input[type=text],
+.card-row select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+/* Locked: still a box, but quiet */
+.card-row input[type=text][readonly],
+.card-row select:disabled {
+  border-color: var(--gray-200);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  opacity: 1;
+}
+.card-row input.award-name[readonly] {
+  font-weight: var(--weight-semibold);
+}
+.card-row.editing {
+  border-color: var(--color-brand);
+  box-shadow: var(--shadow-md);
+}
+.card-row .row-buttons {
+  display: flex;
+  gap: var(--space-1);
+  justify-content: flex-end;
+}
+/* Edit until editing; then Save, Cancel and Delete */
+.card-row .save-button,
+.card-row .cancel-button,
+.card-row .delete-button,
+.card-row.editing .edit-button {
+  display: none;
+}
+.card-row.editing .save-button,
+.card-row.editing .cancel-button,
+.card-row.editing .delete-button {
+  display: inline-flex;
+}
+/* The add row: below the list, in the same columns */
+.grid-card-add.card-row {
+  margin-top: var(--space-3);
+  border: 2px dashed var(--color-border-strong);
+  border-left-width: 2px;
+}
+
 .card-grid.locked .grid-card {
   cursor: default;
+}
+.card-grid.locked .drag-handle {
+  visibility: hidden;
 }
 .card-grid.locked .grid-card-edit,
 .card-grid.locked .grid-card-add {

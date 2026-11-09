@@ -1,9 +1,14 @@
-/* Awards Editor (awards-editor.php): the awards as a .card-grid
-   (components.css) with a gold edge, in award order -- drag a card to move
-   it, the gear to edit or delete -- and an add card at the end.  Locked
-   (.card-grid.locked) while voting is open.  Cards are built by
+/* Awards Editor (awards-editor.php): one row per award (.card-list and
+   .card-row, components.css) with a gold edge, in award order -- a drag
+   handle, the name, type and group (locked until Edit), the winner, and the
+   buttons -- then the add row in the same columns.  Rows are built by
    js/awards-editor.js. */
 
+.awards_editor {
+  /* handle, name, type, group, winner, buttons */
+  --card-row-columns: 28px minmax(160px, 2fr) minmax(130px, 1fr) minmax(130px, 1fr)
+                      minmax(110px, 1fr) 210px;
+}
 .awards_editor .instructions {
   margin: 0 0 var(--space-3) 0;
   font-size: var(--text-sm);
@@ -14,15 +19,36 @@
 }
 
 /* Awards are gold */
-#all_awards {
+#all_awards,
+#quick_add_award {
   --card-accent: var(--stage-after);
 }
 
-/* Who has the award */
-#all_awards .recipient-line {
-  margin: var(--space-2) 0 0 0;
-}
-#all_awards .class-and-rank.hidden,
-#all_awards .recipient-line.hidden {
+.award-winner .badge.hidden {
   display: none;
+}
+
+#awards_message {
+  min-height: 1.4em;
+  margin: var(--space-2) 0 0 0;
+  color: var(--color-danger);
+}
+
+/* On a narrow screen, the fields stack under the name */
+@media (max-width: 760px) {
+  .awards_editor {
+    --card-row-columns: 24px minmax(0, 1fr);
+  }
+  .awards_editor .card-list-head {
+    display: none;
+  }
+  .awards_editor .card-row > :not(.drag-handle) {
+    grid-column: 2;
+  }
+  .awards_editor .card-row > * + * {
+    margin-top: var(--space-1);
+  }
+  .awards_editor .card-row .row-buttons {
+    justify-content: flex-start;
+  }
 }

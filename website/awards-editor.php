@@ -43,6 +43,40 @@ list($classes, $classseq, $ranks, $rankseq) = classes_and_ranks();
 // While voting is open (Judging, Manage Ballot), the awards are locked: no
 // adding, changing, reordering or deleting.  The server enforces it too.
 $awards_locked = read_raceinfo('balloting', 'closed') == 'open';
+
+// The options for an award's type and group, for the add row (and copied
+// from there into each award's row by js/awards-editor.js)
+function award_type_options() {
+  global $db;
+  foreach ($db->query('SELECT awardtypeid, awardtype FROM AwardTypes ORDER BY awardtype') as $atype) {
+    if ($atype['awardtypeid'] != AD_HOC_AWARDTYPEID) {
+      echo '<option value="'.$atype['awardtypeid'].'">'
+          .htmlspecialchars($atype['awardtype'], ENT_QUOTES, 'UTF-8')
+          .'</option>'."\n";
+    }
+  }
+}
+function award_group_options() {
+  global $classes, $classseq, $ranks, $rankseq, $use_subgroups;
+  echo '<option value="0,0">'.htmlspecialchars(supergroup_label(), ENT_QUOTES, 'UTF-8').'</option>'."\n";
+  $rankseq_index = 0;
+  foreach ($classseq as $classid) {
+    echo '<option value="'.$classid.',0">'
+        .htmlspecialchars($classes[$classid]['class'], ENT_QUOTES, 'UTF-8')
+        .'</option>'."\n";
+    for (; $rankseq_index < count($rankseq); ++$rankseq_index) {
+      $rank = $ranks[$rankseq[$rankseq_index]];
+      if ($rank['classid'] != $classid) {
+        break;
+      }
+      if ($use_subgroups) {
+        echo '<option value="'.$classid.','.$rank['rankid'].'">'
+            .htmlspecialchars($classes[$classid]['class'].' / '.$rank['rank'], ENT_QUOTES, 'UTF-8')
+            .'</option>'."\n";
+      }
+    }
+  }
+}
 ?>
 <div class="page-content awards_editor">
 <?php if ($awards_locked) { ?>
@@ -51,91 +85,44 @@ $awards_locked = read_raceinfo('balloting', 'closed') == 'open';
   <a href="judging.php">Judging</a> page (Manage Ballot).
 </div>
 <?php } else { ?>
-<p class="instructions">Drag an award to move it.  Click &#x2699; to edit or delete one.
-  Add one with the last card.</p>
+<p class="instructions">Drag an award by its handle to move it.  Edit changes its name,
+  type or group in place.  Add a new one in the last row.</p>
 <?php } ?>
 
-<!-- The awards, as cards (built by js/awards-editor.js), then the add card -->
-<ul id="all_awards" class="card-grid<?php if ($awards_locked) echo ' locked'; ?>"
+<!-- One row per award: handle, name, type, group, winner, Edit (built by
+     js/awards-editor.js) -->
+<div class="card-list-head" aria-hidden="true">
+  <span></span><span>Award</span><span>Type</span><span>For</span><span>Winner</span><span></span>
+</div>
+<ul id="all_awards" class="card-grid card-list<?php if ($awards_locked) echo ' locked'; ?>"
     data-locked="<?php echo $awards_locked ? 1 : 0; ?>">
-  <li class="grid-card grid-card-add">
-    <form id="quick_add_award" onsubmit="return handle_quick_add_award();">
-      <input type="text" id="quick_award_name" placeholder="New award name"
-             aria-label="New award name" autocomplete="off"/>
-      <select id="quick_award_type" class="not-mobile" aria-label="Award type">
-<?php
-        foreach ($db->query('SELECT awardtypeid, awardtype FROM AwardTypes ORDER BY awardtype') as $atype) {
-          if ($atype['awardtypeid'] != AD_HOC_AWARDTYPEID) {
-            echo '        <option value="'.$atype['awardtypeid'].'">'
-                .htmlspecialchars($atype['awardtype'], ENT_QUOTES, 'UTF-8')
-                .'</option>'."\n";
-          }
-        }
-?>
-      </select>
-      <input type="submit" class="btn btn-sm" value="Add"/>
-    </form>
-  </li>
 </ul>
+
+<?php if (!$awards_locked) { ?>
+<!-- A new award, in the same format -->
+<form id="quick_add_award" class="grid-card grid-card-add card-row"
+      onsubmit="return handle_quick_add_award();">
+  <span class="drag-handle"></span>
+  <input type="text" id="quick_award_name" class="award-name not-mobile" placeholder="New award name"
+         aria-label="New award name" autocomplete="off"/>
+  <select id="quick_award_type" class="award-type not-mobile" aria-label="Award type">
+<?php award_type_options(); ?>
+  </select>
+  <select id="quick_award_group" class="award-group not-mobile" aria-label="Award for">
+<?php award_group_options(); ?>
+  </select>
+  <span class="award-winner"></span>
+  <span class="row-buttons">
+    <input type="submit" class="btn btn-success btn-sm" value="Add"/>
+  </span>
+</form>
+<?php } else { ?>
+<!-- (The option lists, for the award rows) -->
+<select id="quick_award_type" class="hidden not-mobile"><?php award_type_options(); ?></select>
+<select id="quick_award_group" class="hidden not-mobile"><?php award_group_options(); ?></select>
+<?php } ?>
+<p id="awards_message" class="text-danger"></p>
 </div><!-- page-content -->
-
-
-<div id="award_editor_modal" class="modal_dialog hidden block_buttons">
-  <form id="award_editor_form">
-    <input type="hidden" name="action" value="award.edit"/>
-    <input type="hidden" name="awardid" value=""/>
-    <label for="name">Award Name:</label>
-    <input name="name" type="text"/>
-
-    <label for="awardtype-select">Award Category:</label>
-    <select name="awardtypeid" id="awardtype-select">
-        <?php
-        foreach ($db->query('SELECT awardtypeid, awardtype FROM AwardTypes ORDER BY awardtype') as $atype) {
-          if ($atype['awardtypeid'] != AD_HOC_AWARDTYPEID) {
-            echo '<option value="'.$atype['awardtypeid'].'">'
-                .htmlspecialchars($atype['awardtype'], ENT_QUOTES, 'UTF-8')
-                .'</option>'."\n";
-          }
-        }
-        ?>
-    </select>
-
-    <select name="class_and_rank">
-      <option selected="selected" value="0,0"><?php echo supergroup_label(); ?></option>
-        <?php
-        $rankseq_index = 0;
-        foreach ($classseq as $classid) {
-          $cl = $classes[$classid];
-          echo '<option value="'.$classid.',0">'
-              .htmlspecialchars($cl['class'], ENT_QUOTES, 'UTF-8')
-              .'</option>'."\n";
-          for (; $rankseq_index < count($rankseq); ++$rankseq_index) {
-            $rank = $ranks[$rankseq[$rankseq_index]];
-            if ($rank['classid'] != $classid) {
-              break;
-            }
-            if ($use_subgroups) {
-              echo '<option value="'.$classid.','.$rank['rankid'].'">'
-                   .htmlspecialchars($rank['rank'], ENT_QUOTES, 'UTF-8')
-                   .'</option>'."\n";
-            }
-          }
-        }
-        ?>
-    </select>
-
-    <br/>
-    <input type="submit"/>
-
-    <input type="button" value="Close"
-           onclick="close_modal('#award_editor_modal');"/>
-    <hr/><br/>
-
-    <input type="button" class="delete_button" value="Delete Award"
-        onclick="handle_delete_award();"/>
-
-  </form>
-</div><!-- award_editor_modal -->
 
 </body>
 </html>
