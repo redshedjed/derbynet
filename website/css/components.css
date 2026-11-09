@@ -331,6 +331,11 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
   min-height: 44px;
   font-size: var(--text-base);
 }
+/* ...unless marked small (e.g. Delete Scene), as elsewhere */
+.page-toolbar .btn.btn-sm {
+  min-height: 0;
+  font-size: var(--text-sm);
+}
 
 /* ---------------- Page column ----------------
    .page-content: the centered column most pages put their cards in.
