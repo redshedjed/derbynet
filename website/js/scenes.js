@@ -41,14 +41,12 @@ function rebuild_scenes_selector() {
       first_selection = i;
     }
   }
-  $("#scenes-select").append($("<option/>")
-                             .attr('value', -1)
-                             .text("(New scene)"));
-  $("#scenes-select")
-    .on('change', on_scene_change)
-    .val(all_scenes.length > 0 ? all_scenes[first_selection].sceneid : -1)
-    .trigger('change');
-  if (all_scenes.length == 0) {
+  // (A new scene is made with the New Scene button, beside the dropdown.)
+  $("#scenes-select").off('change.scenes').on('change.scenes', on_scene_change);
+  if (all_scenes.length > 0) {
+    $("#scenes-select").val(all_scenes[first_selection].sceneid).trigger('change');
+  } else {
+    // No scenes yet: start by making one
     on_new_scene();
   }
 }
@@ -64,10 +62,8 @@ function on_scene_change() {
   $("div.wrap").remove();
   var sceneid = $("#scenes-select").val();
   g_current_scene = sceneid;
-  // If there are no scenes defined, jump right into defining a new one.
-  if (sceneid < 0) {
-    on_new_scene();
-    return;
+  if (!sceneid) {
+    return;  // no scenes yet
   }
 
   var scene = g_all_scenes.find((s) => { return s.sceneid == sceneid; });
