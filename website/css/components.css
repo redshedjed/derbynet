@@ -387,6 +387,110 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
   color: var(--color-text-muted);
 }
 
+/* ---------------- Card grid ----------------
+   A list of things as cards in a grid (the Awards Editor's awards), which
+   can be dragged to reorder, ending with a dashed "add" card holding a short
+   form.  Markup:
+     <ul class="card-grid">
+       <li class="grid-card">...</li>            one per item; .grid-card-edit is
+                                                 an optional corner button
+       <li class="grid-card grid-card-add"><form>...</form></li>
+     </ul>
+   .card-grid.locked: no dragging, no editing, no add card. */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.grid-card {
+  position: relative;
+  box-sizing: border-box;
+  min-height: 96px;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--gray-200);
+  border-left: 5px solid var(--card-accent, var(--color-brand));
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+}
+.grid-card.ui-sortable-helper {
+  cursor: grabbing;
+  box-shadow: var(--shadow-card-hover, var(--shadow-md));
+}
+/* Where a dragged card will land */
+.grid-card.ui-sortable-placeholder {
+  visibility: visible !important;
+  background: var(--color-surface-sunken);
+  border: 2px dashed var(--color-border-strong);
+  box-shadow: none;
+}
+.grid-card-title {
+  margin: 0 var(--space-5) 2px 0;   /* clear of the edit button */
+  font-weight: var(--weight-semibold);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.grid-card-detail {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.grid-card-edit {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 15px;
+  line-height: 26px;
+  text-align: center;
+  cursor: pointer;
+}
+.grid-card-edit:hover {
+  color: var(--color-brand);
+  border-color: var(--color-brand);
+}
+/* The add card: a dashed outline with a short form */
+.grid-card.grid-card-add {
+  border: 2px dashed var(--color-border-strong);
+  background: transparent;
+  box-shadow: none;
+  cursor: auto;
+}
+.grid-card-add form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.grid-card-add input[type=text],
+.grid-card-add select {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: var(--text-sm);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.card-grid.locked .grid-card {
+  cursor: default;
+}
+.card-grid.locked .grid-card-edit,
+.card-grid.locked .grid-card-add {
+  display: none;
+}
+
 /* ---------------- Full-window pages ----------------
    <body class="fill-page">: the page itself doesn't scroll.  The banner and
    .page-toolbar keep their height and a .page-panel (a white card) fills

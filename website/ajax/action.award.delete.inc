@@ -2,7 +2,9 @@
 require_once('inc/json-awards.inc');
 require_once('inc/json-classes.inc');
 
-if (have_permission(EDIT_AWARDS_PERMISSION)) {
+if (have_permission(EDIT_AWARDS_PERMISSION) && awards_locked_for_ballot()) {
+  // locked while voting is open
+} else if (have_permission(EDIT_AWARDS_PERMISSION)) {
   try {
     $stmt = $db->prepare('DELETE FROM Awards WHERE awardid = :awardid');
     if ($stmt->execute(array(':awardid' => $_POST['awardid']))) {

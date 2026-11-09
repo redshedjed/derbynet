@@ -86,4 +86,16 @@ function json_out_awards($include_adhoc) {
   json_out('speed-awards', json_speed_awards());
   json_out('classes', json_all_classes());
 }
+// While voting is open, the awards themselves are locked: they can't be added,
+// renamed, retyped, moved or deleted (putting them on or off the ballot, and
+// naming winners, still work).  Says so, with the awards, if so.
+function awards_locked_for_ballot() {
+  if (read_raceinfo('balloting', 'closed') == 'open') {
+    json_failure('ballot-open', 'Voting is open, so the awards are locked.'
+                 .'  Close the ballot to change them.');
+    json_out_awards(false);
+    return true;
+  }
+  return false;
+}
 ?>

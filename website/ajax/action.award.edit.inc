@@ -13,7 +13,12 @@ require_once('inc/json-awards.inc');
 require_once('inc/schema_version.inc');
 require_once('inc/voterid.inc');
 
-if (have_permission(EDIT_AWARDS_PERMISSION)) {
+if (have_permission(EDIT_AWARDS_PERMISSION) &&
+    ($_POST['awardid'] == 'new' || isset($_POST['name']) || isset($_POST['awardtypeid']) ||
+     isset($_POST['class_and_rank']) || isset($_POST['sort'])) &&
+    awards_locked_for_ballot()) {
+  // (Only the ballot depth may change while voting is open)
+} else if (have_permission(EDIT_AWARDS_PERMISSION)) {
   $awardid = $_POST['awardid'];
   if ($awardid == 'new') {
     $params = array(':awardname' => $_POST['name'],

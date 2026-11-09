@@ -10,7 +10,7 @@ function awardtypeid_to_awardtype(awardtypeid, awardtypes) {
 }
 
 function classid_to_class(classid, classes) {
-  if (classid == 0) return "";
+  if (!classid || classid == 0) return "";  // (none: the whole pack)
   for (var i = 0; i < classes.length; ++i) {
     if (classes[i].classid == classid) {
       return classes[i].name;
@@ -20,7 +20,7 @@ function classid_to_class(classid, classes) {
 }
 
 function rankid_to_rank(rankid, classes) {
-  if (rankid == 0) return "";
+  if (!rankid || rankid == 0) return "";
   for (var i = 0; i < classes.length; ++i) {
     for (var j = 0; j < classes[i].subgroups.length; ++j) {
       if (classes[i].subgroups[j].rankid == rankid) {
@@ -31,70 +31,79 @@ function rankid_to_rank(rankid, classes) {
   return "Can't resolve rankid " + rankid;
 }
 
+// The awards, as cards in #all_awards (a .card-grid), in award order, ahead of
+// the add card (.grid-card-add) at the end.
 function update_awards(data) {
   var awards = data.awards;
+  var add_card = $("#all_awards .grid-card-add");
 
-  if ($("#all_awards li").length < awards.length) {
-    while ($("#all_awards li").length < awards.length) {
-      $('<li></li>')
-        .append('<a>' +
-                '<span class="awardname"></span>' +
-                '<p>' +
-                    '<span class="awardtype"></span>' +
-                '</p>' +
-                '<p class="class-and-rank">' +
-                    '<span class="rankname"></span>' +
-                    '<span class="classname"></span> ' +
-                    '<span class="recipient"></span>' +
-                '</p>' +
-               '</a>')
-        .append('<a onclick="handle_edit_award($(this).closest(\'li\'));"></a>')
-        .appendTo('#all_awards');
-    }
-    // $("#all_awards").listview("refresh");
+  while ($("#all_awards .award-card").length < awards.length) {
+    $('<li class="grid-card award-card"></li>')
+      .append('<button type="button" class="grid-card-edit" title="Edit or delete"'
+              + ' onclick="handle_edit_award($(this).closest(\'li\'));">&#x2699;</button>')
+      .append('<p class="grid-card-title awardname"></p>')
+      .append('<p class="grid-card-detail awardtype"></p>')
+      .append('<p class="grid-card-detail class-and-rank">'
+              + '<span class="rankname"></span><span class="classname"></span></p>')
+      .append('<p class="recipient-line"><span class="recipient badge badge-success"></span></p>')
+      .insertBefore(add_card);
   }
-  
-  $("#all_awards li").each(function(i) {
+
+  $("#all_awards .award-card").each(function(i) {
     if (i >= awards.length) {
       $(this).remove();
-    } else {
-      $(this).attr("data-awardid", awards[i].awardid);
-      if ($(this).attr("data-awardname") != awards[i].awardname) {
-        $(this).find('span.awardname').text(awards[i].awardname);
-        $(this).attr("data-awardname", awards[i].awardname);
-      }
-      if ($(this).attr("data-awardtypeid") != awards[i].awardtypeid) {
-        $(this).attr("data-awardtypeid", awards[i].awardtypeid);
-        $(this).find('.awardtype').text(
-          awardtypeid_to_awardtype(awards[i].awardtypeid, data['award-types']));
-      }
-
-      if ($(this).attr("data-classid") != awards[i].classid) {
-        $(this).attr("data-classid", awards[i].classid);
-        var classname = classid_to_class(awards[i].classid, data.classes);
-        $(this).attr("data-class", classname);
-        $(this).find('.classname').text(classname);
-      }
-      
-      if ($(this).attr("data-rankid") != awards[i].rankid) {
-        var rankid = awards[i].rankid;
-        $(this).attr("data-rankid", rankid);
-        var rankname = rankid_to_rank(rankid, data.classes);
-        $(this).attr("data-rank", rankname);
-        if (rankid != 0) {
-          $(this).find('.rankname').text(rankname + ', ');
-        }
-      }
-
-      if ($(this).attr("data-racerid") != awards[i].racerid) {
-        $(this).attr("data-racerid", awards[i].racerid);
-        $(this).find('.recipient')
-          .empty()
-          // Trimmed, so an award with no recipient leaves this empty
-          .text((awards[i].firstname + " " + awards[i].lastname).trim());
-      }
+      return;
     }
+    var award = awards[i];
+    $(this).attr("data-awardid", award.awardid)
+      .attr("data-awardname", award.awardname)
+      .attr("data-awardtypeid", award.awardtypeid)
+      .attr("data-classid", award.classid)
+      .attr("data-rankid", award.rankid)
+      .attr("data-racerid", award.racerid);
+    $(this).find('.awardname').text(award.awardname);
+    $(this).find('.awardtype').text(awardtypeid_to_awardtype(award.awardtypeid, data['award-types']));
+    var classname = classid_to_class(award.classid, data.classes);
+    var rankname = rankid_to_rank(award.rankid, data.classes);
+    $(this).find('.classname').text(classname);
+    $(this).find('.rankname').text(rankname != '' ? rankname + ', ' : '');
+    $(this).find('.class-and-rank').toggleClass('hidden', classname == '');
+    // Trimmed, so an award with no recipient shows nothing
+    var recipient = (award.firstname + " " + award.lastname).trim();
+    $(this).find('.recipient').text(recipient);
+    $(this).find('.recipient-line').toggleClass('hidden', recipient == '');
   });
+}
+
+function awards_locked() {
+  return $("#all_awards").attr('data-locked') == '1';
+}
+
+// The add card: a name and a type, and Add.  The award is for the whole
+// pack; the gear can change that.
+function handle_quick_add_award() {
+  var name = $("#quick_award_name").val().trim();
+  if (name == '') {
+    $("#quick_award_name").focus();
+    return false;
+  }
+  $.ajax(g_action_url,
+         {type: 'POST',
+          data: {action: 'award.edit',
+                 awardid: 'new',
+                 name: name,
+                 awardtypeid: $("#quick_award_type").val(),
+                 class_and_rank: '0,0'},
+          success: function(data) {
+            if (data.outcome && data.outcome.summary == 'failure') {
+              alert(data.outcome.description);
+            } else {
+              $("#quick_award_name").val('').focus();
+            }
+            update_awards(data);
+          }
+         });
+  return false;
 }
 
 function handle_new_award() {
@@ -161,9 +170,15 @@ function handle_delete_award() {
 }
 
 $(function() {
-  $("#all_awards").sortable({stop: function(event, ui) {
+  // Drag an award card to move it (not while the awards are locked)
+  $("#all_awards").sortable({
+    items: '> .award-card',
+    disabled: awards_locked(),
+    tolerance: 'pointer',
+    cancel: 'button, input, select',
+    stop: function(event, ui) {
     var data = {action: 'award.order'};
-    $("#all_awards li").each(function (i) {
+    $("#all_awards .award-card").each(function (i) {
       data['awardid_' + (i + 1)] = $(this).attr('data-awardid');
     });
 

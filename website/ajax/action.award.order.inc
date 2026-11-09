@@ -7,7 +7,9 @@
 require_once('inc/json-awards.inc');
 require_once('inc/json-classes.inc');
 
-if (have_permission(EDIT_AWARDS_PERMISSION)) {
+if (have_permission(EDIT_AWARDS_PERMISSION) && awards_locked_for_ballot()) {
+  // locked while voting is open
+} else if (have_permission(EDIT_AWARDS_PERMISSION)) {
   foreach ($_POST as $key => $val) {
     if (substr($key, 0, strlen('awardid_')) == 'awardid_') {
       $stmt = $db->prepare('UPDATE Awards SET sort = :sort WHERE awardid = :awardid');
