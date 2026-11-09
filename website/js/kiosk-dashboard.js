@@ -79,9 +79,8 @@ function process_polled_data(data) {
     current_scene = data['current-scene'];
     if (current_scene != g_current_scene) {
       g_current_scene = current_scene;
-      $("#scenes-select")
-        .val(g_current_scene == '' ? -1 : g_current_scene)
-        .trigger('change', /*synthetic*/true);
+      // The scene dropdown is in the banner
+      $("#banner-scene-select").val(g_current_scene == '' ? -1 : g_current_scene);
     }
   }
 
@@ -210,39 +209,13 @@ function generate_kiosk_control(index, kiosk, pages) {
 // Controls for assigning pages to kiosks
 //////////////////////////////////////////////////////////////////////////
 
-function setup_scenes_select_control() {
-  $("#scenes-select").empty();
-  $("#scenes-select").append($("<option/>")
-                             .attr('value', -1)
-                             .text("(No scene)"));
-  for (var i = 0; i < g_all_scenes.length; ++i) {
-    var scene = g_all_scenes[i];
-    $("#scenes-select").append($("<option/>")
-                               .attr('value', scene.sceneid)
-                               .text(scene.name));
-  }
-
-  $("#scenes-select")
-    .on('change', on_scene_change)
-    .val(g_current_scene == '' ? -1 : g_current_scene)
-    .trigger('change', /*synthetic*/true);
-}
-$(function() { setup_scenes_select_control(); });
-
-// synthetic=false if user triggered scene change
-function on_scene_change(event, synthetic) {
-  if (!synthetic) {
-    var val = $("#scenes-select").val();
-    $.ajax(g_action_url,
-           {type: 'POST',
-            data: {action: 'scene.apply',
-                   sceneid: val},
-            success: function(data) {
-              process_polled_data(data);
-            },
-           });
-  }
-}
+// The scene is changed from the banner's dropdown (inc/banner.inc), which
+// announces the result: show the kiosks' new pages right away.
+$(function() {
+  document.addEventListener('derbynet-scene-applied', function(event) {
+    process_polled_data(event.detail);
+  });
+});
 
 // sel is the <select data-kiosk-address> input element
 function handle_assign_kiosk_page_change(sel) {

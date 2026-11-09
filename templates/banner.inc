@@ -20,11 +20,67 @@ function make_banner($banner_title, $back_button = 'index.php') {
 
   echo "<div class=\"banner_title\">".htmlspecialchars($banner_title, ENT_QUOTES, 'UTF-8')."</div>\n";
 
-  // The right-hand column is kept, empty, so the title stays centered between
-  // it and the back button.  (It held the help link, the version and the
-  // DerbyNet logo.)
-  echo "<div class=\"banner_tools\"></div>\n";
+  // The right-hand column: the current scene, for people logged in (empty
+  // otherwise, so the title stays centered between it and the back button)
+  echo "<div class=\"banner_tools\">".banner_scene_control()."</div>\n";
 
   echo "</div>\n";
+}
+
+// The current scene (what the kiosk screens are showing), for anyone logged
+// in: a dropdown to change it for those who run the race, just its name for
+// the rest of the crew.  Not on the kiosk screens themselves, not for
+// visitors, and not before there's a database with scenes.
+function banner_scene_control() {
+  global $db;
+  if (isset($GLOBALS['as_kiosk']) || isset($GLOBALS['g_kiosk_address'])) return '';
+  if (empty($_SESSION['role'])) return '';
+  if (!isset($db) || !function_exists('read_raceinfo') || !function_exists('have_permission')) {
+    return '';
+  }
+  try {
+    $scenes = $db->query('SELECT sceneid, name FROM Scenes ORDER BY sortorder')->fetchAll();
+    $current = read_raceinfo('current_scene', '');
+  } catch (Exception $e) {
+    return '';
+  }
+  if (count($scenes) == 0) return '';
+
+  $out = "<div class=\"banner_scene\"><span class=\"banner_scene_label\">Scene</span>";
+  if (have_permission(CONTROL_RACE_PERMISSION)) {
+    // not-mobile: left as a plain dropdown by js/mobile.js, styled in global.css
+    $out .= "<select id=\"banner-scene-select\" class=\"not-mobile\" aria-label=\"Scene\""
+        ." onchange=\"banner_scene_change(this);\">";
+    $out .= "<option value=\"-1\">(No scene)</option>";
+    foreach ($scenes as $scene) {
+      $out .= "<option value=\"".intval($scene['sceneid'])."\""
+          .($scene['sceneid'] == $current ? " selected=\"selected\"" : "").">"
+          .htmlspecialchars($scene['name'], ENT_QUOTES, 'UTF-8')."</option>";
+    }
+    $out .= "</select>";
+    // Applies the scene; the Kiosk Dashboard listens for
+    // derbynet-scene-applied to refresh its list.  (Written without less-than
+    // or ampersand, so pages still parse as XML.)
+    $out .= "<script type=\"text/javascript\">"
+        ."function banner_scene_change(sel) {"
+        ." var body = new URLSearchParams();"
+        ." body.append('action', 'scene.apply');"
+        ." body.append('sceneid', sel.value);"
+        ." fetch('action.php', {method: 'POST', body: body})"
+        ."  .then(function(r) { return r.json(); })"
+        ."  .then(function(json) {"
+        ."    document.dispatchEvent(new CustomEvent('derbynet-scene-applied', {detail: json}));"
+        ."  });"
+        ."}"
+        ."</script>";
+  } else {
+    $name = '(No scene)';
+    foreach ($scenes as $scene) {
+      if ($scene['sceneid'] == $current) $name = $scene['name'];
+    }
+    $out .= "<span class=\"banner_scene_name\">".htmlspecialchars($name, ENT_QUOTES, 'UTF-8')."</span>";
+  }
+  $out .= "</div>";
+  return $out;
 }
 ?>

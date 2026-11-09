@@ -57,11 +57,8 @@ var g_standings_choices = <?php
 <?php make_banner('Kiosks'); ?>
 
 <div id="kiosk-toolbar" class="toolbar page-toolbar">
+  <!-- The scene is chosen in the banner (inc/banner.inc) -->
   <div id="scenes-control">
-    <label for="scenes-select">Scene</label>
-    <div id="select-wrap">
-      <select id="scenes-select"></select>
-    </div>
     <div id="scenes-status-message"></div>
   </div>
 </div>
