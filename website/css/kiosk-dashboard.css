@@ -225,3 +225,8 @@ p.parameters {
 #set_up_displays p {
   margin: var(--space-2) 0 0 0;
 }
+
+/* Assign and Reload, side by side */
+.reload input[type='button'] + input[type='button'] {
+  margin-left: var(--space-1);
+}

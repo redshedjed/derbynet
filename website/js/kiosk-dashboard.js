@@ -143,7 +143,7 @@ function generate_kiosk_control(index, kiosk, pages) {
   // who it is, what it's showing, and Reload.
   var kiosk_control = $("<div class='card card-accent accent-during kiosk_control'/>");
 
-  // Who: the assigned name, or the made-up two-word name until one is assigned
+  // Who: the assigned name, or its number ("Kiosk 427") until one is assigned
   var kiosk_ident = $("<div class='kiosk-ident'/>");
   kiosk_ident.append("<p class='kiosk_names'><span class='kiosk_control_name'></span>"
                      + " <span class='kiosk_control_address'></span></p>");
@@ -158,14 +158,16 @@ function generate_kiosk_control(index, kiosk, pages) {
       $("<p class='last_contact'/>")
         .append($("<span class='badge badge-warning'/>").text("No contact for " + kiosk.age + "s")));
   }
-  $("<input type='button' class='btn btn-secondary btn-sm' value='Assign Name'/>")
-    .on('click', function() {
-      show_kiosk_naming_modal(kiosk.address ? kiosk.address.toString() : '', kiosk.name);
-    })
-    .appendTo(kiosk_ident);
   kiosk_ident.appendTo(kiosk_control);
 
+  // Assign (a location, as its name) and Reload, side by side at the right
   kiosk_control.append($("<div/>").addClass('reload')
+                       .append($("<input type='button' class='btn btn-secondary btn-sm' value='Assign'/>")
+                               .attr('title', 'Give this display a location (Kiosk Editor) as its name')
+                               .on('click', function() {
+                                 show_kiosk_naming_modal(kiosk.address ? kiosk.address.toString() : '',
+                                                         kiosk.name);
+                               }))
                        .append($("<input type='button' class='btn btn-secondary btn-sm'"
                                  + " value='Reload' onclick='reload_kiosk(this)'/>")
                                .attr('kiosk-address', kiosk.address))
