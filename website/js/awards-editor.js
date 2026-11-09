@@ -35,12 +35,19 @@ function make_award_row() {
   row.append('<span class="drag-handle" title="Drag to move">&#x22EE;&#x22EE;</span>');
   row.append($('<input type="text" class="award-name not-mobile" readonly="readonly"/>')
              .attr('aria-label', 'Award name'));
-  row.append($('<select class="award-type not-mobile" disabled="disabled"/>')
-             .attr('aria-label', 'Award type')
-             .html($("#quick_award_type").html()));
-  row.append($('<select class="award-group not-mobile" disabled="disabled"/>')
-             .attr('aria-label', 'Award for')
-             .html($("#quick_award_group").html()));
+  // Type and group: shown as text (.locked-text) until Edit, then as dropdowns
+  row.append($('<span class="row-cell"/>')
+             .append($('<input type="text" class="locked-text not-mobile" readonly="readonly"'
+                       + ' tabindex="-1"/>').attr('aria-label', 'Award type'))
+             .append($('<select class="award-type not-mobile" disabled="disabled"/>')
+                     .attr('aria-label', 'Award type')
+                     .html($("#quick_award_type").html())));
+  row.append($('<span class="row-cell"/>')
+             .append($('<input type="text" class="locked-text not-mobile" readonly="readonly"'
+                       + ' tabindex="-1"/>').attr('aria-label', 'Award for'))
+             .append($('<select class="award-group not-mobile" disabled="disabled"/>')
+                     .attr('aria-label', 'Award for')
+                     .html($("#quick_award_group").html())));
   var buttons = $('<span class="row-buttons"/>').appendTo(row);
   if (!awards_locked()) {
     buttons.append($('<input type="button" class="btn btn-secondary btn-sm edit-button" value="Edit"/>')
@@ -67,6 +74,16 @@ function fill_award_row(row, award, data) {
   row.find('.award-name').val(award.awardname);
   row.find('.award-type').val(award.awardtypeid);
   row.find('.award-group').val(class_and_rank_value(award));
+  show_locked_text(row);
+}
+
+// The text shown for each dropdown while the row isn't being edited
+function show_locked_text(row) {
+  row.find('.row-cell').each(function() {
+    var sel = $(this).find('select')[0];
+    $(this).find('.locked-text')
+      .val(sel && sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text : '');
+  });
 }
 
 function update_awards(data) {
@@ -105,6 +122,7 @@ function stop_editing(row, restore) {
   row.removeClass('editing');
   row.find('.award-name').prop('readonly', true);
   row.find('select').prop('disabled', true);
+  show_locked_text(row);
   if (!awards_locked()) {
     $("#all_awards").sortable('enable');
   }

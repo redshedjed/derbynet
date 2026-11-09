@@ -533,13 +533,27 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
   border-radius: var(--radius-md);
   background: var(--color-surface);
 }
-/* Locked: still a box, but quiet */
+/* Locked: still a box, but quiet, with grey text so it doesn't look
+   editable */
 .card-row input[type=text][readonly],
 .card-row select:disabled {
   border-color: var(--gray-200);
   background: var(--color-surface-sunken);
-  color: var(--color-text);
+  color: var(--color-text-muted);
   opacity: 1;
+  cursor: default;
+}
+/* A .row-cell holds a dropdown and its .locked-text: the text (a locked box)
+   until the row is edited, then the dropdown */
+.card-row .row-cell {
+  min-width: 0;
+}
+.card-row .row-cell select,
+.card-row.editing .row-cell .locked-text {
+  display: none;
+}
+.card-row.editing .row-cell select {
+  display: block;
 }
 .card-row input.award-name[readonly] {
   font-weight: var(--weight-semibold);

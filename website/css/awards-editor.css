@@ -6,7 +6,11 @@
 .awards_editor {
   /* handle, name, type, group, buttons: the three fields share what's
      left after the handle and the buttons (room for Save, Cancel, Delete) */
-  --card-row-columns: 28px minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) 210px;
+  --card-row-columns: 28px minmax(0, 5fr) minmax(0, 3fr) minmax(0, 3fr) 196px;
+}
+/* More of the window than most pages' columns: the rows are wide */
+.page-content.awards_editor {
+  max-width: 1300px;
 }
 .awards_editor .instructions {
   margin: 0 0 var(--space-3) 0;
