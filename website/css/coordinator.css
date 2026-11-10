@@ -614,8 +614,6 @@ input.lane-time::-webkit-outer-spin-button {
 
 /* Last Heat / Next Heat: arrow plus words */
 .heat_buttons .heat-arrow {
-  flex: 0 1 160px;
-  width: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -628,9 +626,19 @@ input.lane-time::-webkit-outer-spin-button {
   height: 20px;
   flex: none;
 }
+/* Last Heat | Next Heat over Manual Results | Re-Run: four buttons the same
+   size, in two even columns */
+.heat_buttons .heat-arrow,
 .heat_buttons #manual_results_button,
 .heat_buttons #rerun-button {
-  flex: 0 1 160px;
+  flex: 0 1 180px;
+  width: 180px;
+  min-width: 0;
+  height: 48px;
+  min-height: 48px;
+  margin: 0;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 /* The playlist (the plan), and the rounds (all of them) */
