@@ -22,7 +22,7 @@ function path_info() {
     // On Alpine, at least:
     // 'DOCUMENT_ROOT'   => '/var/www/html',
     // 'SCRIPT_FILENAME' => '/var/www/html/photo.php',
-    // 'PHP_SELF'        =>              '/photo.php/head/file/original/Cub-3126.jpg/xyz'
+    // 'PHP_SELF'        =>              '/photo.php/head/file/original/Car-1862.jpg/xyz'
     return substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_FILENAME']) - strlen($_SERVER['DOCUMENT_ROOT']));
   } else if (isset($_SERVER['ORIG_PATH_INFO'])) {
     // Rewrite rules in Apache 2.2 may leave ORIG_PATH_INFO instead of PATH_INFO
