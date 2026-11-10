@@ -513,14 +513,13 @@ function on_barcode_handling_change() {
 
 function update_qrcode() {
   $("#mobile-checkin-qrcode").empty();
-  $("#mobile-checkin-title").text($("#mobile-checkin-url").val());
   // The code carries the key, so whoever scans it doesn't have to log in
   var url = $("#mobile-checkin-url").val();
   url += (url.indexOf('?') < 0 ? '?' : '&') + 'key=' + encodeURIComponent(g_mobile_checkin_key);
   new QRCode(document.getElementById('mobile-checkin-qrcode'),
              {text: url,
-              width: 256,
-              height: 256});
+              width: 200,
+              height: 200});
 }
 function handle_qrcode_button_click() {
   update_qrcode();

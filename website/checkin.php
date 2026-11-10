@@ -444,18 +444,19 @@ mobile_select_refresh($("#bulk_who"));
 <div id="qrcode_settings_modal" class="modal_dialog wide_modal hidden block_buttons">
   <form id="mobile-checkin-form">
     <h2>Mobile Check-In</h2>
-    <p class="mobile-checkin-hint">Scan with a phone's camera to check racers in
-      and take their photos from the phone.  Anyone who scans this code can do
-      that without logging in, so show it only to helpers.</p>
+    <p class="mobile-checkin-hint">Phones that scan this can check racers in without
+      logging in: show it only to helpers.</p>
     <div id="mobile-checkin-qrcode"></div>
-    <div id="mobile-checkin-title"></div>
-    <input id="mobile-checkin-url" name="mobile-checkin-url" type="text" />
+    <input id="mobile-checkin-url" name="mobile-checkin-url" type="text"
+           aria-label="Address in the code"/>
 
-    <input type="button" value="New Code" class="btn-secondary"
-           title="Stop the phones that scanned the old code from checking racers in"
-           onclick="on_new_mobile_checkin_key();"/>
-    <a id="mcheckin-link" class="button_link" href="mcheckin.php">Mobile Check-In &gt;</a>
-    <input type="button" value="Close" onclick="close_modal('#qrcode_settings_modal');"/>
+    <div class="qr-buttons">
+      <input type="button" value="New Code" class="btn-secondary"
+             title="Stop the phones that scanned the old code from checking racers in"
+             onclick="on_new_mobile_checkin_key();"/>
+      <a id="mcheckin-link" class="button_link" href="mcheckin.php">Mobile Check-In &gt;</a>
+      <input type="button" value="Close" onclick="close_modal('#qrcode_settings_modal');"/>
+    </div>
   </form>
 </div>
 
