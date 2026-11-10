@@ -42,9 +42,11 @@
   background-color: #ff6060;
 }
 
+/* The port and timer model being tried right now: a quiet tint and a bar at
+   the left (no bold, so the row doesn't change size as the scan moves on) */
 .scanlist li.probing {
-  font-weight: bold;
-  background-color: #f9fc2d;
+  background-color: #EAF1FB;
+  box-shadow: inset 4px 0 0 #2B6CC4;
 }
 
 .scanlist li.undiscoverable {
@@ -69,9 +71,23 @@
   margin: 5px;
 }
 
+/* Once a timer is chosen or found: still a list (about six rows, scrolled
+   to the chosen one), so the other models can be seen and picked */
 #profiles-div.racing {
-  height: 30px;
-  overflow-y: scroll;
+  height: 180px;
+  overflow-y: auto;
+}
+
+/* Scanning stopped without finding a timer */
+#scan-message {
+  max-width: 420px;
+  margin: 10px auto;
+  text-align: center;
+  font-weight: bold;
+  color: #8A5300;
+}
+#scan-message.hidden {
+  display: none;
 }
 
 #lower-container {

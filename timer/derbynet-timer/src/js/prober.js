@@ -4,6 +4,9 @@
 
 const PRE_PROBE_SETTLE_TIME_MS = 2000;
 const PROBER_RESPONSE_TIME_MS = 500;
+// Full passes over the ports and timer models before giving up, rather than
+// scanning forever; Scan starts again.
+const MAX_PROBE_PASSES = 3;
 
 class Prober {
   user_chosen_port = -1;
@@ -47,6 +50,7 @@ class Prober {
       return;
     }
     this.probe_cycle_underway = true;
+    $("#scan-message").addClass('hidden');
     g_logger.probing_started();
     TimerProxy.destroy();
     $("#connected").text("Probe started");
@@ -61,14 +65,24 @@ class Prober {
         }
       }
 
-      while (!g_timer_proxy && !this.give_up) {
+      var passes = 0;
+      while (!g_timer_proxy && !this.give_up && passes < MAX_PROBE_PASSES) {
         await g_prober.probe();
+        ++passes;
       }
       if (g_timer_proxy) {
         Flag.apply_all();
         if (g_host_poller) {
           g_host_poller.offer_remote_start(g_timer_proxy.has_remote_start());
         }
+      } else if (!this.give_up) {
+        // Nothing answered: stop, and say how to try again
+        Gui.probe_port(-1);
+        Gui.probe_profile(-1);
+        g_logger.internal_msg('No timer found after ' + passes + ' passes; scanning stopped.');
+        $("#scan-message").text("No timer found.  Check that it's plugged in and turned on,"
+                                + " then press Scan.").removeClass('hidden');
+        $("#probe-button").prop('disabled', false);
       }
     } finally {
       this.probe_cycle_underway = false;
