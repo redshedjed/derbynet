@@ -115,6 +115,11 @@ AUTOCROP=0
 PHOTO_USER=Photo
 PHOTO_PASSWORD=flashbulb
 
+# Set to 1 to read the barcode scanner named in BARCODE_SCANNER_DEVS directly,
+# instead of as keyboard input to the photo station's terminal window.  (See
+# wait_for_barcode in photo-functions.sh.)  May also come from the environment.
+BARCODE_DIRECT=${BARCODE_DIRECT:-0}
+
 # If set to 1, the barcode scan will also check-in the racer
 PHOTO_CHECKIN=0
 
@@ -139,6 +144,7 @@ if [ -d /etc/derbynet.d ] ; then
     done
 fi
 test -f /boot/derbynet.conf && . /boot/derbynet.conf
+test -f /boot/firmware/derbynet.conf && . /boot/firmware/derbynet.conf
 
 announce initializing
 

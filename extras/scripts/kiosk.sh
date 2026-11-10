@@ -116,8 +116,11 @@ while true ; do
     # --unsafely-treat-insecure-origin-as-secure and
     # --use-fake-ui-for-media-stream: a replay camera can use the camera over
     # plain http, without asking.  --autoplay-policy: replays and sounds play
-    # without a tap.  The rest: no prompts, bubbles, swipe-back or pinch zoom.
+    # without a tap.  --password-store=basic: no "unlock keyring" prompt when
+    # the Pi logs in automatically.  The rest: no prompts, bubbles,
+    # swipe-back or pinch zoom.
     "$BROWSER" --kiosk \
+               --password-store=basic \
                --noerrdialogs \
                --no-first-run \
                --no-default-browser-check \

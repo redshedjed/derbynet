@@ -58,14 +58,7 @@ check_scanner
 check_camera &
 
 while true ; do
-    DEV="`find_barcode_scanner`"
-    if [ -z "$DEV" ] ; then
-        announce no-scanner
-        sleep 5s
-        continue
-    fi
-    # BARCODE=`$READ_BARCODE "$DEV"`
-    read BARCODE
+    wait_for_barcode || continue
     echo Scanned $BARCODE
     CAR_NO=`echo $BARCODE | grep -e "^PWD" | sed -e "s/^PWD//"`
     if [ "$BARCODE" = "QUITQUITQUIT" ] ; then
@@ -95,8 +88,12 @@ while true ; do
         elif [ "$PHOTO_CAPTURE" = "raspistill" ] ; then
             raspistill -o "$PHOTO_DIR/Car$CAR_NO.jpg" \
                 && CAPTURE_OK=1
-        elif [ "$PHOTO_CAPTURE" = "libcamera" ] ; then
-            libcamera-still -o "$PHOTO_DIR/Car$CAR_NO.jpg" \
+        elif [ "$PHOTO_CAPTURE" = "libcamera" -o "$PHOTO_CAPTURE" = "rpicam" ] ; then
+            # Raspberry Pi camera module.  Bookworm renamed libcamera-still to
+            # rpicam-still; the old name may not exist on newer releases.
+            STILL=rpicam-still
+            command -v rpicam-still >/dev/null || STILL=libcamera-still
+            $STILL --nopreview -o "$PHOTO_DIR/Car$CAR_NO.jpg" \
                 && CAPTURE_OK=1
         else
             gphoto2 --filename "$PHOTO_DIR/Car$CAR_NO.jpg"  --force-overwrite \

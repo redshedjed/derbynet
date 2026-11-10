@@ -104,13 +104,7 @@ announce idle
 loop_to_capture_tethered &
 
 while true ; do
-    DEV="`find_barcode_scanner`"
-    if [ -z "$DEV" ] ; then
-        announce no-scanner
-        sleep 5s
-        continue
-    fi
-    read BARCODE
+    wait_for_barcode || continue
     echo Scanned $BARCODE
     CAR_NO=`echo $BARCODE | grep -e "^PWD" | sed -e "s/^PWD//"`
 

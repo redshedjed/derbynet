@@ -20,15 +20,11 @@ function upload_car_photo() {
 }
 
 
-echo Headshot uploads begin
-
 user_login_photo
 
-for f in `dirname $0`/data/headshots/head-*.jpg `dirname $0`/data/headshots/Cub-*.jpg
-do
-    echo $f
-    upload_headshot $f
-done
+# There are no headshot fixtures; one car photo stands in as the only racer photo.
+echo Racer photo upload
+upload_headshot `dirname $0`/data/carphotos/Car-1862.jpg
 
 echo Car photo uploads begin
 for f in `dirname $0`/data/carphotos/Car-*.jpg
@@ -42,11 +38,11 @@ echo Done
 user_login_admin
 
 # Delete a photo, then upload it again
-curl_photo_any head/file/original/Cub-3126.jpg/xyz
-curl_postj action.php "action=photo.delete&repo=head&photo=Cub-3126.jpg" | check_jsuccess
+curl_photo_any head/file/original/Car-1862.jpg/xyz
+curl_postj action.php "action=photo.delete&repo=head&photo=Car-1862.jpg" | check_jsuccess
 
-COUNT=`curl --location -s -b $COOKIES_CURL -c $COOKIES_CURL $BASE_URL/photo.php/head/file/original/Cub-3126.jpg/xyz | wc -c`
+COUNT=`curl --location -s -b $COOKIES_CURL -c $COOKIES_CURL $BASE_URL/photo.php/head/file/original/Car-1862.jpg/xyz | wc -c`
 if [ $COUNT -gt 1000 ]; then
     test_fails Photo not deleted
 fi
-upload_headshot `dirname $0`/data/headshots/Cub-3126.jpg
+upload_headshot `dirname $0`/data/carphotos/Car-1862.jpg

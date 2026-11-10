@@ -141,6 +141,54 @@ find_barcode_scanner() {
     done
 }
 
+# Echoes the full path of the first device named in $BARCODE_SCANNER_DEVS that's
+# present in /dev/input/by-id.  Unlike find_barcode_scanner, never falls back to
+# "any device", because in direct mode the device gets grabbed exclusively, and
+# grabbing the keyboard by mistake would be bad.
+find_named_barcode_scanner() {
+    for DEV in $BARCODE_SCANNER_DEVS ; do
+        if [ -e "/dev/input/by-id/$DEV" ] ; then
+            echo /dev/input/by-id/$DEV
+            return
+        fi
+    done
+}
+
+# Waits for one barcode scan and puts it in $BARCODE.  Returns non-zero (after
+# announcing the problem) if no scanner is available, so the caller can retry.
+#
+# Normally the scanner acts as a keyboard, and its input is read from stdin, so
+# the photo station's terminal window must have keyboard focus.  With
+# BARCODE_DIRECT=1, the scanner named in BARCODE_SCANNER_DEVS is read directly
+# (and exclusively), so the station works even when another window, e.g. a
+# kiosk, has focus.  Direct mode requires read access to the device (membership
+# in the "input" group).
+#
+# Inputs from the environment:
+#    BARCODE_DIRECT, BARCODE_SCANNER_DEVS, LIB_DIR
+wait_for_barcode() {
+    BARCODE=
+    if [ "$BARCODE_DIRECT" = "1" ] ; then
+        DEV="`find_named_barcode_scanner`"
+    else
+        DEV="`find_barcode_scanner`"
+    fi
+    if [ -z "$DEV" ] ; then
+        if [ "$BARCODE_DIRECT" = "1" ] ; then
+            echo "BARCODE_DIRECT=1, but none of BARCODE_SCANNER_DEVS ($BARCODE_SCANNER_DEVS) is in /dev/input/by-id"
+        fi
+        announce no-scanner
+        sleep 5s
+        return 1
+    fi
+    if [ "$BARCODE_DIRECT" = "1" ] ; then
+        BARCODE="`python3 "$LIB_DIR"/read_barcode.py "$DEV"`" || { sleep 1s ; return 1 ; }
+    else
+        read BARCODE
+    fi
+    return 0
+}
+
 # Verifies that the barcode scanner device is connected; loops until successful.
 #
 # Input from the environment:
