@@ -381,60 +381,106 @@ function bulk_eligibility() {
   });
 }
 
+// Sorting the table: click a column's header to sort by it (alphabetically,
+// or numerically for car numbers); click it again to reverse.  g_order is the
+// column (set first in checkin.php, from ?order=), g_order_reversed the
+// direction.  Both are kept for the browser session, so the table stays in
+// the chosen order when racers are edited and when the page is reloaded.
+var g_order_reversed = false;
+
+// Text and numbers alike, numbers in numeric order ("Den 2" before "Den 10")
+// and letters regardless of case
+function compare_values(a, b) {
+  if (typeof a == 'number' && typeof b == 'number') {
+    return a - b;
+  }
+  return String(a).localeCompare(String(b), undefined, {numeric: true, sensitivity: 'base'});
+}
 function compare_first(a, b) {
   for (var i = 0; i < a[0].length; ++i) {
-    if (a[0][i] < b[0][i]) return -1;
-    if (a[0][i] > b[0][i]) return 1;
+    var c = compare_values(a[0][i], b[0][i]);
+    if (c != 0) return c;
   }
   return 0;
 }
 
 function handle_sorting_event(event) {
-  g_order = $(event.target).attr('data-order');
-  $("thead a[data-order]").prop('href', '#');
-  $(event.target).removeAttr('href');
+  var order = $(event.currentTarget).attr('data-order');
+  // The same column again reverses it
+  g_order_reversed = (order == g_order) ? !g_order_reversed : false;
+  g_order = order;
+  try {
+    sessionStorage.setItem('checkin-sort', JSON.stringify({order: g_order, reversed: g_order_reversed}));
+  } catch (e) {}
   sort_checkin_table();
   return false;
 }
 
+function cell_text(row, selector) {
+  var cell = row.querySelector(selector);
+  return cell ? cell.textContent.trim() : '';
+}
+
+// What a row sorts by: the chosen column, then last name, then first name
 function sorting_key(row) {
+  var last = cell_text(row, '.sort-lastname');
+  var first = cell_text(row, '.sort-firstname');
+  var key;
   if (g_order == 'partition') {
-    // partition sortorder, lastname, firstname
-    return [parseInt(row.querySelector('[data-div-sortorder]').getAttribute('data-div-sortorder')),
-            row.getElementsByClassName('sort-lastname')[0].innerHTML,
-            row.getElementsByClassName('sort-firstname')[0].innerHTML]
+    key = cell_text(row, '[data-div-sortorder]');
   } else if (g_order == 'car') {
-    // carnumber (numeric), lastname, firstname
-    return [parseInt(row.getElementsByClassName('sort-car-number')[0].innerHTML),
-            row.getElementsByClassName('sort-lastname')[0].innerHTML,
-            row.getElementsByClassName('sort-firstname')[0].innerHTML]
+    var n = parseInt(cell_text(row, '.sort-car-number'));
+    key = isNaN(n) ? Number.MAX_SAFE_INTEGER : n;  // (no car number: last)
+  } else if (g_order == 'first') {
+    return [first, last];
+  } else if (g_order == 'carname') {
+    key = cell_text(row, '.carname');
+  } else if (g_order == 'passed') {
+    var box = row.querySelector('.checkin-status input[type=checkbox]');
+    key = box && box.checked ? 0 : 1;  // checked in first
   } else /* 'name' */ {
-    // lastname, firstname
-    return [row.getElementsByClassName('sort-lastname')[0].innerHTML,
-            row.getElementsByClassName('sort-firstname')[0].innerHTML]
+    return [last, first];
   }
+  return [key, last, first];
 }
 
 function sort_checkin_table() {
-  row_array = [];
-  rows = $("#main_tbody").get(0).getElementsByTagName('tr');
+  var row_array = [];
+  var rows = $("#main_tbody").get(0).getElementsByTagName('tr');
 
   for (var j = 0; j < rows.length; ++j) {
-	row_array[row_array.length] = [sorting_key(rows[j]), rows[j]];
+    row_array.push([sorting_key(rows[j]), rows[j]]);
   }
 
-  row_array.sort(compare_first);
+  row_array.sort(function(a, b) {
+    return g_order_reversed ? compare_first(b, a) : compare_first(a, b);
+  });
 
-  tb = $("#main_tbody").get(0);
+  var tb = $("#main_tbody").get(0);
 
   for (var j = 0; j < row_array.length; ++j) {
-    row_array[j][1].classList.remove('d' + (j & 1));
+    row_array[j][1].classList.remove('d0', 'd1');
     row_array[j][1].classList.add('d' + ((j + 1) & 1));
-	tb.appendChild(row_array[j][1]);
+    tb.appendChild(row_array[j][1]);
   }
 
-  delete row_array;
+  // The sorted column's header shows the direction
+  $("thead a[data-order]").removeClass('sorted sorted-reversed');
+  $("thead a[data-order='" + g_order + "']")
+    .addClass(g_order_reversed ? 'sorted sorted-reversed' : 'sorted');
 }
+
+// Back to the order chosen earlier in this browser session, if any
+$(function() {
+  try {
+    var saved = JSON.parse(sessionStorage.getItem('checkin-sort'));
+    if (saved && saved.order) {
+      g_order = saved.order;
+      g_order_reversed = !!saved.reversed;
+    }
+  } catch (e) {}
+  sort_checkin_table();
+});
 
 // g_action_on_barcode is set in checkin.php with a value persisted in the PHP
 // session for this user.

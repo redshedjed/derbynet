@@ -60,20 +60,25 @@ html, body { /* Don't scroll the page, just the table. */
   font-size: var(--text-lg);
 }
 
-/* Sortable column headers: the current sort is plain text with an arrow,
-   the others are links. */
+/* Sortable column headers (click to sort, again to reverse): links, with an
+   arrow on the column the table is sorted by (js/checkin.js) */
 #main-checkin-table th a {
-  color: inherit;
-  text-decoration: none;
-}
-#main-checkin-table th a[href] {
   color: var(--color-brand);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
 }
-#main-checkin-table th a[href]:hover {
+#main-checkin-table th a:hover {
   text-decoration: underline;
 }
-#main-checkin-table th a:not([href])::after {
-  content: " \25BE";
+#main-checkin-table th a.sorted {
+  color: var(--color-text);
+}
+#main-checkin-table th a.sorted::after {
+  content: " \25B2";
+}
+#main-checkin-table th a.sorted-reversed::after {
+  content: " \25BC";
 }
 
 #main-checkin-table tr.d0 td {

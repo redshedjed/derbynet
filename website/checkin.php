@@ -38,20 +38,18 @@ $xbs = read_raceinfo_boolean('use-xbs');
 $xbs_award_name = xbs_award();
 
 $order = '';
-if (isset($_GET['order']) && in_array($_GET['order'], ['name', 'class', 'car', 'partition']))
+if (isset($_GET['order']) && in_array($_GET['order'], ['name', 'class', 'car', 'partition',
+                                                       'first', 'carname', 'passed']))
   $order = $_GET['order'];
 if (!$order)
     $order = 'name';
 
-// The table of racers can be presented in order by name, car, or class (and
-// then by name within the class).  Each sortable column has a header which is a
-// link to change the ordering, with the exception that the header for the
-// column for ordering currently in use is NOT a link (because it wouldn't do
-// anything).
+// The table of racers can be sorted by any of its text columns: each one's
+// header is a link that sorts by it, and again reverses the order
+// (js/checkin.js, which also marks the column in use and remembers the choice
+// for the browser session).
 function column_header($text, $o) {
-  global $order;
-  return "<a data-order='".$o."' "
-      .($o == $order ? "" : " href='#'").">".$text."</a>";
+  return "<a data-order='".$o."' href='#'>".$text."</a>";
 }
 ?><!DOCTYPE html>
 <html>
@@ -155,9 +153,9 @@ make_banner('Racer Check-In');
     <th><?php echo column_header('Car Number', 'car'); ?></th>
     <th>Photo</th>
     <th><?php echo column_header('Last Name', 'name'); ?></th>
-    <th>First Name</th>
-    <th>Car Name &amp; From</th>
-    <th>Passed?</th>
+    <th><?php echo column_header('First Name', 'first'); ?></th>
+    <th><?php echo column_header('Car Name &amp; From', 'carname'); ?></th>
+    <th><?php echo column_header('Passed?', 'passed'); ?></th>
     <?php if ($xbs) {
         echo '<th>'.$xbs_award_name.'</th>';
     } ?>
