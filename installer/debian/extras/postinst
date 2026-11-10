@@ -2,8 +2,19 @@
 
 ######## For RPi, some of the /extras scripts prefer config files in /boot,
 ######## where they can be easily edited on a foreign host.
-if [ "$ID" = "raspbian" ] ; then
-  if [ ! -f /boot/derbynet.conf ] ; then
-    cp /etc/derbynet.conf /boot
+IS_RPI=0
+if [ -f /etc/os-release ] ; then
+  . /etc/os-release
+  test "$ID" = "raspbian" && IS_RPI=1
+fi
+# 64-bit Raspberry Pi OS reports ID=debian, so check the hardware too.
+grep -qs "Raspberry Pi" /proc/device-tree/model && IS_RPI=1
+
+if [ $IS_RPI -eq 1 ] ; then
+  # Since Bookworm, the boot partition is mounted at /boot/firmware.
+  BOOT=/boot
+  test -f /boot/firmware/config.txt && BOOT=/boot/firmware
+  if [ ! -f $BOOT/derbynet.conf ] ; then
+    cp /etc/derbynet.conf $BOOT
   fi
 fi

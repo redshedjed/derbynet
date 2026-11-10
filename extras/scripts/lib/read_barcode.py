@@ -1,5 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
+# Reads one barcode (one line, terminated by Enter) directly from a scanner's
+# /dev/input event device, and prints it.  The device is grabbed exclusively
+# while reading, so the scanned keystrokes don't also go to whatever window has
+# keyboard focus.
+
+import fcntl
 import struct
 import sys
 
@@ -38,21 +44,31 @@ EV_KEY = 1
 # EV_SYN = 0
 # EV_MSC = 4
 
-# 4IHHI on 64-bit machines; each of the other INEV_ indices would increase by 2
-INEV_STRUCT = '2IHHI'
+# struct input_event is { struct timeval time; __u16 type; __u16 code; __s32 value; }
+# where timeval's two fields are C longs: 4 bytes on 32-bit systems, 8 on
+# 64-bit.  Native ('@') sizes and alignment match the running system either way.
+INEV_STRUCT = '@llHHi'
+INEV_SIZE = struct.calcsize(INEV_STRUCT)
 # Offsets in the input_event struct
-#INEV_XX0 = 0
-#INEV_XX1 = 1
 INEV_TYPE = 2
 INEV_CODE = 3
 INEV_VALUE = 4
 
+# EVIOCGRAB = _IOW('E', 0x90, int)
+EVIOCGRAB = 0x40044590
+
 ss = ""
 with open(scanner_device, 'rb') as fp:
+    try:
+        fcntl.ioctl(fp, EVIOCGRAB, 1)
+    except OSError:
+        pass  # Still usable, just not exclusive
     shift = False
     done = False
     while not done:
-        buffer = fp.read(struct.calcsize(INEV_STRUCT))
+        buffer = fp.read(INEV_SIZE)
+        if len(buffer) < INEV_SIZE:
+            sys.exit(1)  # Device went away
         ev = struct.unpack(INEV_STRUCT, buffer)
 
         if ev[INEV_TYPE] != EV_KEY:

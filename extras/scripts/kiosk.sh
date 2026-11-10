@@ -4,24 +4,26 @@
 # web server.  Place the companion kiosk.desktop file in ~/.config/autostart/ to
 # have it autostart.
 #
-# Supports midori and epiphany browsers, commonly found on Raspbian.  Midori is
-# the default; override with a BROWSER= value in one of the config files
-# (/etc/derbynet.conf or /boot/derbynet.conf).
+# On a Raspberry Pi, extras/rpi/setup-kiosk.sh does the whole setup in one step.
 #
-# Note that Midori is not installed by default:
+# Chromium is preferred when installed; midori and epiphany are also supported.
+# Override with a BROWSER= value in one of the config files (/etc/derbynet.conf,
+# /boot/derbynet.conf, or /boot/firmware/derbynet.conf).
 #
-# sudo apt-get install midori
-#
-# Epiphany is the default browser for Raspbian, but it doesn't seem to support a
-# "full screen" mode that clears the desktop decorations (menu bar, etc.).  The
-# work-around is to install xautomation (which provides the xte command), and
-# simulate an F11 keystroke to put the browser in fullscreen mode.
+# Epiphany doesn't seem to support a "full screen" mode that clears the desktop
+# decorations (menu bar, etc.).  The work-around is to install xautomation
+# (which provides the xte command), and simulate an F11 keystroke to put the
+# browser in fullscreen mode.  That only works under X11, not Wayland.
 
-
-xset s off
-xset -dpms
-xset s noblank
-test -x /usr/bin/unclutter && unclutter &
+# Screen blanking and cursor hiding via X11 tools only work in an X11 session.
+# Under Wayland (the default on current Raspberry Pi OS), blanking is turned off
+# by setup-kiosk.sh via raspi-config instead.
+if [ -z "$WAYLAND_DISPLAY" ] ; then
+    xset s off
+    xset -dpms
+    xset s noblank
+    test -x /usr/bin/unclutter && unclutter &
+fi
 
 # Choosing the X font is kind of a nuisance; getting it wrong may result in a dialog box with no visible text.
 # See https://tronche.com/wiki/Howto_specify_X_scalable_fonts_from_the_command_line
@@ -55,6 +57,7 @@ test -x /usr/bin/chromium-browser && BROWSER=chromium-browser
 
 test -f /etc/derbynet.conf  && . /etc/derbynet.conf
 test -f /boot/derbynet.conf && . /boot/derbynet.conf
+test -f /boot/firmware/derbynet.conf && . /boot/firmware/derbynet.conf
 
 test -n "$1" && DERBYNET_SERVER="$1"
 
@@ -98,21 +101,31 @@ while true ; do
         test -x /usr/bin/xte && xte 'sleep 15' 'key F11' &
         # From https://www.raspberrypi.org/forums/viewtopic.php?f=66&t=118118 :
         WEBKIT_DISABLE_TBS=1 \
-        epiphany-browser --application-mode --profile /home/pi/.config "$DERBYNET_SERVER/kiosk.php?address=$ADDRESS"
+        epiphany-browser --application-mode --profile "$HOME/.config" "$DERBYNET_SERVER/kiosk.php?address=$ADDRESS"
     elif [ "$BROWSER" = "chromium"  -o "$BROWSER" = "chromium-browser" ] ; then
         # Update preferences file to disable warnings about bad shutdown/restoring sessions
-        sed -i \
+        PREFS="$HOME/.config/chromium/Default/Preferences"
+        test -f "$PREFS" && sed -i \
             -e 's/"exited_cleanly": *false/"exited_cleanly": true/' \
             -e 's/"exit_type": *"[^"]*"/"exit_type": "Normal"/' \
-            ~/.config/chromium/Default/Preferences
+            "$PREFS"
+        # --password-store=basic avoids a keyring-unlock prompt on autologin.
+        # --check-for-update-interval suppresses the "Chromium is out of date" nag.
         "$BROWSER" --noerrdialogs \
                    --no-default-browser-check \
+                   --no-first-run \
                    --disable-session-crashed-bubble \
                    --disable-infobars \
-                   --kiosk "$DERBYNET_SERVER/kiosk.php?address=$ADDRESS" \
-                   –incognito
+                   --disable-features=Translate \
+                   --password-store=basic \
+                   --check-for-update-interval=31536000 \
+                   --autoplay-policy=no-user-gesture-required \
+                   --incognito \
+                   --kiosk "$DERBYNET_SERVER/kiosk.php?address=$ADDRESS"
     else
         # Arbitrary browser command:
         "$BROWSER" "$DERBYNET_SERVER/kiosk.php?address=$ADDRESS"
     fi
+    # Don't spin if the browser fails immediately
+    sleep 3
 done
