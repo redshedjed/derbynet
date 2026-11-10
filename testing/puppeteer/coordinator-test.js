@@ -279,11 +279,11 @@ puppeteer.launch({devtools: debugging, slowMo: 200}).then(async browser => {
                await page.$eval("#now-racing-group p", p => { return $(p).text(); }));
 
   assert.equal([
-    // Now racing
-    "3", 0,
+    // Now racing: Close Round, then the round's own buttons
+    "3", 2, "Close Round", "Repeat Round",
     // Not yet scheduled
-    "4", 1, "Schedule",
-    "5", 1, "Schedule",
+    "4", 1, "Schedule Heats",
+    "5", 1, "Schedule Heats",
     "7", 0,  // No passed racers
     // Done racing
     "1", 2, "Make Changes", "Repeat Round",
@@ -300,7 +300,7 @@ puppeteer.launch({devtools: debugging, slowMo: 200}).then(async browser => {
                  return buttons;
                }));
 
-  assert.equal(["Repeat Round", "Add New Rounds"],
+  assert.equal(["Add New Rounds"],
                await page.evaluate(function() {
                  var buttons = [];
                  $("#supplemental-control-group input[type='button']").each(function() {
@@ -1386,7 +1386,7 @@ puppeteer.launch({devtools: debugging, slowMo: 200}).then(async browser => {
     // right away; the number of runs per lane comes from Settings, on the
     // server, so isn't sent.
     await page.evaluate(() => {
-      $(".control_group[data-roundid='5'] input[type='button'][value='Schedule']").click();
+      $(".control_group[data-roundid='5'] input[type='button'][value='Schedule Heats']").click();
     });
   },
                        {'type': 'POST',
@@ -1615,15 +1615,15 @@ puppeteer.launch({devtools: debugging, slowMo: 200}).then(async browser => {
                await page.$eval("#now-racing-group p", p => { return $(p).text(); }));
 
   assert.equal([
-    // Now racing
-    "2", 0,
+    // Now racing: Close Round, then the round's own buttons
+    "2", 2, "Close Round", "Repeat Round",
     // Master schedule
     "-1", 1,"Next Up",
     // Not yet scheduled
-    "7", 2,"Schedule","Delete Round",
+    "7", 2,"Schedule Heats","Delete Round",
     "5", 0,  // No passed racers
     "6", 0,
-    "8", 2,"Schedule","Delete Round",
+    "8", 2,"Schedule Heats","Delete Round",
     // Done racing
     "1", 2,"Make Changes","Repeat Round",
     "3", 2,"Make Changes","Repeat Round",
@@ -1640,7 +1640,7 @@ puppeteer.launch({devtools: debugging, slowMo: 200}).then(async browser => {
                  return buttons;
                }));
 
-  assert.equal(["Repeat Round", "Add New Rounds"],
+  assert.equal(["Add New Rounds"],
                await page.evaluate(function() {
                  var buttons = [];
                  $("#supplemental-control-group input[type='button']").each(function() {

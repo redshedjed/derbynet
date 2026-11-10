@@ -51,7 +51,23 @@ function handle_isracing_change(event, scripted) {
                });
     }
 }
-$(function() { $("#is-currently-racing").on("change", handle_isracing_change); });
+$(function() {
+  $("#is-currently-racing").on("change", handle_isracing_change)
+    .on("change", function() { update_racing_hint(); });
+  update_racing_hint();
+});
+
+// Close Round: no round is current any more; its results are kept, and its
+// Race button picks it up at its first heat without results.
+function handle_close_round_button() {
+    $.ajax(g_action_url,
+           {type: 'POST',
+            data: {action: 'heat.select',
+                   roundid: -1,
+                   now_racing: 0},
+            success: function(json) { process_coordinator_poll_json(json); }
+           });
+}
 
 function handle_skip_heat_button() {
     $.ajax(g_action_url,

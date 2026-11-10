@@ -25,7 +25,12 @@ require_once('inc/scenes.inc');
 $ok = true;
 
 if (have_permission(CONTROL_RACE_PERMISSION)) {
-  if (isset($_POST['roundid']) || isset($_POST['heat'])) {
+  if (isset($_POST['roundid']) && $_POST['roundid'] == -1) {
+    // "Close Round": stop racing and leave no round current.  The results of
+    // the heats already run are kept; "Race" picks the round up again.
+    set_racing_state(0);
+    set_current_heat(-1, 1);
+  } else if (isset($_POST['roundid']) || isset($_POST['heat'])) {
     // Turn off NowRacing, although it may get turned back on before
     // this action completes.  set_racing_state(0) will take care of
     // sending a replay CANCEL.
@@ -35,7 +40,14 @@ if (have_permission(CONTROL_RACE_PERMISSION)) {
 
     if (isset($_POST['roundid'])) {
       $current['roundid'] = $_POST['roundid'];
-      $heat = 1;
+      // A round raced part way picks up at its first heat without results
+      $heat = read_single_value('SELECT MIN(heat) FROM RaceChart'
+                                .' WHERE roundid = :roundid'
+                                .'  AND finishtime IS NULL AND finishplace IS NULL',
+                                array(':roundid' => $_POST['roundid']));
+      if (!$heat) {
+        $heat = 1;
+      }
     }
     if (isset($_POST['heat'])) {
       $heat = $_POST['heat'];

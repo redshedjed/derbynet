@@ -145,6 +145,14 @@ function update_for_current_round(current) {
             g_updating_current_round = false;
         }
     }
+    update_racing_hint();
+}
+
+// What the Racing switch does, in its current position
+function update_racing_hint() {
+  $("#racing-hint").text($("#is-currently-racing").prop('checked')
+                         ? "Results from the timer are recorded, and each heat moves on to the next."
+                         : "Paused: results from the timer aren't recorded.  Turn on to race.");
 }
 
 function generate_timer_state_group(tstate) {
@@ -298,7 +306,17 @@ function generate_current_round_control_group(round, current, timer_state) {
                         + '</p>'))
               .append('<div class="heat_number"/>'))
     .addClass('current')
-    .append("<div class='heat-lineup'></div>");
+    .append("<div class='heat-lineup'></div>")
+    // This round's own buttons: Close Round, then the ones from
+    // inject_into_scheduling_control_group (Unschedule Heats, Repeat Round, ...)
+    .append($("<div class='current_round_actions block_buttons'/>")
+            .append('<input type="button" class="close-round-button" value="Close Round"'
+                    + ' title="Stop racing this round.  Its results are kept, and'
+                    + ' Race picks it up where it left off."'
+                    + ' onclick="handle_close_round_button()"/>')
+            .append("<div id='now-racing-group-buttons'></div>"));
+  control_group.find('h3.roundclass')
+    .before("<div class='round_in_progress_tag'>Round in progress</div>");
 
   inject_into_scheduling_control_group(round, current, timer_state);
 }
@@ -370,14 +388,14 @@ function inject_into_scheduling_control_group(round, current, timer_state) {
                      + ' onclick="handle_unschedule_button(' + round.roundid
                      + ', \'' + String(round['class']).replace(/"/g, '&quot;').replace(/'/, "\\'") + '\', '
                      + round.round + ')"'
-                     + ' value="Unschedule"/>');
+                     + ' value="Unschedule Heats"/>');
     }
     if (round.heats_scheduled == 0 && round.unscheduled > 0) {
       if (timer_state.lanes != '' && timer_state.lanes > 0) {
         // Each racer runs in each lane as many times as Settings says
         actions.append('<input type="button"'
                        + ' onclick="handle_schedule_submit(' + round.roundid + ')"'
-                       + ' value="Schedule"/>');
+                       + ' value="Schedule Heats"/>');
       } else {
         actions.append("<p>Can't schedule heats, because the number of lanes hasn\'t" +
                        " been determined.<br/>" +
@@ -608,7 +626,7 @@ function update_next_step(json) {
   } else if (to_race.length > 0) {
     next = "Press <b>Race</b> on a scheduled round at the right.";
   } else if (to_schedule.length > 0) {
-    next = "Press <b>Schedule</b> on a round at the right to make its heats"
+    next = "Press <b>Schedule Heats</b> on a round at the right to make its heats"
       + ($("#playlist-start").is(':visible')
          ? ", or press <b>Start Playlist</b> to run the rounds in playlist order."
          : ".");
@@ -768,8 +786,7 @@ function process_coordinator_poll_json(json) {
 
   // Hide the control group if there's nothing to show
   $("#supplemental-control-group").toggleClass("hidden",
-                                               $("#add-new-rounds-button").hasClass("hidden") &&
-                                               $("#now-racing-group-buttons").is(":empty"));
+                                               $("#add-new-rounds-button").hasClass("hidden"));
 }
 
 var g_polling_interval;

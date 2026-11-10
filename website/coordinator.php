@@ -71,25 +71,28 @@ $warn_no_timer = warn_no_timer();
         checked="checked"
         data-on-text="Racing" data-off-text="Not Racing"/>
     </div>
+    <!-- What the switch does, for its current position (coordinator-poll.js) -->
+    <p id="racing-hint" class="racing_hint"></p>
 
-    <!-- Previous heat | Manual Results | Next heat, then Re-Run -->
+    <!-- Last Heat | Next Heat, then Manual Results | Re-Run -->
     <div class="heat_buttons">
       <div id="prev_heat_button" class="btn btn-secondary heat-arrow" role="button"
-           title="Previous heat" onclick="handle_previous_heat_button()">
+           title="Go back to the heat before this one" onclick="handle_previous_heat_button()">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+        <span>Last Heat</span>
       </div>
 
-      <input type="button" id="manual_results_button" class="btn btn-secondary" value="Manual Results"
-        onclick="on_manual_results_button_click(<?php echo !$warn_no_timer ? "true" : "false"; ?>)" />
-
       <div id="skip_heat_button" class="btn btn-secondary heat-arrow" role="button"
-           title="Next heat" onclick="handle_skip_heat_button()">
+           title="Move on to the next heat" onclick="handle_skip_heat_button()">
+        <span>Next Heat</span>
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
       </div>
     </div>
     <div class="heat_buttons">
+      <input type="button" id="manual_results_button" class="btn btn-secondary" value="Manual Results"
+        onclick="on_manual_results_button_click(<?php echo !$warn_no_timer ? "true" : "false"; ?>)" />
       <input type="button" id="rerun-button" class="btn btn-secondary" value="Re-Run"
              data-rerun="none"
              onclick="handle_rerun(this);"/>
@@ -97,7 +100,6 @@ $warn_no_timer = warn_no_timer();
   </div>
 
   <div id="supplemental-control-group" class="control_group block_buttons new_round_control hidden">
-      <div id="now-racing-group-buttons"></div>
       <div id="add-new-rounds-button" class="hidden">
           <input type="button" value="Add New Rounds"
                  onclick="show_choose_new_round_modal()"/>
@@ -139,13 +141,24 @@ $warn_no_timer = warn_no_timer();
 
 <div class="control_column">
 
-  <div id="playlist-group">
-    <?php if (have_permission(SET_UP_PERMISSION)) { /* editing it is set-up */ ?>
-    <a class='btn btn-secondary' href='playlist.php'>Rounds Playlist</a>
-    <?php } ?>
-    <div id="playlist-start">
-      <input type="button" class="btn btn-success" value="Start Playlist" onclick="handle_start_playlist();"/>
+  <div id="playlist-group" class="control_group">
+    <h3>Playlist</h3>
+    <p class="section_note">The plan: the order the rounds race in.  When a round
+      finishes, the playlist schedules and starts the next one (marked NEXT below).</p>
+    <div class="playlist_buttons">
+      <?php if (have_permission(SET_UP_PERMISSION)) { /* editing it is set-up */ ?>
+      <a class='btn btn-secondary btn-sm' href='playlist.php'>Edit Playlist</a>
+      <?php } ?>
+      <div id="playlist-start">
+        <input type="button" class="btn btn-success btn-sm" value="Start Playlist" onclick="handle_start_playlist();"/>
+      </div>
     </div>
+  </div>
+
+  <div class="rounds_heading">
+    <h3>Rounds</h3>
+    <p class="section_note">Every round, whether or not it's in the playlist.
+      Schedule and race any of them by hand.</p>
   </div>
 
   <div id="master-schedule-group" class="master_schedule_group"></div>
@@ -268,7 +281,7 @@ $warn_no_timer = warn_no_timer();
        has a schedule, but no heats have been run.  If you want to add or remove racers,
        you need to delete the schedule for this round.  Is that what you would like to do?</p>
   <form>
-    <input type="submit" value="Unschedule"/>
+    <input type="submit" value="Unschedule Heats"/>
     <input type="button" value="Cancel"
       onclick='close_modal("#unschedule_modal");'/>
   </form>
