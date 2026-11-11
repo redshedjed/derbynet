@@ -153,3 +153,73 @@ p.photo_dir_status_message:empty {
     max-width: 100%;
   }
 }
+
+/* ---------------- Cameras ---------------- */
+
+.track-cameras-scroll {
+  overflow-x: auto;  /* A phone scrolls the table, not the page */
+}
+#track-cameras-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm, 0.9rem);
+}
+#track-cameras-table th {
+  font-size: var(--text-sm, 0.9rem);
+  text-align: left;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-1, 4px) var(--space-2);
+  white-space: nowrap;
+}
+#track-cameras-table td {
+  padding: var(--space-1, 4px) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+#track-cameras-table td.camera-name {
+  font-weight: var(--weight-semibold);
+}
+#track-cameras-table td.camera-order {
+  white-space: nowrap;
+}
+#track-cameras-table td.camera-order .btn {
+  min-width: 0;
+  padding: 2px 6px;
+}
+#track-cameras-table select {
+  font-size: var(--text-sm, 0.9rem);
+}
+#track-cameras-table td.camera-status {
+  font-size: var(--text-sm, 0.9rem);
+}
+
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: var(--space-2);
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.status-dot.on {
+  background: var(--color-success);
+}
+.status-dot.off {
+  background: var(--color-border-strong);
+}
+
+.add-camera-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+#replay-displays {
+  margin: 0;
+  padding-left: var(--space-4);
+}
+#replay-displays li {
+  margin: var(--space-1, 4px) 0;
+}

@@ -20,17 +20,6 @@
   margin-left: 25%;
 }
 
-#recording-stream-info {
-  width: 50%;
-  margin-left: 25%;
-  text-align: center;
-}
-#recording-stream-info,
-#recording-stream-info span {
-  font-size: 18px;
-  font-family: sans-serif;
-}
-
 #replay-setup {
   background: white;
 }
@@ -47,17 +36,39 @@
   position: relative;
 }
 
-#waiting-for-remote {
-  position: absolute;
-  top: 45%;
-  left: 25%;
-  min-width: 50%;
-  right: 75%;
-  z-index: 10;
-  background-color: white;
+/* "Track cameras": a tile per camera */
+#track-previews {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 10%;
 }
-#waiting-for-remote p {
+#track-previews.hidden {
+  display: none;
+}
+.track-tile {
+  width: 320px;
+  background: #111;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.track-tile video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+.track-tile-label {
+  padding: 4px 8px;
+  color: white;
+  font-family: sans-serif;
+  font-size: 15px;
+}
+#no-track-cameras {
+  max-width: 40em;
   text-align: center;
+  font-family: sans-serif;
 }
 
 #fps {

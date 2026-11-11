@@ -32,3 +32,25 @@
 #preview {
   max-width: 640px;
 }
+
+/* camera.php: the camera's name, and how it's doing */
+#camera-name-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 8px);
+  margin: var(--space-3, 12px) 0;
+}
+#camera-name-form input[type=text] {
+  width: 12em;
+  margin: 0;
+}
+#camera-name-form input[type=submit] {
+  width: auto;
+  margin: 0;
+}
+#camera-status {
+  text-align: center;
+  color: var(--color-text-muted, #555);
+}

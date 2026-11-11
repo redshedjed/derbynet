@@ -154,9 +154,10 @@ class ReplayRecorder {
   }
 
   // Stops recording and plays the last length_ms on canvas, `showings` times
-  // over, at `rate` percent of normal speed.  Resolves to true when done, or
-  // false if there was nothing to play.
-  play(canvas, {showings = 2, rate = 50} = {}) {
+  // over, at `rate` percent of normal speed, with `label` (e.g., the camera's
+  // name) in the corner.  Resolves to true when done, or false if there was
+  // nothing to play.
+  play(canvas, {showings = 2, rate = 50, label = ''} = {}) {
     this.stop();
     let end_t = this.frames.length > 0 ? this.frames[this.frames.length - 1].t : 0;
     let frames = this.frames.filter((f) => f.t >= end_t - this.length_ms);
@@ -172,6 +173,17 @@ class ReplayRecorder {
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(bitmap, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+      if (label) {
+        let size = Math.max(16, Math.round(canvas.height / 24));
+        ctx.font = '600 ' + size + 'px sans-serif';
+        ctx.textBaseline = 'bottom';
+        let pad = Math.round(size / 2);
+        let tw = ctx.measureText(label).width;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+        ctx.fillRect(pad, canvas.height - pad - size * 1.5, tw + size, size * 1.5);
+        ctx.fillStyle = 'white';
+        ctx.fillText(label, pad + size / 2, canvas.height - pad - size * 0.2);
+      }
     }
 
     return new Promise((resolve) => {

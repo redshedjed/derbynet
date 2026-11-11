@@ -35,6 +35,7 @@ $schedules_exist = read_single_value('SELECT COUNT(*) FROM RaceChart'
 <script type="text/javascript" src="js/dashboard-ajax.js"></script>
 <script type="text/javascript" src="js/chooser.js"></script>
 <script type="text/javascript" src="js/settings.js"></script>
+<script type="text/javascript" src="js/track-cameras-settings.js"></script>
 <script type="text/javascript">
 // Returns a string identifying the directory at which browsing for photo
 // directories should start.  See js/settings.js' browse_for_photo_directory().
@@ -329,6 +330,38 @@ function photo_aspect_select($repo_name, $label, $choices) {
       ?>
       <?php photo_settings('racer photos', 'photo-dir', photo_directory()); ?>
       <?php photo_settings('car photos', 'car-photo-dir', car_photo_directory()); ?>
+    </div>
+  </section>
+
+  <!-- Saved as they change, by js/track-cameras-settings.js; the inputs have
+       no names, so the settings form leaves them alone. -->
+  <section class="settings_group card card-accent accent-during" id="cameras-group">
+    <h2 class="card-title">Cameras</h2>
+    <div class="settings_group_settings">
+      <p class="settings-hint">Track cameras are phones or laptops at the track running
+        <b>camera.php?name=Finish</b> (any name: Start, Finish, Side...).  Each appears here
+        when it connects.  Replay displays set to <b>Track cameras</b> show the cameras that
+        are on, one after another, in this order.  Length, showings and speed follow the
+        Race Dashboard's Replay Settings unless set here.</p>
+      <div class="track-cameras-scroll">
+      <table id="track-cameras-table">
+        <thead>
+          <tr><th>Order</th><th>Camera</th><th>On</th><th>Length</th><th>Showings</th>
+              <th>Speed</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <p id="no-track-cameras-yet" class="hidden settings-hint">No track cameras yet.</p>
+      <p class="add-camera-row">
+        <input type="text" id="new-camera-name" class="not-mobile" maxlength="50"
+               placeholder="Camera name" autocomplete="off"
+               onkeydown="if (event.key == 'Enter') { event.preventDefault(); on_add_track_camera(); }"/>
+        <input type="button" class="btn btn-secondary btn-sm" value="Add Camera"
+               onclick="on_add_track_camera();"/>
+      </p>
+      <p><b>Replay displays</b></p>
+      <ul id="replay-displays"></ul>
     </div>
   </section>
 

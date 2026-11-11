@@ -5,7 +5,7 @@ if (have_permission(CONTROL_RACE_PERMISSION)) {
   send_replay_REPLAY();
   json_success();
 } else {
-  not_authorized_body();
+  json_not_authorized();
 }
 
 ?>

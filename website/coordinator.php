@@ -181,6 +181,9 @@ $warn_no_timer = warn_no_timer();
            onclick='handle_discard_results_button();'
            value="Discard Results"/>
     <input type="submit" value="Change"/>
+    <!-- If the timer or a gate let us down, the replay helps judge the finish -->
+    <input type="button" id="manual-results-replay" value="Show Replay"
+      onclick='handle_test_replay();'/>
     <input type="button" value="Cancel"
       onclick='close_modal("#manual_results_modal");'/>
   </form>

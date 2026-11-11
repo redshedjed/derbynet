@@ -2,23 +2,52 @@
 
 require_once('inc/replay.inc');
 
+// Replay status for the Race Dashboard: how many displays are showing
+// replays, and whether each track camera that's switched on is connected.
 function json_replay() {
-  $replay = get_replay();
-  if ($replay['state'] == REPLAY_NOT_CONNECTED) {
+  $displays = 0;
+  $cameras_up = array();
+  $last_contact = 0;
+  foreach (replay_clients() as $client) {
+    if (!$client['connected']) {
+      continue;
+    }
+    $last_contact = max($last_contact, $client['last_contact']);
+    if ($client['kind'] == 'display') {
+      ++$displays;
+    } else {
+      $cameras_up[$client['name']] = true;
+    }
+  }
+  $missing = array();
+  foreach (track_cameras(/* enabled_only */ true) as $cam) {
+    if (!isset($cameras_up[$cam['name']])) {
+      $missing[] = $cam['name'];
+    }
+  }
+
+  if ($displays == 0) {
     $msg = 'NOT CONNECTED';
     $icon = 'img/status/not_connected.png';
-  } else if ($replay['state'] == REPLAY_CONNECTED) {
-    $msg = $replay['reported_status'].' ('.(time() - $replay['last_contact']).' sec.)';
-    $icon = 'img/status/ok.png';
   } else {
-    $msg = 'TROUBLE: '.$replay['trouble'];
-    $icon = 'img/status/trouble.png';
+    $msg = $displays.($displays == 1 ? ' display' : ' displays');
+    if (count($cameras_up) > 0) {
+      $msg .= ', '.(count($cameras_up) == 1 ? 'camera ' : 'cameras ')
+          .implode(', ', array_keys($cameras_up));
+    }
+    if (count($missing) > 0) {
+      $msg .= '.  Not connected: '.implode(', ', $missing);
+      $icon = 'img/status/trouble.png';
+    } else {
+      $icon = 'img/status/ok.png';
+    }
   }
   return array(
-    'last_contact' => $replay['last_contact'],
-    'state' => $replay['state'],
+    'last_contact' => $last_contact,
     'icon' => $icon,
-    'connected' => $replay['state'] != REPLAY_NOT_CONNECTED,
+    'connected' => $displays > 0,
+    'displays' => $displays,
+    'missing_cameras' => $missing,
     'message' => $msg);
 }
 

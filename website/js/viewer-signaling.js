@@ -1,111 +1,126 @@
 'use strict';
 
-function ice_candidate_key(candidate) {
-  return "ice-candidate";
-}
+// The display's side of a track camera connection (see camera-signaling.js).
 
-// viewer_id is string identifying this viewer.
+// viewer_id is a string identifying this viewer.
 // ideal is the ideal video stream width and height.
-// stream_cb gets called when a new stream is added.
-function RemoteCamera(viewer_id, ideal, stream_cb) {
+// stream_cb gets called with each new stream from the camera.
+// camera_name is the camera's name (camera.php?name=...).
+function RemoteCamera(viewer_id, ideal, stream_cb, camera_name) {
+  let camera = 'camera-' + camera_name;
   let pc = null;
-  pc = new RTCPeerConnection();
+  let last_ask = 0;  // When we last asked the camera for its stream
 
+  function new_connection() {
+    if (pc) {
+      pc.close();
+    }
+    // Everything's on the local network, so no STUN server is needed.
+    pc = new RTCPeerConnection();
+    pc.onicecandidate = function(event) {
+      if (event.candidate) {
+        logsent('ice-candidate');
+        if (poller) poller.send_message({recipient: camera,
+                             type: 'ice-candidate',
+                             from: viewer_id,
+                             candidate: event.candidate.toJSON()});
+      }
+    };
+    pc.ontrack = function(event) {
+      let wh = event.track.getSettings();
+      logstream(camera_name + ': track ' + wh.width + 'x' + wh.height);
+      let s = new MediaStream();
+      s.addTrack(event.track);
+      stream_cb(s);
+    };
+  }
+
+  function on_offer(msg) {
+    logrcvd('offer');
+    // An offer on a connection that isn't working means the camera started
+    // over; so do we.  (On a working one, it's a change to the stream.)
+    if (!pc || pc.connectionState != 'connected') {
+      new_connection();
+    }
+    let this_pc = pc;
+    return this_pc.setRemoteDescription(new RTCSessionDescription(msg.sdp))
+      .then(function() { return this_pc.createAnswer(); })
+      .then(function(answer) { return this_pc.setLocalDescription(answer); })
+      .then(function() {
+        logsent('answer');
+        if (poller) poller.send_message({recipient: camera,
+                             type: 'answer',
+                             from: viewer_id,
+                             sdp: this_pc.localDescription.toJSON()});
+      });
+  }
+
+  function on_message(msg) {
+    if (msg.from != camera) {
+      return Promise.resolve();  // e.g., another camera, or a broadcast
+    }
+    if (msg.type == 'offer') {
+      return on_offer(msg);
+    } else if (msg.type == 'ice-candidate') {
+      logrcvd('ice-candidate');
+      if (!pc) {
+        return Promise.resolve();
+      }
+      return pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+    } else {
+      console.error('Unrecognized message ', msg);
+      return Promise.resolve();
+    }
+  }
+
+  // Messages are handled one at a time, in order, so an ICE candidate never
+  // arrives ahead of the offer it belongs to.
+  let queue = Promise.resolve();
   let poller = new MessagePoller(
     viewer_id,
     function(msg) {
-      if (msg.type == 'offer') {
-        logrcvd('offer');
-        if (!pc) {
-          pc = new RTCPeerConnection();
-        }
-        pc.onnegotiationneeded = function(event) {
-          logstream('NEGOTIATION NEEDED');
-        };
-        pc.onicecandidate = function(event) {
-          if (event.candidate) {
-            logsent(ice_candidate_key(event.candidate));
-            poller.send_message({recipient: 'camera-replay',
-                                 type: 'ice-candidate',
-                                 from: viewer_id,
-                                 candidate: event.candidate.toJSON()});
-          }
-        };
-        pc.ontrack = function(event) {
-          let wh = event.track.getSettings();
-          logstream('ontrack with ' + wh.width + 'x' + wh.height +
-                        ' (' + event.streams.length + ' streams)');
-          let s = new MediaStream();
-          s.addTrack(event.track);
-          stream_cb(s);
-        }
-
-        var desc = new RTCSessionDescription(msg.sdp);
-        pc.setRemoteDescription(desc)
-          .then(function() {
-            return pc.createAnswer();
-          })
-          .then(function(answer) {
-            return pc.setLocalDescription(answer);
-          })
-          .then(function() {
-            logsent('answer');
-            poller.send_message({recipient: 'camera-replay',
-                                 type: 'answer',
-                                 from: viewer_id,
-                                 sdp: pc.localDescription.toJSON()});
-          });
-      } else if (msg.type == 'ice-candidate') {
-        if (!pc) {
-          pc = new RTCPeerConnection();
-          logstream('UNEXPECTED ICE CANDIDATE');
-        }
-        let candidate = new RTCIceCandidate(msg.candidate);
-        logrcvd(ice_candidate_key(candidate));
-        if (msg.from != 'camera-replay') {
-          console.log('ICE candidate from unknown sender ' + msg.from + '');
-          return;
-        }
-        pc.addIceCandidate(candidate);
-      } else if (msg.type == 'solicitation') {
-        // Broadcast solicitation, intended for camera
-      } else {
-        console.error('Unrecognized message ', msg);
-      }
+      queue = queue.then(function() { return on_message(msg); })
+        .catch(function(err) { console.log(camera_name + ': signaling trouble', err); });
     });
 
-  let pcstate = '';
+  function ask() {
+    if (!poller) return;
+    last_ask = Date.now();
+    logsent('solicitation ' + camera + ' ' + ideal.width + 'x' + ideal.height);
+    poller.send_message({recipient: camera, type: 'solicitation',
+                         from: viewer_id, ideal: ideal});
+  }
+
+  // Ask again if there's no working connection: right away if it's failed,
+  // otherwise after giving it 10 seconds to come up.
   let nag = setInterval(function() {
-    if (pc) {
-      if (pc.connectionState != pcstate) {
-        logstream("State " + pc.connectionState);
-        pcstate = pc.connectionState;
-      }
-      if (pc.connectionState == 'disconnected') {
-        pc.close();
-        pc = null;
-      }
+    let state = pc ? pc.connectionState : 'none';
+    if (state == 'connected') {
+      return;
     }
-
-    if (pc == null || pc.connectionState != 'connected') {
-      logsent("solicitation (nag) " + (pc == null ? 'disconnected' : pc.connectionState) + ' '
-              + ideal.width + 'x' + ideal.height);
-      poller.send_message({recipient: 'camera-replay', type: 'solicitation',
-                           from: viewer_id, ideal: ideal});
+    if (state == 'failed' || state == 'closed' || state == 'disconnected' ||
+        Date.now() - last_ask >= 10000) {
+      ask();
     }
-  }, 5000);
+  }, 2500);
 
-  // This may fail to send anything if the MessagePoller is using a WebSocket and the WebSocket
-  // hasn't finished opening.  ws.onopen is the usual solution
-  logsent('solicitation ' + ideal.width + 'x' + ideal.height);
-  poller.send_message({recipient: 'camera-replay', type: 'solicitation', from: viewer_id, ideal: ideal});
+  // If the MessagePoller is using a WebSocket that hasn't opened yet, this
+  // waits in its queue.
+  ask();
+
+  this.camera_name = camera_name;
+  this.connected = function() { return pc != null && pc.connectionState == 'connected'; };
 
   this.close = function() {
-    logstream('------------ closed -----------------');
+    logstream('------------ closed ' + camera_name + ' -----------------');
+    clearInterval(nag);
     if (poller) {
       poller.close();
+      poller = null;
     }
-    poller = null;
-    clearInterval(nag);
+    if (pc) {
+      pc.close();
+      pc = null;
+    }
   };
 }

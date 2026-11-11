@@ -2,12 +2,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //
-// Signaling/message handling for the replay camera.
+// Signaling for a track camera (camera.php): sends the camera's stream over
+// WebRTC to each replay display that asks for it.
 //
 // Usage:
 //
-// Create a single ViewClientManager instance (vcm).
-// vcm.setstream( the stream to send out );
+//   let vcm = new ViewClientManager('Finish', on_new_viewer);
+//   vcm.setstream( the stream to send out );
+//
+// The camera listens for messages addressed to 'camera-<name>'.  A display
+// asks for the stream with a 'solicitation'; the camera answers with an
+// 'offer', and the two exchange ICE candidates.  A display that isn't
+// connected keeps asking every few seconds, and each ask after the first
+// starts its connection over.
 //
 //////////////////////////////////////////////////////////////////////////////////////
 // Assumes message-poller.js
@@ -21,118 +28,127 @@ function camera_received(viewer, key) {
 }
 
 function ice_candidate_key(candidate) {
-  return "ice " + 
+  return "ice " +
     candidate.protocol + " " + candidate.ip + ":" + candidate.port +
     " (" + candidate.type + ")";
 }
 
-// A ViewClient represents a remote client that wants to receive the camera stream.
-function ViewClient(recipient, poller) {
-  let pc = new RTCPeerConnection();
+// The recipient name a camera listens on
+function camera_recipient(camera_name) {
+  return 'camera-' + camera_name;
+}
 
-  // Local ICE candidate
+// A ViewClient is one display receiving the camera's stream.
+function ViewClient(recipient, poller, from) {
+  // Everything's on the local network, so no STUN server is needed.
+  let pc = new RTCPeerConnection();
+  this.connection = pc;
+
   pc.onicecandidate = function(event) {
     if (event.candidate) {
       camera_sent(recipient, ice_candidate_key(event.candidate));
       poller.send_message({recipient: recipient,
                            type: 'ice-candidate',
-                           from: 'camera-replay',
+                           from: from,
                            candidate: event.candidate.toJSON()});
     }
   };
 
-  let self = this;
+  // Adding the stream's tracks is what sets off negotiation, so the offer
+  // goes out exactly once, when there's something to send.
   pc.onnegotiationneeded = function(event) {
-    logstream("onnegotiation");
+    logstream("negotiation needed for " + recipient);
     pc.setLocalDescription()
       .then(function() {
         camera_sent(recipient, 'offer');
         poller.send_message({recipient: recipient,
                              type: 'offer',
-                             from: 'camera-replay',
+                             from: from,
                              sdp: pc.localDescription.toJSON()});
-      });
+      })
+      .catch(function(err) { console.error('Offer failed', err); });
   };
 
-  this.connection = pc;
-  
+  // A new stream (another camera picked, or a new size) replaces the old
+  // tracks in place, without starting the connection over.
+  let senders = {};  // track kind => RTCRtpSender
   this.setstream = function(stream) {
     stream.getTracks().forEach(function(track) {
-      console.log('  adding track');
-      pc.addTrack(track, stream);
+      if (senders[track.kind]) {
+        senders[track.kind].replaceTrack(track);
+      } else {
+        senders[track.kind] = pc.addTrack(track, stream);
+      }
     });
   };
 
   this.on_message = function(msg) {
-    console.log('on_message ' + msg.type + ' from ' + msg.from);
     if (msg.type == 'answer') {
-      this.on_answer(msg);
+      camera_received(recipient, 'answer');
+      pc.setRemoteDescription(new RTCSessionDescription(msg.sdp))
+        .catch(function(err) { console.error('Answer not accepted', err); });
     } else if (msg.type == 'ice-candidate') {
-      this.on_ice_candidate(msg);
+      let candidate = new RTCIceCandidate(msg.candidate);
+      camera_received(recipient, ice_candidate_key(candidate));
+      pc.addIceCandidate(candidate)
+        .catch(function(err) { console.log('ICE candidate not accepted', err); });
     } else {
       logrcvd("UNRECOGNIZED " + JSON.stringify(msg));
       console.error('Unrecognized message for camera:', msg);
-      console.trace();
     }
-  };
-  this.on_answer = function(msg) {
-    camera_received(recipient, 'answer');
-    pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-  };
-  this.on_ice_candidate = function(msg) {  // Remote ICE candidate signaled
-    let candidate = new RTCIceCandidate(msg.candidate);
-    camera_received(recipient, ice_candidate_key(candidate));
-    pc.addIceCandidate(candidate);
   };
 
   let ideal = {width: 0, height: 0};
-  this.on_solicitation = function(msg) {
-    logrcvd('solicitation');
+  this.set_ideal = function(msg) {
     if (msg.hasOwnProperty('ideal')) {
       ideal = msg.ideal;
     }
-    this.convey_offer();
   };
-  this.ideal = function() { return ideal; }
-  
-  this.convey_offer = function() {
-    console.log('Conveying offer to ' + recipient);
-    pc.createOffer()
-      .then(function(offer) {
-          return pc.setLocalDescription(offer);
-      })
-      .then(function() {
-        camera_sent(recipient, 'offer');
-        poller.send_message({recipient: recipient,
-                             type: 'offer',
-                             from: 'camera-replay',
-                             sdp: pc.localDescription.toJSON()});
-      });
+  this.ideal = function() { return ideal; };
+
+  this.is_connected = function() {
+    return pc.connectionState == 'connected';
+  };
+
+  this.close = function() {
+    pc.close();
   };
 }
 
 // The ViewClientManager creates and owns the ViewClient instances and handles
-// dispatching messages.
-function ViewClientManager(on_add_client_callback) {
+// dispatching messages.  on_add_client is called when a display connects (or
+// reconnects), as its ideal size may call for a bigger stream.
+function ViewClientManager(camera_name, on_add_client_callback) {
+  let self = this;
   let dispatcher = {};  // viewer-name => ViewClient
-
-  let initializer_cb = function(vc) { };
+  let from = camera_recipient(camera_name);
+  let stream = null;
 
   let poller = new MessagePoller(
-    'camera-replay',
+    from,
     function(msg) {
-      if (dispatcher.hasOwnProperty(msg.from)) {
-        dispatcher[msg.from].on_message(msg);
-      } else if (msg.type != 'solicitation') {
-        console.log('Received non-solicitation message from unknown sender: ', msg);
-        return;
-      } else {
+      if (msg.type == 'solicitation') {
+        let existing = dispatcher[msg.from];
+        if (existing && existing.is_connected()) {
+          // It asked before seeing it's connected; nothing to do
+          return;
+        }
+        if (existing) {
+          // It's asking again because the connection didn't work: start over
+          existing.close();
+        }
         logrcvd("Solicitation received from " + msg.from);
-        let client = new ViewClient(msg.from, poller);
-        initializer_cb(client);
+        let client = new ViewClient(msg.from, poller, from);
+        client.set_ideal(msg);
         dispatcher[msg.from] = client;
-        client.on_solicitation(msg);
+        if (stream) {
+          client.setstream(stream);
+        }
         on_add_client_callback();
+      } else if (dispatcher.hasOwnProperty(msg.from)) {
+        dispatcher[msg.from].on_message(msg);
+      } else {
+        console.log('Received non-solicitation message from unknown sender: ', msg);
       }
     });
 
@@ -142,16 +158,16 @@ function ViewClientManager(on_add_client_callback) {
     }
   };
 
-  this.setinitializer = function(cb) {
-    initializer_cb = cb;
+  this.setstream = function(new_stream) {
+    stream = new_stream;
+    this.each_client(function(vc) { vc.setstream(stream); });
   };
 
-  this.setstream = function(stream) {
-    this.each_client(function (vc) {
-      vc.setstream(stream); });
-    this.setinitializer(function(vc) {
-      vc.setstream(stream);
-    });
+  // How many displays are receiving the stream
+  this.connected_count = function() {
+    let n = 0;
+    this.each_client(function(vc) { if (vc.is_connected()) ++n; });
+    return n;
   };
 
   // Returns the largest "ideal" resolution requested by a viewer

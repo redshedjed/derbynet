@@ -44,6 +44,23 @@ function make_id_string(stem) {
   return id;
 }
 
+// Like make_id_string, but the same id comes back after a reload of the same
+// browser tab, so a replay display or track camera that reloads keeps its
+// place (instead of showing up twice) on Settings > Cameras.
+function tab_id_string(stem) {
+  let key = 'derbynet-id-' + stem;
+  try {
+    let id = window.sessionStorage.getItem(key);
+    if (!id) {
+      id = make_id_string(stem);
+      window.sessionStorage.setItem(key, id);
+    }
+    return id;
+  } catch (e) {
+    return make_id_string(stem);
+  }
+}
+
 function MessagePoller(recipient, on_message, topics = []) {
   let poller = this;
   if (g_websocket_url != undefined && g_websocket_url != '') {
