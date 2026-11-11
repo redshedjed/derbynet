@@ -1,0 +1,97 @@
+/* Framing for racer and car photos: see js/photo-frame.js */
+
+/* The element holding the <video>: the frame is placed relative to it, and
+   the darkened surround stops at its edges. */
+.photo-frame-host {
+  position: relative;
+  overflow: hidden;
+}
+
+.photo-frame {
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  /* Darkens everything outside the frame: the part the photo leaves out */
+  box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.photo-silhouette {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0.7;
+}
+
+/* ---------------- Crop sheet, for a photo from the phone's camera ---------------- */
+
+.crop-sheet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20000;
+  display: flex;
+  flex-direction: column;
+  background: #111;
+}
+
+.crop-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  touch-action: none;  /* Dragging moves the frame, not the page */
+  cursor: move;
+}
+
+.crop-stage canvas {
+  display: block;
+}
+
+.crop-hint {
+  position: absolute;
+  top: var(--space-2, 8px);
+  left: 0;
+  right: 0;
+  z-index: 6;
+  text-align: center;
+  color: white;
+  font-size: 0.9rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.crop-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3, 12px);
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  background: var(--color-surface, white);
+}
+
+.crop-size {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  flex: 1;
+  min-width: 160px;
+  margin: 0;
+}
+.crop-size input[type=range] {
+  flex: 1;
+}
+
+.crop-buttons {
+  display: flex;
+  gap: var(--space-2, 8px);
+}

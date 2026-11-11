@@ -15,7 +15,7 @@ session_write_close();
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/message-poller.js"></script>
 <script type="text/javascript" src="js/camera-signaling.js"></script>
-<script type="text/javascript" src="js/video-device-picker.js"></script>
+<script type="text/javascript" src="js/camera-source.js"></script>
 <script type="text/javascript">
 
 g_websocket_url = <?php echo json_encode(read_raceinfo('_websocket_url', '')); ?>;
@@ -23,56 +23,42 @@ g_websocket_url = <?php echo json_encode(read_raceinfo('_websocket_url', '')); ?
 function on_add_client() {
   // Adding a new client may give new information about the ideal width and
   // height for the video stream.
-  on_device_selection($("#device-picker"));
+  g_camera.restart();
 }
 
 var g_client_manager = new ViewClientManager(on_add_client);
+var g_camera;
 
-function on_device_selection(selectq) {
-  // mobile_select_refresh(selectq);
-  // If a stream is already open, stop it.
-  stream = document.getElementById("preview").srcObject;
-  if (stream != null) {
-    stream.getTracks().forEach(function(track) {
-      track.stop();
-    });
-  }	
-  
-  let device_id = selectq.find(':selected').val();
-  let video_constraint = {deviceId: device_id};
-  let ideal = g_client_manager.ideal();
-  if (ideal.width) {
-    video_constraint.width = {ideal: ideal.width};
-  }
-  if (ideal.height) {
-    video_constraint.height = {ideal: ideal.height};
-  }
-  navigator.mediaDevices.getUserMedia({video: video_constraint})
-  .then(stream => {
-      document.getElementById("preview").srcObject = stream;
+$(function() {
+  g_camera = new CameraSource({
+    video: document.getElementById("preview"),
+    picker: $("#device-picker"),
+    remember_as: 'track-camera',
+    // As big as the biggest replay screen watching this camera
+    constraints: function() {
+      let c = {};
+      let ideal = g_client_manager.ideal();
+      if (ideal.width) {
+        c.width = {ideal: ideal.width};
+      }
+      if (ideal.height) {
+        c.height = {ideal: ideal.height};
+      }
+      return c;
+    },
+    on_stream: function(stream) {
+      $("#no-camera-warning").addClass('hidden');
       g_client_manager.setstream(stream);
-
       let tracks = stream.getVideoTracks();
       if (tracks.length > 0) {
         logstream("Video stream width is " + tracks[0].getSettings().width);
       }
-    });
-}
-
-$(function() {
-    if (typeof(navigator.mediaDevices) == 'undefined') {
-      $("#no-camera-warning").removeClass('hidden');
-      if (window.location.protocol == 'http:') {
-        var https_url = "https://" + window.location.hostname + window.location.pathname;
-        $("#no-camera-warning").append("<p>You may need to switch to <a href='" +  https_url + "'>" + https_url + "</a></p>");
-      }
-    } else {
-      navigator.mediaDevices.ondevicechange = function(event) {
-        build_device_picker($("#device-picker"), /*include_remote*/false, on_device_selection);
-      };
-    }
-
-    build_device_picker($("#device-picker"), /*include_remote*/false, on_device_selection);
+    },
+    on_trouble: function(message) {
+      $("#no-camera-warning").empty().append(message).removeClass('hidden');
+    },
+  });
+  g_camera.start();
 });
 
 function toggle_preview() {
@@ -90,9 +76,7 @@ function toggle_preview() {
 <div class="block_buttons">
   <video id="preview" autoplay="true" muted="true" playsinline="true"></video>
 
-  <div id="no-camera-warning" class="hidden">
-     <h2 id='reject'>Access to cameras is blocked.</h2>
-  </div>
+  <div id="no-camera-warning" class="hidden"></div>
 
   <div id="device-picker-div">
     <select id="device-picker"><option>Please wait</option></select>

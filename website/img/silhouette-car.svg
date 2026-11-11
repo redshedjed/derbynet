@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Side view of a derby car, as a guide for car photos (3:2).  Drawn as an
+     outline over the live camera picture; see js/photo-frame.js. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+  <g fill="rgba(255,255,255,0.08)" stroke="white" stroke-width="3"
+     stroke-dasharray="10 6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 22 128 L 22 104 C 26 96 40 92 70 90 L 196 72
+             C 236 66 266 80 278 108 L 278 128 Z"/>
+    <circle cx="70" cy="132" r="19"/>
+    <circle cx="232" cy="132" r="19"/>
+  </g>
+</svg>

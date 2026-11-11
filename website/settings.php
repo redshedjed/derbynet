@@ -263,6 +263,19 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
       echo '<p class="photo_dir_status_message" id="'.$photo_dir_id.'_message"></p>';
     }
 }
+
+// The shape photos are taken in: the check-in cameras frame and crop to it.
+function photo_aspect_select($repo_name, $label, $choices) {
+  $id = 'photo-aspect-'.$repo_name;
+  $current = photo_aspect($repo_name);
+  echo '<p><label for="'.$id.'">'.$label.'</label>'."\n";
+  echo '  <select id="'.$id.'" name="'.$id.'" class="not-mobile">'."\n";
+  foreach ($choices as $value => $text) {
+    echo '    <option value="'.$value.'"'.($value == $current ? ' selected="selected"' : '').'>'
+        .htmlspecialchars($text, ENT_QUOTES, 'UTF-8')."</option>\n";
+  }
+  echo "  </select></p>\n";
+}
 ?>
 
   <section class="settings_group card card-accent accent-brand">
@@ -301,6 +314,19 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
         <label>Car photos</label>
       </p>
 
+      <?php
+        photo_aspect_select('head', 'Racer photo shape:',
+                            array('3:4' => '3:4 portrait',
+                                  '4:5' => '4:5 portrait',
+                                  '1:1' => 'Square',
+                                  'none' => "The camera's own shape"));
+        photo_aspect_select('car', 'Car photo shape:',
+                            array('3:2' => '3:2 landscape',
+                                  '4:3' => '4:3 landscape',
+                                  '16:9' => '16:9 wide',
+                                  '1:1' => 'Square',
+                                  'none' => "The camera's own shape"));
+      ?>
       <?php photo_settings('racer photos', 'photo-dir', photo_directory()); ?>
       <?php photo_settings('car photos', 'car-photo-dir', car_photo_directory()); ?>
     </div>

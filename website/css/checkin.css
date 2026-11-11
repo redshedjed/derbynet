@@ -195,18 +195,28 @@ tr.exclude td.checkin-status {
   height: 53px;
 }
 
-#preview {
+/* The live camera, shown whole (letterboxed); the photo's frame is drawn over
+   it by js/photo-frame.js. */
+#preview-box {
   width: 640px;
   height: 480px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto var(--space-3, 12px);
+  background: #111;
+  border-radius: var(--radius-md, 6px);
+}
+#preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-#captured {
-  width: 640px;
-  height: 480px;
-  margin-left: auto;
-  margin-right: auto;
+#no-camera-warning {
+  margin-bottom: var(--space-3, 12px);
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border-radius: var(--radius-md, 6px);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
 }
 
 .centered_flipswitch {

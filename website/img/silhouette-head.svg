@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Head-and-shoulders guide for racer photos (3:4).  Drawn as an outline over
+     the live camera picture; see js/photo-frame.js. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+  <g fill="rgba(255,255,255,0.08)" stroke="white" stroke-width="4"
+     stroke-dasharray="14 8" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="150" cy="158" rx="70" ry="88"/>
+    <path d="M 18 400 C 22 318 70 284 118 272 L 124 248
+             M 182 248 L 182 272 C 230 284 278 318 282 400"/>
+  </g>
+</svg>

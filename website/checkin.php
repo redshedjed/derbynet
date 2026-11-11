@@ -80,6 +80,7 @@ function column_header($text, $o) {
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
 <?php require('inc/stylesheet.inc'); ?>
 <link rel="stylesheet" type="text/css" href="css/checkin.css"/>
+<link rel="stylesheet" type="text/css" href="css/photo-frame.css"/>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
@@ -94,6 +95,9 @@ var g_action_on_barcode = "<?php
 // The secret in the Mobile Check-In QR code: a phone that scans it can check
 // racers in without logging in
 var g_mobile_checkin_key = <?php echo json_encode(mobile_checkin_key()); ?>;
+
+// Shapes (width / height) the camera frames racer and car photos to; 0 = any
+var g_photo_aspects = <?php echo photo_aspects_json(); ?>;
 
 var g_preferred_urls = <?php echo json_encode(preferred_urls(/*use_https=*/true),
                                               JSON_HEX_TAG | JSON_HEX_AMP | JSON_PRETTY_PRINT); ?>;
@@ -114,8 +118,8 @@ $(window).on('resize', set_checkin_table_height);
 <script type="text/javascript" src="js/modal.js"></script>
 <script type="text/javascript" src="js/dropzone.min.js"></script>
 <script type="text/javascript" src="js/partitions-modal.js"></script>
-<script type="text/javascript" src="js/video-device-picker.js"></script>
-<script type="text/javascript" src="js/imagecapture.js"></script>
+<script type="text/javascript" src="js/camera-source.js"></script>
+<script type="text/javascript" src="js/photo-frame.js"></script>
 <script type="text/javascript" src="js/photo-capture-modal.js"></script>
 <script type="text/javascript" src="js/find-racer.js"></script>
 <script type="text/javascript" src="js/checkin.js"></script>
@@ -316,7 +320,10 @@ mobile_select_refresh($("#bulk_who"));
         photo for <span id="racer_photo_name"></span>
     </h3>
 
-    <video id="preview" autoplay="true" muted="true" playsinline="true"></video>
+    <div id="preview-box">
+      <video id="preview" autoplay="true" muted="true" playsinline="true"></video>
+    </div>
+    <div id="no-camera-warning" class="hidden"></div>
 
     <div id="left-photo">
 

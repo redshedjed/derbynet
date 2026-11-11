@@ -25,7 +25,7 @@ function close_announce_hover() {
 }
 
 function show_camera() {
-  build_device_picker($("#device-picker"), /*include_remote*/false, on_device_selection);
+  g_camera.start();
 }
 
 function using_landscape() {
@@ -99,72 +99,78 @@ var g_current_racer = {};
 //  - { racerid: racerid }
 
 
-async function on_device_selection(selectq) {
-  // If a stream is already open, stop it.
-  stream = document.getElementById("preview").srcObject;
-  if (stream != null) {
-    stream.getTracks().forEach(function(track) {
-      track.stop();
-    });
-  }	
+// The camera, which both scans barcodes and takes photos
+var g_camera = null;
+var g_photo_overlay = null;
+// For the current stream: a Promise of the barcode scanner's controls
+var g_scan = null;
 
-  mobile_select_refresh($("#device-picker"));
-  
-  let device_id = selectq.find(':selected').val();
-  let video_constraint = {deviceId: device_id,
-                          // width: $("#preview").width(),
-                          // height: $("#preview").height()
-                         };
+$(function() {
+  var preview = document.getElementById('preview');
+  g_camera = new CameraSource({
+    video: preview,
+    picker: $("#device-picker"),
+    remember_as: 'mcheckin',
+    // Sharp enough for photos without making barcode scanning too slow.  For
+    // the camera's full resolution, there's the Phone Camera button.
+    constraints: () => ({width: {ideal: 1920}}),
+    on_stream: start_scanning,
+    on_stream_ending: stop_scanning,
+    on_trouble: function(message) {
+      // Stays up: there's nothing to scan with until it's sorted out
+      clearTimeout(g_trouble_timeout);
+      $("#trouble").empty().append(message).removeClass('hidden');
+    },
+  });
+  g_photo_overlay = new PhotoFrameOverlay(preview);
+  preview.addEventListener('loadedmetadata', layout_preview);
+  preview.addEventListener('resize', layout_preview);
 
-  navigator.mediaDevices.getUserMedia({video: video_constraint})
-    .then(function(stream) {
-      var tracks = stream.getTracks();
-      if (tracks.length < 1) {
-        report_trouble("No video streams available.");
-        return;
-      }
+  $("#native-camera-input").on('change', on_native_photo_chosen);
+});
 
-      var settings = tracks[0].getSettings();
-
-      var max_height = $("#camera-div").height() - $("#device-picker-div").height();
-      var aspect = settings.hasOwnProperty('aspectRatio') ? settings.aspectRatio
-          : settings.width / settings.height;
-
-      if (max_height >= $(window).width() / aspect) {
-        console.log('Limiting video preview by width');
-        // Display at max width in order not to be too tall
-        $("#preview").css({'min-height': 0,
-                           'height': 'auto',
-                           'min-width': '100%',
-                           'margin-left': 'auto'
-                          });
-      } else {
-        console.log('Limiting video preview by HEIGHT');
-        var width = max_height * aspect;
-        $("#preview").css({'min-height': max_height,
-                           'height': max_height,
-                           'min-width': width + 'px',
-                           'margin-left': ($("#camera-div").width() - width) / 2,
-                          });
-      }
-
-      if (g_decode_barcodes) {
-        codeReader.decodeFromStream(stream, 'preview',
-                                    function(result, error, control) {
-                                      if (result) {
-                                        console.log("Recognized barcode:", result);
-                                        on_recognized_barcode(result);
-                                      } else if (error && error.getKind() != "NotFoundException") {
-                                        report_trouble("ZXing error: " + error.getKind() + "\n\n" +
-                                                       error.toString());
-                                        console.log('error', error.getKind(), error);
-                                      }
-                                    });
+function start_scanning(stream) {
+  if (!g_decode_barcodes) {
+    return;
+  }
+  // Scans whatever the <video> shows; stopping it leaves the video alone.
+  g_scan = codeReader.decodeFromVideoElement(
+    document.getElementById('preview'),
+    function(result, error, control) {
+      if (result) {
+        console.log("Recognized barcode:", result);
+        on_recognized_barcode(result);
+      } else if (error && error.getKind() != "NotFoundException") {
+        report_trouble("ZXing error: " + error.getKind() + "\n\n" +
+                       error.toString());
+        console.log('error', error.getKind(), error);
       }
     });
+  g_scan.catch(function(err) { console.log('Barcode scanning failed to start', err); });
+}
+
+function stop_scanning() {
+  if (g_scan) {
+    g_scan.then(function(controls) { controls.stop(); }, function() {});
+    g_scan = null;
+  }
+}
+
+// The live picture fills the space below the camera picker, shown whole
+// (object-fit: contain), so the photo frame drawn over it is all on screen.
+function layout_preview() {
+  var max_height = $("#camera-div").height() - $("#device-picker-div").outerHeight();
+  $("#preview").css('height', Math.max(max_height, 0));
+  if (g_photo_overlay) {
+    g_photo_overlay.layout();
+  }
 }
 
 function on_recognized_barcode(result) {
+  if (g_photo_repo) {
+    // Lining up a photo: a barcode in view isn't a request to switch racers
+    return;
+  }
   if (g_current_racer['barcode'] == result.text) {
     return;
   }
@@ -227,48 +233,98 @@ function on_autocrop_button_click() {
   announce_hover('Autocrop is ' + (g_autocrop ? "ON" : "OFF"));
 }
 
+// While lining up a photo: 'head' or 'car'.  Otherwise null.
+var g_photo_repo = null;
+
+// Tapping the racer or car photo button frames the shot: the photo's shape and
+// a silhouette over the live picture, with buttons to take it, or to use the
+// phone's own camera app instead.
 function capture_photo(repo) {
+  if (!g_current_racer['barcode'] && !g_current_racer['racerid']) {
+    report_trouble('No racer selected');
+    return false;
+  }
+  g_photo_repo = repo;
+  $("#photo-bar-label").text(repo == 'head' ? 'Racer photo' : 'Car photo');
+  // Taking the photo from the live picture needs a working camera
+  $("#take-photo-button").toggleClass('hidden', !g_camera.stream());
+  $("#preview-overlay").addClass('hidden');
+  $("#photo-bar").removeClass('hidden');
+  g_photo_overlay.show(repo, g_photo_aspects[repo]);
+  return false;
+}
+
+function leave_photo_mode() {
+  g_photo_repo = null;
+  g_photo_overlay.hide();
+  $("#photo-bar").addClass('hidden');
+  $("#preview-overlay").removeClass('hidden');
+}
+
+function on_take_photo_click() {
+  var repo = g_photo_repo;
+  var racer = Object.assign({}, g_current_racer);
+  capture_still(document.getElementById('preview'), g_photo_aspects[repo])
+    .then(function(blob) { upload_photo(racer, repo, blob); },
+          function(err) { report_trouble(err.message); });
+  $("#flash-overlay").css({display: 'block'}).fadeOut(400);
+  leave_photo_mode();
+}
+
+function on_phone_camera_click() {
+  // Opens the phone's camera app (or, on a computer, a file chooser)
+  $("#native-camera-input").val('').trigger('click');
+}
+
+function on_native_photo_chosen() {
+  var file = this.files && this.files[0];
+  if (!file || !g_photo_repo) {
+    return;
+  }
+  var repo = g_photo_repo;
+  var racer = Object.assign({}, g_current_racer);
+  crop_photo_file(file, g_photo_aspects[repo], repo)
+    .then(function(blob) {
+      if (blob) {
+        upload_photo(racer, repo, blob);
+        leave_photo_mode();
+      }
+      resume_camera();
+    })
+    .catch(function(err) {
+      report_trouble("Couldn't open that photo: " + err.message);
+      resume_camera();
+    });
+}
+
+// Some phones stop the page's camera while their camera app is open.
+function resume_camera() {
+  var stream = g_camera.stream();
+  if (CameraSource.available() && $("#camera-div").is(':visible') &&
+      (!stream || stream.getVideoTracks().every(function(t) { return t.readyState == 'ended'; }))) {
+    g_camera.restart();
+  }
+}
+
+// racer is a copy of g_current_racer from when the photo was taken
+function upload_photo(racer, repo, blob) {
   var photo_base_name = 'mobile-' + repo + '-' +
       // Only one of barcode and racerid will be populated
-      (g_current_racer['barcode'] || '') + (g_current_racer['racerid'] || '');
+      (racer['barcode'] || '') + (racer['racerid'] || '');
 
-  var width = $("#preview").width();
-  var height = $("#preview").height();
-  var preview = $("#preview")[0];
-  var stream = preview.srcObject;
-  
-  var canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  canvas.getContext('2d').drawImage($("#preview")[0], 0, 0, width, height);
-  var image_data_url = canvas.toDataURL('image/jpeg');
-  canvas.remove();
-
-  var byteString = atob(image_data_url.split(',')[1]);
-
-  // write the bytes of the string to an ArrayBuffer
-  var ab = new ArrayBuffer(byteString.length);
-  var ia = new Uint8Array(ab);
-  for (var i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i);
-  }
-
-  var blob = new Blob([ab], {type: 'image/jpeg'});
-
-  // stuff into a form, so server can receive it as a standard file upload
+  // A standard file upload, as if from a form
   var form_data = new FormData();
   form_data.append('action', 'photo.upload');
-  if (g_current_racer['barcode']) {
-    form_data.append('barcode', g_current_racer['barcode']);
+  if (racer['barcode']) {
+    form_data.append('barcode', racer['barcode']);
   } else {
-    form_data.append('racerid', g_current_racer['racerid']);
+    form_data.append('racerid', racer['racerid']);
   }
   form_data.append('repo', repo);
   form_data.append('photo', blob, photo_base_name + ".jpg");
   if (g_autocrop && repo == 'head') {
     form_data.append('autocrop', '1');
   }
-  console.log(form_data.keys());
 
   $.ajax('action.php?query=photo.upload-mobile',
          {type: 'POST',
@@ -279,7 +335,10 @@ function capture_photo(repo) {
             if (data.outcome.summary != 'success') {
               report_trouble('Upload ' + data.outcome.code + ': ' + data.outcome.description);
               console.log('Failed upload', data);
-            } else if (data.hasOwnProperty('thumbnail')) {
+            } else if (data.hasOwnProperty('thumbnail') &&
+                       racer['barcode'] == g_current_racer['barcode'] &&
+                       racer['racerid'] == g_current_racer['racerid']) {
+              // (Unless they've moved on to another racer)
               update_thumbnail(repo, data['thumbnail']);
             }
           }
@@ -415,6 +474,7 @@ function on_switch_to_camera_cllicked() {
 // Done (or "Racers" above the camera): back to the racer list.  The camera
 // is turned off while the list is showing.
 function on_done_click() {
+  leave_photo_mode();
   if ($("#slide-in").is(':visible')) {
     hide_slide_in();
   }
@@ -426,11 +486,7 @@ function on_done_click() {
 }
 
 function stop_camera() {
-  var stream = document.getElementById("preview").srcObject;
-  if (stream != null) {
-    stream.getTracks().forEach(function(track) { track.stop(); });
-    document.getElementById("preview").srcObject = null;
-  }
+  g_camera.stop();
 }
 
 
@@ -456,25 +512,15 @@ function on_resize() {
         show_slide_in(function () { g_restore_slidein_timeout = false; });
       }, 500);
     }
-    on_device_selection($("#device-picker"));
+    layout_preview();
   }
 }
 
 $(function() {
-  if (typeof(navigator.mediaDevices) == 'undefined') {
-    $("#trouble").removeClass('hidden');
-    if (window.location.protocol == 'http:') {
-      var https_url = "https://" + window.location.hostname + window.location.pathname;
-      // No timeout
-      $("#trouble")
-        .empty()
-        .append("<p>No camera access is available.  " +
-                "You may need to switch to <a href='" +  https_url + "'>" + https_url + "</a></p>");
-    }
-  } else {
-    navigator.mediaDevices.ondevicechange = function(event) {
-      build_device_picker($("#device-picker"), /*include_remote*/false, on_device_selection);
-    };
-    $(window).on("resize", on_resize);
+  // Without camera access (e.g., not on https), say so now.  The Phone Camera
+  // button still works for photos.
+  if (!CameraSource.available()) {
+    $("#trouble").empty().append(CameraSource.unavailable_message()).removeClass('hidden');
   }
+  $(window).on("resize", on_resize);
 });

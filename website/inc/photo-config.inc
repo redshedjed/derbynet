@@ -32,6 +32,30 @@ function photo_directory() {
   return read_raceinfo('photo-directory');
 }
 
+// The shape racer ('head') and car photos are taken in, as "width:height", or
+// "none" to keep whatever shape the camera gives.  The camera pages show this
+// frame over the live picture and crop to it.
+define('PHOTO_ASPECT_DEFAULTS', array('head' => '3:4', 'car' => '3:2'));
+
+function photo_aspect($repo_name) {
+  return read_raceinfo('photo-aspect-'.$repo_name, PHOTO_ASPECT_DEFAULTS[$repo_name]);
+}
+
+// width / height for a "w:h" setting, or 0 for "none" (or anything unreadable)
+function photo_aspect_ratio($repo_name) {
+  $parts = explode(':', photo_aspect($repo_name));
+  if (count($parts) == 2 && is_numeric($parts[0]) && is_numeric($parts[1]) && $parts[1] > 0) {
+    return $parts[0] / $parts[1];
+  }
+  return 0;
+}
+
+// For a page's javascript: {"head": 0.75, "car": 1.5}
+function photo_aspects_json() {
+  return json_encode(array('head' => photo_aspect_ratio('head'),
+                           'car' => photo_aspect_ratio('car')));
+}
+
 function car_photo_directory() {
   $dir = read_raceinfo('car-photo-directory');
   if ($dir === false) {

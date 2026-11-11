@@ -123,8 +123,10 @@
 }
 video#preview {
   z-index: -100;
-  margin-left: auto;
-  margin-right: auto;
+  display: block;
+  width: 100%;  /* height is set by layout_preview() */
+  object-fit: contain;
+  background: #111;
 }
 /* Where to hold the barcode */
 #preview-overlay {
@@ -150,6 +152,42 @@ video#preview {
   font-size: 0.9rem;
   font-weight: var(--weight-semibold);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Lining up a racer or car photo: over the bottom of the screen, above the
+   racer panel, until the photo is taken or cancelled. */
+#photo-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 300;
+  box-sizing: border-box;
+  padding: var(--space-3) var(--space-4);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+}
+#photo-bar-label {
+  margin-bottom: var(--space-2);
+  font-weight: var(--weight-semibold);
+}
+/* Three buttons share the width, however narrow the phone */
+#photo-bar-buttons {
+  display: flex;
+  gap: var(--space-2);
+}
+#photo-bar-buttons .btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-left: var(--space-2);
+  padding-right: var(--space-2);
+  white-space: normal;  /* A long label wraps inside its button */
+  line-height: 1.15;
+}
+#photo-bar-buttons .btn.hidden {
+  display: none;
 }
 
 div#flash-overlay {
@@ -486,6 +524,31 @@ div#racer-list {
   grid-column: 1 / span 2;
   grid-row: 2;
   padding: var(--space-3);
+}
+
+/* Lining up a photo: over the racer panel at the side, leaving the whole
+   picture clear */
+#photo-bar {
+  left: auto;
+  top: 0;
+  width: var(--mc-panel-width);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top: none;
+  border-left: 1px solid var(--color-border);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.2);
+}
+#photo-bar.hidden {
+  display: none;
+}
+#photo-bar-buttons {
+  flex-direction: column-reverse;  /* Take Photo on top */
+}
+#photo-bar-buttons .btn {
+  flex: none;
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
 }
 
 }

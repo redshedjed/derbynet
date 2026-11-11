@@ -1,5 +1,9 @@
 'use strict';
 
+// The photo dialog on Race Check-In: a live camera with the photo's frame over
+// it, or drop a picture file onto it.  Assumes camera-source.js and
+// photo-frame.js, and g_photo_aspects ({head: w/h, car: w/h}) from the page.
+
 // For the photo_modal dialog, this boolean controls whether the racer gets
 // checked in as a side-effect of uploading a photo.  Set by the onclick of the
 // two submit buttons.
@@ -12,7 +16,6 @@ var g_autocrop_car = false;
 
 function set_autocrop_state(repo) {
   $("#autocrop").prop('checked', repo == 'head' ? g_autocrop_head : g_autocrop_car);
-  // TODO $("#autocrop").flipswitch("refresh");
 }
 
 function preserve_autocrop_state() {
@@ -50,78 +53,52 @@ Dropzone.options.photoDrop = {
   },
 };
 
+// The camera is made the first time the dialog opens.  It runs only while the
+// dialog is showing.
+var g_checkin_camera = null;
+var g_photo_overlay = null;
 
-function on_device_selection(selectq) {
-  mobile_select_refresh(selectq);
-  // If a stream is already open, stop it.
-  var stream = document.getElementById("preview").srcObject;
-  if (stream != null) {
-    stream.getTracks().forEach(function(track) {
-      track.stop();
+function checkin_camera() {
+  if (!g_checkin_camera) {
+    var preview = document.getElementById('preview');
+    g_checkin_camera = new CameraSource({
+      video: preview,
+      picker: $("#device-picker"),
+      remember_as: 'checkin',
+      // Ask for the camera's best resolution.  (Asking for a height as well
+      // makes some browsers offer a portrait 1080x1920.)
+      constraints: () => ({width: {ideal: 3840}}),
+      on_stream: () => { $("#no-camera-warning").addClass('hidden'); },
+      on_trouble: (message) => {
+        $("#no-camera-warning").empty().append(message).removeClass('hidden');
+      },
     });
-  }	
-
-  let device_id = selectq.find(':selected').val();
-
-  navigator.mediaDevices.getUserMedia(
-    { video: {
-      deviceId: device_id,
-      // "ideal" 4K resolution is just an attempt to get the highest resolution
-      // from the camera(s)
-      width: { ideal: 3840 },
-      // Including the height prompts Mac Chrome (at least) to offer 1080w x 1920h, which
-      // isn't really desirable.
-      // height: { ideal: 2160 }
-    }
-    })
-    .then(function(stream) {
-      // TODO
-      for (var t = 0; t < stream.getVideoTracks().length; ++t) {
-        console.log('  track', t, stream.getVideoTracks()[t].getSettings());
-      }
-
-      $("#preview")[0].srcObject = stream;
-      try {
-        console.log('Creating ImageCapture object');
-        $("#preview").data('image-capture', new ImageCapture(stream.getVideoTracks()[0]));
-      } catch(err) {
-        console.error('new ImageCapture failed', err);
-        $("#preview").data('image-capture', null);
-      }
-    });
+    g_photo_overlay = new PhotoFrameOverlay(preview);
+  }
+  return g_checkin_camera;
 }
 
-$(function() {
-  var previewj = $("#preview");
-  var preview = previewj[0];
-  preview.addEventListener('loadedmetadata',
-                           (ev) => {
-                             console.log('preview loadedmetadata', preview.videoWidth, preview.videoHeight);
-                             if (preview.videoHeight == 0 || preview.videoWidth == 0) {
-                               console.log('metadata says 0');
-                               return;
-                             }
-                             // preview to be no bigger than 640w x 480h
-                             var aspect = preview.videoWidth / preview.videoHeight;
-                             if (aspect > 640 / 480) {
-                               previewj.width(640);
-                               previewj.height(640 / aspect);
-                             } else {
-                               previewj.height(480);
-                               previewj.width(480 * aspect);
-                             }
-                             // Containing modal is 720px wide with 20px padding.
-                             var margin = (720 - previewj.width()) / 2 - 20;
-                             previewj.css({'margin-left': margin,
-                                                'margin-right': margin});
-                           });
-});
+// Modals can close several ways (buttons, Escape, after an upload), so watch
+// for the dialog being hidden and turn the camera off then.
+var g_photo_modal_watch = null;
+function stop_camera_when_photo_modal_closes() {
+  var frame = $("#photo_modal").closest('.modal_frame');
+  if (g_photo_modal_watch || frame.length == 0) {
+    return;
+  }
+  g_photo_modal_watch = new MutationObserver(function() {
+    if (frame.hasClass('hidden') && g_checkin_camera) {
+      g_checkin_camera.stop();
+    }
+  });
+  g_photo_modal_watch.observe(frame[0], {attributes: true, attributeFilter: ['class']});
+}
 
 function show_photo_modal(racerid, repo) {
   var firstname = $('#firstname-' + racerid).text();
   var lastname = $('#lastname-' + racerid).text();
   $("#racer_photo_name").text(firstname + ' ' + lastname);
-  $("#racer_photo_repo").text(repo);
+  $("#racer_photo_repo").text(repo == 'head' ? 'racer' : 'car');
   $("#photo_modal_repo").val(repo);
   $("#photo_modal_racerid").val(racerid);
 
@@ -135,112 +112,58 @@ function show_photo_modal(racerid, repo) {
   // If the racer's already been checked in, don't offer "Capture & Check In" button
   $("#capture_and_check_in").toggleClass('hidden', $("#passed-" + racerid).prop('checked'));
 
-  // TODO Two different submit buttons that set a global, g_check_in.  Eww.
   show_modal("#photo_modal", function() {
     preserve_autocrop_state();
     take_snapshot(racerid, repo, lastname + '-' + firstname);
     return false;
   });
+  stop_camera_when_photo_modal_closes();
 
-  if (typeof(navigator.mediaDevices) == 'undefined') {
-    $("#no-camera-warning").removeClass('hidden');
-    if (window.location.protocol == 'http:') {
-      var https_url = "https://" + window.location.hostname + window.location.pathname;
-      $("#no-camera-warning").append("<p>You may need to switch to <a href='" +  https_url + "'>" + https_url + "</a></p>");
-    }
-  } else {
-    navigator.mediaDevices.ondevicechange = function(event) {
-      build_device_picker($("#device-picker"), /*include_remote*/false, on_device_selection);
-    };
-  }
-
-  build_device_picker($("#device-picker"), /*include_remote*/false, on_device_selection);
+  checkin_camera().start();
+  g_photo_overlay.show(repo, g_photo_aspects[repo]);
 }
 
 function show_racer_photo_modal(racerid) {
   show_photo_modal(racerid, 'head');
 }
 function show_car_photo_modal(racerid) {
-  console.log('show_car_photo_modal', racerid);
   show_photo_modal(racerid, 'car');
 }
-
 
 function take_snapshot(racerid, repo, photo_base_name) {
   if (photo_base_name.length <= 1) {
     photo_base_name = 'photo';
   }
 
-  // g_check_in set by onclick method in submit buttons
-  if (g_check_in) {
-    $("#passed-" + racerid).prop('checked', true);
-    $("#passed-" + racerid).trigger("change", true);
+  // capture_still copies the picture before it returns, so the dialog (and
+  // with it the camera) can close straight away.
+  var capture = capture_still(document.getElementById('preview'), g_photo_aspects[repo]);
+  close_modal("#photo_modal");
 
-    $.ajax(g_action_url,
-           {type: 'POST',
-            data: {action: 'racer.pass',
-                   racer: racerid,
-                   value: 1},
-           });
-  }
+  capture.then(
+    function(blob) {
+      // g_check_in set by onclick method in submit buttons
+      if (g_check_in) {
+        $("#passed-" + racerid).prop('checked', true);
+        $("#passed-" + racerid).trigger("change", true);
 
-  var canvas = document.createElement('canvas');
-  if ($("#preview").data('image-capture')) {
-    console.log('image-capture exists!');
-    $("#preview").data('image-capture').grabFrame()
-      .then((image_bitmap) => {
-        console.info('image_bitmap is ', image_bitmap.width, image_bitmap.height);
-        console.info(image_bitmap);
-        canvas.width = image_bitmap.width;
-        canvas.height = image_bitmap.height;
-        canvas.getContext('2d').drawImage($("#preview")[0], 0, 0,
-                                          canvas.width, canvas.height);
-        send_canvas_photo(canvas, racerid, repo, photo_base_name);
-      })
-      .catch((error) => {
-        console.error('grabFrame error', error);
-        // If we didn't get an image bitmap (or had some other problem), then fall
-        // back to just capturing the preview window content.
-        send_photo_from_preview(canvas, racerid, repo, photo_base_name);
-      });
-  } else {
-    send_photo_from_preview(canvas, racerid, repo, photo_base_name);
-  }
+        $.ajax(g_action_url,
+               {type: 'POST',
+                data: {action: 'racer.pass',
+                       racer: racerid,
+                       value: 1},
+               });
+      }
+      send_photo_blob(blob, racerid, repo, photo_base_name);
+    },
+    function(error) {
+      // Upload failures are reported the same way, by dashboard-ajax.js
+      alert("Photo capture failure: " + error.message);
+    });
 }
 
-function send_photo_from_preview(canvas, racerid, repo, photo_base_name) {
-  console.error('Falling back to preview capture', $("#preview").width(), $("#preview").height());
-  canvas.width = $("#preview").width();
-  canvas.height = $("#preview").height();
-  canvas.getContext('2d').drawImage($("#preview")[0], 0, 0, canvas.width, canvas.height);
-  send_canvas_photo(canvas, racerid, repo, photo_base_name);
-}
-
-function send_canvas_photo(canvas, racerid, repo, photo_base_name) {
-  var image_data_url = canvas.toDataURL('image/jpeg');
-  canvas.remove();
-
-  // https://stackoverflow.com/questions/6850276
-  
-  // convert base64 to raw binary data held in a string
-  // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-  var byteString = atob(image_data_url.split(',')[1]);
-
-  // write the bytes of the string to an ArrayBuffer
-  var ab = new ArrayBuffer(byteString.length);
-  var ia = new Uint8Array(ab);
-  for (var i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i);
-  }
-  var blob = new Blob([ab], {type: 'image/jpeg'});
-
-  if (blob.size == 0) {
-    $("#ajax-failure").text("Photo capture failure").removeClass('hidden');
-    setTimeout(function() { $("#ajax-failure").addClass('hidden'); }, 10000);
-    return;
-  }
-
-  // stuff into a form, so servers can easily receive it as a standard file upload
+function send_photo_blob(blob, racerid, repo, photo_base_name) {
+  // A standard file upload, as if from a form
   var form_data = new FormData();
   form_data.append('action', 'photo.upload');
   form_data.append('racerid', racerid);
@@ -263,10 +186,8 @@ function send_canvas_photo(canvas, racerid, repo, photo_base_name) {
             }
           }
          });
+}
 
-  close_modal("#photo_modal");
-  }
-  
 function close_photo_modal() {
   close_modal("#photo_modal");
 }

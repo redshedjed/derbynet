@@ -37,7 +37,7 @@ if (isset($_REQUEST['address'])) {
 <script type="text/javascript" src="js/message-poller.js"></script>
 <script type="text/javascript" src="js/viewer-signaling.js"></script>
 <script type="text/javascript" src="js/circular-frame-buffer.js"></script>
-<script type="text/javascript" src="js/video-device-picker.js"></script>
+<script type="text/javascript" src="js/camera-source.js"></script>
 <script type="text/javascript">
 
 g_websocket_url = <?php echo json_encode(read_raceinfo('_websocket_url', '')); ?>;
@@ -176,66 +176,50 @@ function on_remote_stream_ready(stream) {
   g_recorder.on_resize(resize);
 }
 
-function on_device_selection(selectq) {
-  // mobile_select_refresh(selectq);
-  // If a stream is already open, stop it.
-  stream = document.getElementById("preview").srcObject;
-  if (stream != null) {
-    stream.getTracks().forEach(function(track) {
-      track.stop();
-    });
-  }	
-
-  let device_id = selectq.find(':selected').val();
-
-  if (typeof(navigator.mediaDevices) == 'undefined') {
-    $("#no-camera-warning").toggleClass('hidden', device_id == 'remote');
-  }
-
-  if (device_id == 'remote') {
-    if (g_remote_poller) {
-      g_remote_poller.close();
-      g_remote_poller = null;
-    }
-    $("#waiting-for-remote").removeClass('hidden');
-    let id = make_id_string("viewer-");
-    console.log("Viewer id is " + id);
-    g_remote_poller = new RemoteCamera(
-      id,
-      {width: $(window).width(),
-       height: $(window).height()},
-      on_remote_stream_ready);
-  } else {
-    if (g_remote_poller) {
-      g_remote_poller.close();
-      g_remote_poller = null;
-    }
-    $("#recording-stream-info").addClass('hidden');
-    navigator.mediaDevices.getUserMedia(
-      { video: {
-          deviceId: device_id,
-          width: { ideal: $(window).width() },
-          height: { ideal: $(window).height() }
-        }
-      })
-    .then(on_stream_ready);
+function close_remote_camera() {
+  if (g_remote_poller) {
+    g_remote_poller.close();
+    g_remote_poller = null;
   }
 }
 
-$(function() {
-    if (typeof(navigator.mediaDevices) == 'undefined') {
-      $("#no-camera-warning").removeClass('hidden');
-      if (window.location.protocol == 'http:') {
-        var https_url = "https://" + window.location.hostname + window.location.pathname;
-        $("#no-camera-warning").append("<p>You may need to switch to <a href='" +  https_url + "'>" + https_url + "</a></p>");
-      }
-    } else {
-      navigator.mediaDevices.ondevicechange = function(event) {
-        build_device_picker($("#device-picker"), /*include_remote*/true, on_device_selection, on_setup);
-      };
-    }
+function use_remote_camera() {
+  close_remote_camera();
+  $("#no-camera-warning").addClass('hidden');
+  $("#waiting-for-remote").removeClass('hidden');
+  let id = make_id_string("viewer-");
+  console.log("Viewer id is " + id);
+  g_remote_poller = new RemoteCamera(
+    id,
+    {width: $(window).width(),
+     height: $(window).height()},
+    on_remote_stream_ready);
+}
 
-    build_device_picker($("#device-picker"), /*include_remote*/true, on_device_selection);
+// A camera on this computer, or "Remote Camera" for a phone running camera.php
+var g_camera;
+$(function() {
+  g_camera = new CameraSource({
+    video: document.getElementById("preview"),
+    picker: $("#device-picker"),
+    remember_as: 'replay',
+    constraints: () => ({width: {ideal: $(window).width()},
+                         height: {ideal: $(window).height()}}),
+    extra_choices: [{value: 'remote', label: 'Remote Camera'}],
+    on_extra_choice: use_remote_camera,
+    on_stream: function(stream) {
+      close_remote_camera();
+      $("#no-camera-warning").addClass('hidden');
+      $("#recording-stream-info").addClass('hidden');
+      on_stream_ready(stream);
+    },
+    on_trouble: function(message) {
+      $("#no-camera-warning").empty().append(message).removeClass('hidden');
+    },
+    // Back to the setup screen, so it's clear which camera is in use now
+    on_device_lost: function() { on_setup(); },
+  });
+  g_camera.start();
 });
 
 // Posts a message to the page running in the interior iframe.
@@ -345,9 +329,7 @@ $(window).on('resize', function(event) { on_setup(); });
 <div id="replay-setup" class="full-window block_buttons">
   <?php make_banner('Replay'); ?>
 
-  <div id="no-camera-warning" class="hidden">
-     <h2 id='reject'>Access to cameras is blocked.</h2>
-  </div>
+  <div id="no-camera-warning" class="hidden"></div>
 
   <div id="preview-container">
     <video id="preview" autoplay="true" muted="true" playsinline="true">

@@ -80,6 +80,8 @@ if (have_permission(SET_UP_PERMISSION)) {
     'show-racer-photos-rr' => array('setting' => 'show-racer-photos-rr', 'type' => 'checkbox'),
     'supergroup-label' => array('setting' => 'supergroup-label'),
     'timer-send-logs' => array('setting' => 'timer-send-logs'),
+    'photo-aspect-car' => array('setting' => 'photo-aspect-car'),
+    'photo-aspect-head' => array('setting' => 'photo-aspect-head'),
     'track-length' => array('setting' => 'track-length', 'type' => 'number'),
     'unused-lane-mask' => array('setting' => 'unused-lane-mask'),
     'update-period' => array('setting' => 'update-period'),

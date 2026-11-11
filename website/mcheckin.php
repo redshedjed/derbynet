@@ -4,6 +4,7 @@ require_once('inc/authorize.inc');
 
 require_once('inc/data.inc');
 require_once('inc/mobile-checkin-key.inc');
+require_once('inc/photo-config.inc');
 
 // Who can use Mobile Check-In: someone logged in who can check racers in, or
 // a phone that scanned the QR code on Race Check-In, whose link carries the
@@ -37,14 +38,19 @@ session_write_close();
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
 <link rel="stylesheet" type="text/css" href="css/camera.css"/>
 <link rel="stylesheet" type="text/css" href="css/mcheckin.css"/>
+<link rel="stylesheet" type="text/css" href="css/photo-frame.css"/>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/mobile.js"></script>
-<script type="text/javascript" src="js/video-device-picker.js"></script>
+<script type="text/javascript" src="js/camera-source.js"></script>
+<script type="text/javascript" src="js/photo-frame.js"></script>
 <script type="text/javascript" src="js/zxing.js"></script>
 <script type="text/javascript" src="js/mcheckin.js"></script>
 <script type="text/javascript">
+// Shapes (width / height) racer and car photos are framed to; 0 = any
+var g_photo_aspects = <?php echo photo_aspects_json(); ?>;
+
 //window.addEventListener('resize', function(event) { report_trouble('resize event'); });
 //window.addEventListener('orientationchange', function(event) { report_trouble('orientationchange event'); });
 $(function() {
@@ -86,6 +92,19 @@ $(function() {
       </div>
     </div>
   </div>
+</div>
+
+<!-- Lining up a racer or car photo: see capture_photo() -->
+<div id="photo-bar" class="hidden">
+  <div id="photo-bar-label"></div>
+  <div id="photo-bar-buttons">
+    <button type="button" class="btn btn-secondary" onclick="leave_photo_mode();">Cancel</button>
+    <button type="button" id="phone-camera-button" class="btn btn-secondary"
+            onclick="on_phone_camera_click();">Phone Camera</button>
+    <button type="button" id="take-photo-button" class="btn"
+            onclick="on_take_photo_click();">Take Photo</button>
+  </div>
+  <input type="file" id="native-camera-input" class="hidden" accept="image/*" capture="environment"/>
 </div>
 
 <div id="racer-list">

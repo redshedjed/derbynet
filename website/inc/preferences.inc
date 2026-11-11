@@ -76,6 +76,8 @@ define('PREF_STRING_SETTINGS', array(
   'xbs-award' => 'xbs-award',
   'partition-label' => 'partition-label',
   'photos-on-now-racing' => 'photos-on-now-racing',
+  'photo-aspect-head' => 'photo-aspect-head',
+  'photo-aspect-car' => 'photo-aspect-car',
   'supergroup-label' => 'supergroup-label',
   'update-period' => 'update-period',
   // 'photo-dir' => 'photo-directory',
