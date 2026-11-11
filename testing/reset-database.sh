@@ -14,9 +14,6 @@ PHOTO_DIR=$(curl_getj "action.php?query=settings.list&key=photo-directory" | \
 CAR_PHOTO_DIR=$(curl_getj "action.php?query=settings.list&key=car-photo-directory" | \
              jq -r 'if .settings | has("car-photo-directory") then .settings["car-photo-directory"] else "" end')
 
-VIDEO_DIR=$(curl_getj "action.php?query=settings.list&key=video-directory" | \
-             jq -r 'if .settings | has("video-directory") then .settings["video-directory"] else "" end')
-
 LOG_DIR=$(curl_getj "action.php?query=settings.list&key=logs-directory" | \
              jq -r 'if .settings | has("logs-directory") then .settings["logs-directory"] else "" end')
 
@@ -28,9 +25,6 @@ if [ "$PHOTO_DIR" ] ; then
 fi
 if [ "$CAR_PHOTO_DIR" ] ; then
     curl_postj action.php "action=settings.write&car-photo-dir=$CAR_PHOTO_DIR" | check_jsuccess
-fi
-if [ "$VIDEO_DIR" ] ; then
-    curl_postj action.php "action=settings.write&video-dir=$VIDEO_DIR" | check_jsuccess
 fi
 if [ "$LOG_DIR" ] ; then
     curl_postj action.php "action=settings.write&log-dir=$LOG_DIR" | check_jsuccess

@@ -36,16 +36,6 @@ h3#reject {
   font-family: sans-serif;
 }
 
-#recorder-warning {
-  width: 50%;
-  margin-left: 25%;
-}
-
-#recorder-warning p,
-#recorder-warning span {
-  font-size: 18px;
-}
-
 #replay-setup {
   background: white;
 }

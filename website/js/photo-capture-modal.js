@@ -1,31 +1,14 @@
 'use strict';
 
-
-function PhotoCaptureModal() {
-  // Default values for autocrop, depending on repo.  If user changes the setting,
-  // that setting endures for the repo for as long as the page is loaded.
-  var autocrop_head = true;
-  var autocrop_car = false;
-}
-
-var g_photo_capture_modal = PhotoCaptureModal();
-  
-
-
-
-// TODO
 // For the photo_modal dialog, this boolean controls whether the racer gets
-// checked in as a side-effect of uploading a photo.
+// checked in as a side-effect of uploading a photo.  Set by the onclick of the
+// two submit buttons.
 var g_check_in;
 
-// TODO
 // Default values for autocrop, depending on repo.  If user changes the setting,
 // that setting endures for the repo for as long as the page is loaded.
 var g_autocrop_head = true;
 var g_autocrop_car = false;
-
-var g_cameras = new Array();
-var g_cameraIndex = 0;
 
 function set_autocrop_state(repo) {
   $("#autocrop").prop('checked', repo == 'head' ? g_autocrop_head : g_autocrop_car);
@@ -68,9 +51,6 @@ Dropzone.options.photoDrop = {
 };
 
 
-window.addEventListener('orientationchange', function() {
-});
-
 function on_device_selection(selectq) {
   mobile_select_refresh(selectq);
   // If a stream is already open, stop it.
@@ -88,7 +68,7 @@ function on_device_selection(selectq) {
       deviceId: device_id,
       // "ideal" 4K resolution is just an attempt to get the highest resolution
       // from the camera(s)
-      width: { ideal: 3960 },
+      width: { ideal: 3840 },
       // Including the height prompts Mac Chrome (at least) to offer 1080w x 1920h, which
       // isn't really desirable.
       // height: { ideal: 2160 }
@@ -184,53 +164,6 @@ function show_car_photo_modal(racerid) {
   console.log('show_car_photo_modal', racerid);
   show_photo_modal(racerid, 'car');
 }
-
-
-// =================
-
-function onTakePhotoButtonClick() {
-  imageCapture.takePhoto()
-  .then((blob) => createImageBitmap(blob))
-  .then((imageBitmap) => {
-    const canvas = document.querySelector('#takePhotoCanvas');
-    drawCanvas(canvas, imageBitmap);
-  })
-  .catch((error) => console.error(error));
-}
-
-/* Utils */
-
-function drawCanvas(canvas, img) {
-  canvas.width = getComputedStyle(canvas).width.split('px')[0];
-  canvas.height = getComputedStyle(canvas).height.split('px')[0];
-  let ratio  = Math.min(canvas.width / img.width, canvas.height / img.height);
-  let x = (canvas.width - img.width * ratio) / 2;
-  let y = (canvas.height - img.height * ratio) / 2;
-  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-  canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
-      x, y, img.width * ratio, img.height * ratio);
-}
-
-
-function onGrabFrameButtonClick() {
-  imageCapture.grabFrame()
-  .then(imageBitmap => {
-    const canvas = document.querySelector('#grabFrameCanvas');
-    drawCanvas(canvas, imageBitmap);
-  })
-  .catch(error => ChromeSamples.log(error));
-}
-
-function onTakePhotoButtonClick() {
-  imageCapture.takePhoto()
-  .then(blob => createImageBitmap(blob))
-  .then(imageBitmap => {
-    const canvas = document.querySelector('#takePhotoCanvas');
-    drawCanvas(canvas, imageBitmap);
-  })
-  .catch(error => ChromeSamples.log(error));
-}
-// =================
 
 
 function take_snapshot(racerid, repo, photo_base_name) {
@@ -331,11 +264,9 @@ function send_canvas_photo(canvas, racerid, repo, photo_base_name) {
           }
          });
 
-  // TODO-Webcam.reset();
   close_modal("#photo_modal");
   }
   
 function close_photo_modal() {
-  // TODO-Webcam.reset();
   close_modal("#photo_modal");
 }

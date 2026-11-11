@@ -62,7 +62,6 @@ $use_subgroups = use_subgroups();
 $use_xbs = read_raceinfo_boolean('use-xbs');
 $xbs_award = xbs_award();
 $use_master_sched = read_raceinfo_boolean('use-master-sched');
-$upload_videos = read_raceinfo_boolean('upload-videos');
 
 $photos_on_now_racing = read_photos_on_now_racing();
 $show_car_photos_on_deck = read_raceinfo_boolean('show-cars-on-deck');
@@ -267,7 +266,7 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
 ?>
 
   <section class="settings_group card card-accent accent-brand">
-    <h2 class="card-title">Photos and Video</h2>
+    <h2 class="card-title">Photos</h2>
     <div class="settings_group_settings">
       <p id='images-dir-p'>
         <label for='images-dir'>Image set:</label>
@@ -304,12 +303,6 @@ function photo_settings($purpose, $photo_dir_id, $photo_dir_value) {
 
       <?php photo_settings('racer photos', 'photo-dir', photo_directory()); ?>
       <?php photo_settings('car photos', 'car-photo-dir', car_photo_directory()); ?>
-      <p>
-        <input id="upload-videos" name="upload-videos" class="not-mobile"
-                type="checkbox"<?php if ($upload_videos) echo ' checked="checked"';?>/>
-        <label>Upload replay videos?</label>
-      </p>
-      <?php photo_settings('videos', 'video-dir', read_raceinfo('video-directory')); ?>
     </div>
   </section>
 

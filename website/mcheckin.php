@@ -41,8 +41,6 @@ session_write_close();
 <script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/mobile.js"></script>
-<!-- webrtc adapter: recommended for use with quaggajs -->
-<script type="text/javascript" src="js/adapter.js"></script>
 <script type="text/javascript" src="js/video-device-picker.js"></script>
 <script type="text/javascript" src="js/zxing.js"></script>
 <script type="text/javascript" src="js/mcheckin.js"></script>

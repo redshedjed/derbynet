@@ -116,7 +116,6 @@ if [ "$BASE_URL" = "localhost" ]; then
     [ -f $DATADIR/$YEAR/this-will-succeed/derbynet.sqlite3 ] || test_fails Database not created
     [ -d $DATADIR/$YEAR/this-will-succeed/cars ] || test_fails Car photo directory not created
     [ -d $DATADIR/$YEAR/this-will-succeed/racers ] || test_fails Racer photo directory not created
-    [ -d $DATADIR/$YEAR/this-will-succeed/videos ] || test_fails Video directory not created
 
     ## ----------------------------------
     echo '   ' Removing database file

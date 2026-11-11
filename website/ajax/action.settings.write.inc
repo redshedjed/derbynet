@@ -23,7 +23,7 @@ if (have_permission(SET_UP_PERMISSION)) {
   $written = array();
 
   if (locked_settings()) {
-    foreach(array('photo-dir', 'car-photo-dir', 'video-dir') as $post_key) {
+    foreach(array('photo-dir', 'car-photo-dir') as $post_key) {
       if (isset($_POST[$post_key])) {
         json_failure('locked', "Directory settings are locked and cannot be changed.");
         $ok = false;
@@ -83,11 +83,9 @@ if (have_permission(SET_UP_PERMISSION)) {
     'track-length' => array('setting' => 'track-length', 'type' => 'number'),
     'unused-lane-mask' => array('setting' => 'unused-lane-mask'),
     'update-period' => array('setting' => 'update-period'),
-    'upload-videos' => array('setting' => 'upload-videos', 'type' => 'checkbox'),
     'use-master-sched' => array('setting' => 'use-master-sched', 'type' => 'checkbox'),
     'use-points' => array('setting' => 'use-points', 'type' => 'checkbox'),
     'use-xbs' => array('setting' => 'use-xbs', 'type' => 'checkbox'),
-    'video-dir' => array('setting' => 'video-directory'),
     'warn-no-timer' => array('setting' => 'warn-no-timer', 'type' => 'checkbox'),
     'xbs-award' => array('setting' => 'xbs-award'),
   );

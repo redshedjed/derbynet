@@ -56,11 +56,15 @@ define('PREF_BOOL_SETTINGS', array(
   'show-car-photos-on-deck' => 'show-cars-on-deck',
   'show-car-photos-rr' => 'show-car-photos-rr',
   'show-racer-photos-rr' => 'show-racer-photos-rr',
-  'upload-videos' => 'upload-videos',
   'use-master-sched' => 'use-master-sched',
   'use-points' => 'use-points',
   'use-xbs' => 'use-xbs',
   'warn-no-timer' => 'warn-no-timer',
+));
+// Settings that no longer exist.  Older preferences files may still name them
+// (with or without a "no-" prefix), so they're accepted and ignored.
+define('PREF_RETIRED_SETTINGS', array(
+  'upload-videos',  // Replay videos are no longer saved.
 ));
 define('PREF_STRING_SETTINGS', array(
   'n-lanes' => 'lane_count',
@@ -336,6 +340,13 @@ function set_preferences($content) {
       continue;
     }
 
+    if (!isset($val) &&
+        (in_array($line_tag, PREF_RETIRED_SETTINGS) ||
+         (substr($line_tag, 0, 3) == 'no-' && in_array(substr($line_tag, 3), PREF_RETIRED_SETTINGS)))) {
+      $matched = true;
+      continue;
+    }
+
     if (!isset($val)) {
       $key = @PREF_BOOL_SETTINGS[$line_tag];
       if (isset($key)) {
@@ -539,7 +550,6 @@ function dump_preferences() {
           'show-cars-on-deck' => '1',
           'show-racer-photos-rr' => '1',
           'show-car-photos-rr' => '1',
-          'upload-videos' => '1',
           // Some values are de facto defaults, meaning the get_raceinfo calls assume
           // a value if the key isn't written.
           'lane-colors' => '',

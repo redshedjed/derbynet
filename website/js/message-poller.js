@@ -67,7 +67,7 @@ function MessagePoller(recipient, on_message, topics = []) {
         if (messages_pending_open.length > 0) {
           logstream('websocket opened, sending queued messages');
           while (messages_pending_open.length > 0) {
-            wc.send(messages_pending_open.shift());
+            ws.send(messages_pending_open.shift());
           }
         }
       };

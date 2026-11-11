@@ -199,7 +199,6 @@ array(
 "INSERT INTO RaceInfo (itemkey, itemvalue) VALUES ('show-cars-on-deck', '1')",
 "INSERT INTO RaceInfo (itemkey, itemvalue) VALUES ('show-racer-photos-rr', '1')",
 "INSERT INTO RaceInfo (itemkey, itemvalue) VALUES ('show-car-photos-rr', '1')",
-"INSERT INTO RaceInfo (itemkey, itemvalue) VALUES ('upload-videos', '1')",
   )
 );
 ?>

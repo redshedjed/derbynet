@@ -13,7 +13,6 @@ session_write_close();
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
-<script type="text/javascript" src="js/adapter.js"></script>
 <script type="text/javascript" src="js/message-poller.js"></script>
 <script type="text/javascript" src="js/camera-signaling.js"></script>
 <script type="text/javascript" src="js/video-device-picker.js"></script>

@@ -96,7 +96,6 @@ if (locked_settings()) {
   // these variables.
   $racers_subdir = '';
   $cars_subdir = '';
-  $videos_subdir = '';
   $imagery_subdir = '';
   $slides_subdir = '';
 
@@ -126,7 +125,6 @@ if (locked_settings()) {
     // database is opened and initialized.
     $racers_subdir = $directory . DIRECTORY_SEPARATOR . 'racers';
     $cars_subdir = $directory . DIRECTORY_SEPARATOR . 'cars';
-    $videos_subdir = $directory . DIRECTORY_SEPARATOR . 'videos';
     $logs_subdir = $directory . DIRECTORY_SEPARATOR . 'logs';
     $imagery_subdir = $directory . DIRECTORY_SEPARATOR . 'imagery';
     $slides_subdir = $directory . DIRECTORY_SEPARATOR . 'slides';
@@ -139,12 +137,6 @@ if (locked_settings()) {
     if ($ok) {
       if (!@mkdir($cars_subdir)) {
         json_failure('mkdir-cars', "Unable to create cars subdirectory.");
-        $ok = false;
-      }
-    }
-    if ($ok) {
-      if (!@mkdir($videos_subdir)) {
-        json_failure('mkdir-videos', "Unable to create videos subdirectory.");
         $ok = false;
       }
     }
@@ -258,9 +250,6 @@ if (locked_settings()) {
     }
     if ($cars_subdir != '') {
       write_raceinfo('car-photo-directory', $cars_subdir);
-    }
-    if ($videos_subdir != '') {
-      write_raceinfo('video-directory', $videos_subdir);
     }
     if ($logs_subdir != '') {
       write_raceinfo('logs-directory', $logs_subdir);

@@ -658,11 +658,11 @@
    <text:p text:style-name="P23"><text:span text:style-name="T1">The Replay Protocol for</text:span> DerbyNet</text:p>
    <text:p text:style-name="P7"><text:span text:style-name="T36">The replay kiosk</text:span> provides video replay capability for DerbyNet. <text:s/>It communicates with the DerbyNet web server using the communication protocol described in this document.</text:p>
    <text:h text:style-name="Heading_20_1" text:outline-level="1">Messages Sent To The Server</text:h>
-   <text:p text:style-name="P8"><text:span text:style-name="T36">The replay kiosk</text:span> polls the server by sending HTTP <text:a xlink:type="simple" xlink:href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST" text:style-name="Internet_20_link" text:visited-style-name="Visited_20_Internet_20_Link">POST</text:a> requests <text:span text:style-name="T4">to server, normally several times per second. <text:s/>If the server doesn’t get a replay message for two seconds, it will report to the user that the replay connection has been lost.</text:span></text:p>
+   <text:p text:style-name="P8"><text:span text:style-name="T36">The replay kiosk</text:span> polls the server by sending HTTP <text:a xlink:type="simple" xlink:href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST" text:style-name="Internet_20_link" text:visited-style-name="Visited_20_Internet_20_Link">POST</text:a> requests <text:span text:style-name="T4">to the server, normally 4 times a second (every 5 seconds when commands arrive over a WebSocket instead). <text:s/>If the server doesn’t get a replay message for 10 seconds, it reports the replay connection as lost and stops sending it commands.</text:span></text:p>
    <text:p text:style-name="P10">The <text:span text:style-name="T22">body of the</text:span> replay-to-server <text:span text:style-name="T22">POST request is in </text:span><text:span text:style-name="T10">application/x-www-form-urlencoded</text:span> <text:span text:style-name="T22">format, and </text:span>comprises three parameters:</text:p>
    <text:list text:style-name="L1">
     <text:list-item>
-     <text:p text:style-name="P24"><text:span text:style-name="T11">action</text:span>: This always has the value <text:span text:style-name="T11">replay-message</text:span> <text:span text:style-name="T20">to i</text:span>dentif<text:span text:style-name="T20">y</text:span> the message as part of the replay protocol.</text:p>
+     <text:p text:style-name="P24"><text:span text:style-name="T11">action</text:span>: This always has the value <text:span text:style-name="T11">replay.message</text:span> <text:span text:style-name="T20">to i</text:span>dentif<text:span text:style-name="T20">y</text:span> the message as part of the replay protocol.</text:p>
     </text:list-item>
     <text:list-item>
      <text:p text:style-name="P24"><text:span text:style-name="T12">status</text:span>: <text:span text:style-name="T20">This has an integer value summarizing the status of the replay application:</text:span></text:p>
@@ -695,14 +695,14 @@
     </text:list-item>
    </text:list>
    <text:h text:style-name="P13" text:outline-level="1">Responses From The Server</text:h>
-   <text:p text:style-name="P12">If the server recognizes a replay message, it responds with an HTTP response whose body is a simple XML document. <text:s/></text:p>
-   <text:p text:style-name="P14"><text:span text:style-name="T22">The response’s XML document will include zero or more </text:span><text:span text:style-name="T9">&lt;replay-message&gt;</text:span><text:span text:style-name="T22"> elements. <text:s/>Each of these elements has a text body which is a command to the replay application. <text:s/>The possible replay commands are:</text:span></text:p>
+   <text:p text:style-name="P12">If the server recognizes a replay message, it responds with a JSON document. <text:s/></text:p>
+   <text:p text:style-name="P14"><text:span text:style-name="T22">The response’s </text:span><text:span text:style-name="T9">replay</text:span><text:span text:style-name="T22"> field is an array of zero or more strings. <text:s/>Each string is a command to the replay application. <text:s/>The possible replay commands are:</text:span></text:p>
    <text:list text:style-name="L2">
     <text:list-item>
      <text:p text:style-name="P28">&quot;HELLO&quot; is the server&apos;s response to a first connection, <text:span text:style-name="T28">confirming that a connection has been successfully established.</text:span></text:p>
      <text:list>
       <text:list-item>
-       <text:p text:style-name="P32">Example: <text:span text:style-name="T13">&lt;replay-message&gt;HELLO&lt;/replay-message&gt;</text:span></text:p>
+       <text:p text:style-name="P32">Example: <text:span text:style-name="T13">HELLO</text:span></text:p>
       </text:list-item>
      </text:list>
     </text:list-item>
@@ -710,7 +710,7 @@
      <text:p text:style-name="P31">&quot;TEST <text:span text:style-name="T23">skipback </text:span><text:span text:style-name="T26">showings rate</text:span>&quot; runs the replay test <text:span text:style-name="T28">or demo clip. <text:s/></text:span><text:span text:style-name="T27">skipback</text:span><text:span text:style-name="T28"> tells how many </text:span><text:span text:style-name="T37">milli</text:span><text:span text:style-name="T28">seconds from the end of the clip should be shown. <text:s/></text:span><text:span text:style-name="T31">This is repeated </text:span><text:span text:style-name="T24">showings</text:span><text:span text:style-name="T31"> times, and playback is a</text:span><text:span text:style-name="T33">t</text:span><text:span text:style-name="T31"> </text:span><text:span text:style-name="T24">rate</text:span><text:span text:style-name="T31"> </text:span><text:span text:style-name="T33">percent of</text:span><text:span text:style-name="T31"> normal speed (e.g., 10</text:span><text:span text:style-name="T33">0</text:span><text:span text:style-name="T31"> is normal speed playback).</text:span></text:p>
      <text:list>
       <text:list-item>
-       <text:p text:style-name="P32">Example: <text:span text:style-name="T13">&lt;replay-message&gt;</text:span><text:span text:style-name="T11">TEST 3</text:span><text:span text:style-name="T15">500 2 75</text:span><text:span text:style-name="T13">&lt;/replay-message&gt;</text:span></text:p>
+       <text:p text:style-name="P32">Example: <text:span text:style-name="T13"></text:span><text:span text:style-name="T11">TEST 3</text:span><text:span text:style-name="T15">500 2 75</text:span><text:span text:style-name="T13"></text:span></text:p>
       </text:list-item>
      </text:list>
     </text:list-item>
@@ -718,7 +718,7 @@
      <text:p text:style-name="P28"><text:soft-page-break/>&quot;START <text:span text:style-name="T23">video_name_root</text:span>&quot; starts a recording video (video_name_root is a suggested file name stem).</text:p>
      <text:list>
       <text:list-item>
-       <text:p text:style-name="P29"><text:span text:style-name="T29">Example: </text:span><text:span text:style-name="T14">&lt;r</text:span><text:span text:style-name="T13">eplay-message&gt;</text:span><text:span text:style-name="T14">START Bears_Round1_Heat02</text:span><text:span text:style-name="T13">&lt;/replay-message&gt;</text:span></text:p>
+       <text:p text:style-name="P29"><text:span text:style-name="T29">Example: </text:span><text:span text:style-name="T14">&lt;r</text:span><text:span text:style-name="T13">eplay-message&gt;</text:span><text:span text:style-name="T14">START Bears_Round1_Heat02</text:span><text:span text:style-name="T13"></text:span></text:p>
       </text:list-item>
      </text:list>
     </text:list-item>
@@ -729,7 +729,7 @@
      <text:p text:style-name="P28">&quot;REPLAY <text:span text:style-name="T23">skipback showings rate</text:span>&quot; stops <text:span text:style-name="T29">the </text:span>recording if <text:span text:style-name="T37">one is in progress</text:span>, and plays back <text:span text:style-name="T29">the last </text:span><text:span text:style-name="T24">skipback</text:span><text:span text:style-name="T31"> </text:span><text:span text:style-name="T33">milli</text:span><text:span text:style-name="T31">seconds of th</text:span><text:span text:style-name="T33">at</text:span><text:span text:style-name="T31"> recording. <text:s/>This is repeated </text:span><text:span text:style-name="T24">showings</text:span><text:span text:style-name="T31"> times, and playback is a</text:span><text:span text:style-name="T33">t</text:span><text:span text:style-name="T31"> </text:span><text:span text:style-name="T24">rate</text:span><text:span text:style-name="T31"> </text:span><text:span text:style-name="T33">percent of</text:span><text:span text:style-name="T31"> normal speed (e.g., 10</text:span><text:span text:style-name="T33">0</text:span><text:span text:style-name="T31"> is normal speed playback).</text:span></text:p>
      <text:list>
       <text:list-item>
-       <text:p text:style-name="P32"><text:span text:style-name="T30">Example: </text:span><text:span text:style-name="T16">&lt;r</text:span><text:span text:style-name="T17">eplay-message&gt;</text:span><text:span text:style-name="T16">REPLAY 3</text:span><text:span text:style-name="T19">000</text:span><text:span text:style-name="T16"> 2 10</text:span><text:span text:style-name="T19">0</text:span><text:span text:style-name="T17">&lt;/replay-message&gt;</text:span></text:p>
+       <text:p text:style-name="P32"><text:span text:style-name="T30">Example: </text:span><text:span text:style-name="T16">&lt;r</text:span><text:span text:style-name="T17">eplay-message&gt;</text:span><text:span text:style-name="T16">REPLAY 3</text:span><text:span text:style-name="T19">000</text:span><text:span text:style-name="T16"> 2 10</text:span><text:span text:style-name="T19">0</text:span><text:span text:style-name="T17"></text:span></text:p>
       </text:list-item>
      </text:list>
     </text:list-item>
@@ -737,7 +737,7 @@
      <text:p text:style-name="P28">&quot;CANCEL&quot; cancels (abandons) the current recording</text:p>
      <text:list>
       <text:list-item>
-       <text:p text:style-name="P32">Example: <text:span text:style-name="T16">&lt;r</text:span><text:span text:style-name="T17">eplay-message&gt;</text:span><text:span text:style-name="T18">CANCEL</text:span><text:span text:style-name="T17">&lt;/replay-message&gt;</text:span></text:p>
+       <text:p text:style-name="P32">Example: <text:span text:style-name="T16">&lt;r</text:span><text:span text:style-name="T17">eplay-message&gt;</text:span><text:span text:style-name="T18">CANCEL</text:span><text:span text:style-name="T17"></text:span></text:p>
       </text:list-item>
      </text:list>
     </text:list-item>
@@ -746,10 +746,10 @@
    <text:h text:style-name="Heading_20_1" text:outline-level="1">Example <text:span text:style-name="T29">Initial </text:span>Message Exchange</text:h>
    <text:p text:style-name="P12">The following is an example initial message exchange between replay and the server.</text:p>
    <text:p text:style-name="P12">Replay sends an initial introductory message:</text:p>
-   <text:p text:style-name="P5"><text:span text:style-name="T5">POST /derbynet/action.php HTTP/1.1<text:line-break/>Host: localhost<text:line-break/>Content-Type: application/x-www-form-urlencoded<text:line-break/>Connection: keep-alive<text:line-break/>Accept: */*<text:line-break/>User-Agent: MacDerbyReplay/1 CFNetwork/893.13.1 Darwin/17.3.0 (x86_64)<text:line-break/>Accept-Language: en-us<text:line-break/>Accept-Encoding: gzip, deflate<text:line-break/>Content-Length: 49<text:line-break/><text:line-break/></text:span><text:span text:style-name="T6">action=replay-message&amp;status=-1&amp;finished-replay=0</text:span></text:p>
+   <text:p text:style-name="P5"><text:span text:style-name="T5">POST /derbynet/action.php HTTP/1.1<text:line-break/>Host: localhost<text:line-break/>Content-Type: application/x-www-form-urlencoded<text:line-break/>Connection: keep-alive<text:line-break/>Accept: */*<text:line-break/>User-Agent: MacDerbyReplay/1 CFNetwork/893.13.1 Darwin/17.3.0 (x86_64)<text:line-break/>Accept-Language: en-us<text:line-break/>Accept-Encoding: gzip, deflate<text:line-break/>Content-Length: 49<text:line-break/><text:line-break/></text:span><text:span text:style-name="T6">action=replay.message&amp;status=-1&amp;finished-replay=0</text:span></text:p>
    <text:p text:style-name="P6"><text:span text:style-name="T21">(</text:span>Note the single blank line <text:span text:style-name="T21">separating the headers from the body</text:span>.<text:span text:style-name="T21">)</text:span> <text:s/>The response <text:span text:style-name="T22">from the server</text:span> is:</text:p>
-   <text:p text:style-name="P4"><text:span text:style-name="T5">HTTP/1.1 200 OK<text:line-break/>Date: Tue, 09 Jan 2018 23:01:17 GMT<text:line-break/>Server: Apache/2.4.28 (Unix) LibreSSL/2.2.7 PHP/7.1.7<text:line-break/>X-Powered-By: PHP/7.1.7<text:line-break/>Set-Cookie: PHPSESSID=0e39d9b53b7e4a56ee88ed88d780f50f; path=/<text:line-break/>Expires: Thu, 19 Nov 1981 08:52:00 GMT<text:line-break/>Cache-Control: no-store, no-cache, must-revalidate<text:line-break/>Pragma: no-cache<text:line-break/>Content-Length: 206<text:line-break/>Keep-Alive: timeout=5, max=100<text:line-break/>Connection: Keep-Alive<text:line-break/>Content-Type: text/xml; charset=utf-8<text:line-break/><text:line-break/></text:span><text:soft-page-break/><text:span text:style-name="T5">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<text:line-break/></text:span><text:span text:style-name="T5">&lt;action-response action=&quot;replay-message&quot; status=&quot;-1&quot; finished-replay=&quot;0&quot;&gt;<text:line-break/></text:span><text:span text:style-name="T6">&lt;replay-message&gt;HELLO&lt;/replay-message&gt;</text:span><text:span text:style-name="T5"><text:line-break/>&lt;success/&gt;<text:line-break/>&lt;/action-response&gt;</text:span></text:p>
-   <text:p text:style-name="P12">Note the single <text:span text:style-name="T8">&lt;replay-message&gt;</text:span> element carrying a “HELLO” message.</text:p>
+   <text:p text:style-name="P4"><text:span text:style-name="T5">HTTP/1.1 200 OK<text:line-break/>Date: Tue, 09 Jan 2018 23:01:17 GMT<text:line-break/>Server: Apache/2.4.28 (Unix) LibreSSL/2.2.7 PHP/7.1.7<text:line-break/>X-Powered-By: PHP/7.1.7<text:line-break/>Set-Cookie: PHPSESSID=0e39d9b53b7e4a56ee88ed88d780f50f; path=/<text:line-break/>Expires: Thu, 19 Nov 1981 08:52:00 GMT<text:line-break/>Cache-Control: no-store, no-cache, must-revalidate<text:line-break/>Pragma: no-cache<text:line-break/>Keep-Alive: timeout=5, max=100<text:line-break/>Connection: Keep-Alive<text:line-break/>Content-Type: application/json; charset=utf-8<text:line-break/><text:line-break/></text:span><text:soft-page-break/><text:span text:style-name="T5">{<text:line-break/><text:s text:c="4"/>&quot;action&quot;: {&quot;action&quot;: &quot;replay.message&quot;, &quot;status&quot;: -1, &quot;finished-replay&quot;: 0},<text:line-break/><text:s text:c="4"/>&quot;outcome&quot;: {&quot;summary&quot;: &quot;success&quot;, &quot;code&quot;: &quot;success&quot;, &quot;description&quot;: &quot;&quot;},<text:line-break/></text:span><text:span text:style-name="T6"><text:s text:c="4"/>&quot;replay&quot;: [&quot;HELLO&quot;]</text:span><text:span text:style-name="T5"><text:line-break/>}</text:span></text:p>
+   <text:p text:style-name="P12">Note the <text:span text:style-name="T8">replay</text:span> array carrying a single “HELLO” command.</text:p>
    <text:p text:style-name="P12"/>
   </office:text>
  </office:body>

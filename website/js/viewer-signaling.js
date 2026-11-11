@@ -9,7 +9,7 @@ function ice_candidate_key(candidate) {
 // stream_cb gets called when a new stream is added.
 function RemoteCamera(viewer_id, ideal, stream_cb) {
   let pc = null;
-  pc = new RTCPeerConnection({'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
+  pc = new RTCPeerConnection();
 
   let poller = new MessagePoller(
     viewer_id,
@@ -17,7 +17,7 @@ function RemoteCamera(viewer_id, ideal, stream_cb) {
       if (msg.type == 'offer') {
         logrcvd('offer');
         if (!pc) {
-          pc = new RTCPeerConnection({'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
+          pc = new RTCPeerConnection();
         }
         pc.onnegotiationneeded = function(event) {
           logstream('NEGOTIATION NEEDED');
@@ -57,7 +57,7 @@ function RemoteCamera(viewer_id, ideal, stream_cb) {
           });
       } else if (msg.type == 'ice-candidate') {
         if (!pc) {
-          pc = new RTCPeerConnection(null);
+          pc = new RTCPeerConnection();
           logstream('UNEXPECTED ICE CANDIDATE');
         }
         let candidate = new RTCIceCandidate(msg.candidate);

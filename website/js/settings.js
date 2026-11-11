@@ -278,12 +278,10 @@ $(function() {
   if ($("#photo-dir").length > 0) {
     render_directory_status_icon("#photo-dir");
     render_directory_status_icon("#car-photo-dir");
-    render_directory_status_icon("#video-dir");
   }
 
   $("#photo-dir").on("change", function() { render_directory_status_icon("#photo-dir"); });
   $("#car-photo-dir").on("change", function() { render_directory_status_icon("#car-photo-dir"); });
-  $("#video-dir").on("change", function() { render_directory_status_icon("#video-dir"); });
 
   $("#schedule-method-normal, label[for='schedule-method-normal'], " +
     "#schedule-method-abbreviated, label[for='schedule-method-abbreviated'], " +

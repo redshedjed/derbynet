@@ -74,7 +74,6 @@ function restore_saved_race_info_values(&$saved_raceinfo) {
 define('RACE_INFO_KEYS_FOR_SCHEMA_SCRIPT',
        ['photo-directory',
         'car-photo-directory',
-        'video-directory',
         'logs-directory',
         'lane_count',
 
@@ -84,7 +83,6 @@ define('RACE_INFO_KEYS_FOR_SCHEMA_SCRIPT',
 define('RACE_INFO_KEYS_FOR_SNAPSHOT',
        ['photo-directory',
         'car-photo-directory',
-        'video-directory',
         'logs-directory',
 
         '_websocket_url',

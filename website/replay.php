@@ -34,12 +34,8 @@ if (isset($_REQUEST['address'])) {
 <script type="text/javascript" src="js/ajax-setup.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/screenfull.min.js"></script>
-<!-- WebRTC adapter: a shim to insulate apps from spec changes and prefix differences in WebRTC.
-     Latest: https://webrtc.github.io/adapter/adapter-latest.js -->
-<script type="text/javascript" src="js/adapter.js"></script>
 <script type="text/javascript" src="js/message-poller.js"></script>
 <script type="text/javascript" src="js/viewer-signaling.js"></script>
-<script type="text/javascript" src="js/video-capture.js"></script>
 <script type="text/javascript" src="js/circular-frame-buffer.js"></script>
 <script type="text/javascript" src="js/video-device-picker.js"></script>
 <script type="text/javascript">
@@ -89,8 +85,6 @@ function listen_for_replay_messages() {
   }
 }
 
-g_upload_videos = <?php echo read_raceinfo_boolean('upload-videos') ? "true" : "false"; ?>;
-g_video_name_root = "";
 // If a replay is triggered by timing out after a RACE_STARTS, then ignore any
 // subsequent REPLAY messages until the next START.
 //
@@ -125,15 +119,13 @@ var g_replay_timeout_epsilon = 0;
 
 function handle_replay_message(cmdline) {
   console.log('* Replay message:', cmdline);
-  var root = g_video_name_root;
   if (cmdline.startsWith("HELLO")) {
   } else if (cmdline.startsWith("TEST")) {
     parse_replay_options(cmdline);
-    on_replay(root);
+    on_replay();
   } else if (cmdline.startsWith("START")) {  // Setting up for a new heat
-    // This assumes that we'll get a queued START when the page is freshly
-    // loaded.
-    g_video_name_root = cmdline.substr(6).trim();
+    // START carries a heat name (e.g., Bears_Round1_Heat02), which isn't
+    // needed now that replays aren't saved.
     g_preempted = false;
   } else if (cmdline.startsWith("REPLAY")) {
     // REPLAY skipback showings rate
@@ -141,8 +133,8 @@ function handle_replay_message(cmdline) {
     parse_replay_options(cmdline);
     if (!g_preempted) {
       clearTimeout(g_replay_timeout);
-      console.log('Triggering replay from REPLAY message', root);
-      on_replay(root);
+      console.log('Triggering replay from REPLAY message');
+      on_replay();
     }
   } else if (cmdline.startsWith("CANCEL")) {
     clearTimeout(g_replay_timeout);
@@ -153,8 +145,8 @@ function handle_replay_message(cmdline) {
     g_replay_timeout = setTimeout(
       function() {
         g_preempted = true;
-        console.log('Triggering replay from timeout after RACE_STARTS', root);
-        on_replay(root);
+        console.log('Triggering replay from timeout after RACE_STARTS');
+        on_replay();
       },
       g_replay_options.length - g_replay_timeout_epsilon);
   } else {
@@ -197,7 +189,7 @@ function on_device_selection(selectq) {
   let device_id = selectq.find(':selected').val();
 
   if (typeof(navigator.mediaDevices) == 'undefined') {
-    $("no-camera-warning").toggleClass('hidden', device_id == 'remote');
+    $("#no-camera-warning").toggleClass('hidden', device_id == 'remote');
   }
 
   if (device_id == 'remote') {
@@ -231,15 +223,6 @@ function on_device_selection(selectq) {
 }
 
 $(function() {
-    if (typeof(window.MediaRecorder) == 'undefined') {
-      g_upload_videos = false;
-      $("#user_agent").text(navigator.userAgent);
-      $("#recorder-warning").removeClass('hidden');
-    }
-});
-
-
-$(function() {
     if (typeof(navigator.mediaDevices) == 'undefined') {
       $("#no-camera-warning").removeClass('hidden');
       if (window.location.protocol == 'http:') {
@@ -260,35 +243,8 @@ function announce_to_interior(msg) {
   document.querySelector("#interior").contentWindow.postMessage(msg, '*');
 }
 
-function upload_video(root, blob) {
-  if (blob) {
-    console.log("Uploading video " + root + ".mkv");
-    let form_data = new FormData();
-    form_data.append('video', blob, root + ".mkv");
-    form_data.append('action', 'video.upload');
-    $.ajax("action.php",
-           {type: 'POST',
-             data: form_data,
-             processData: false,
-             contentType: false,
-             success: function(data) {
-               console.log('video upload success:');
-               console.log(data);
-             }
-           });
-  }
-}
-
-
-function on_replay(root) {
+function on_replay() {
   console.log('* on_replay');
-  if (root != g_video_name_root) {
-    console.log('** root=', root, ', g_video_name_root=', g_video_name_root);
-  }
-  // Capture this global variable before starting the asynchronous operation,
-  // because it's reasonably likely to be clobbered by another queued message
-  // from the server.
-  var upload = g_upload_videos;
 
   // If this is a replay triggered after RACE_START, make sure we don't start
   // another replay for the same heat.
@@ -297,18 +253,24 @@ function on_replay(root) {
   }
   g_replay_timeout = 0;
 
+  if (!g_recorder) {
+    // No camera stream has started yet, so there's nothing to play back.
+    console.log('No camera stream; nothing to replay');
+    return;
+  }
+
   g_recorder.stop_recording();
 
   var delay = $("#delay")[0].valueAsNumber * 1000;
   if (delay > 0) {
-    setTimeout(function() { start_playback(root, upload); }, delay);
+    setTimeout(start_playback, delay);
   } else {
     console.log('Direct playback');
-    start_playback(root, upload);
+    start_playback();
   }
 }
 
-function start_playback(root, upload) {
+function start_playback() {
   let playback = document.querySelector("#playback");
   playback.width = $(window).width();
   playback.height = $(window).height();
@@ -316,31 +278,11 @@ function start_playback(root, upload) {
   announce_to_interior('replay-started');
 
   $("#playback-background").show('slide', function() {
-      let playback_start_ms = Date.now();
-      let vc;
-      // When the offscreen <canvas> is first created, we construct a
-      // VideoCapture object to record its capture stream.  After the first play
-      // through, stop the VideoCapture and upload the resulting Blob.
       g_recorder.playback(playback,
                           g_replay_options.count,
                           g_replay_options.rate,
-                          function(pre_canvas) {
-                            if (upload && root != "") {
-                              vc = new VideoCapture(pre_canvas.captureStream());
-                            } else if (!upload) {
-                              console.log("No video upload planned.");
-                            } else {
-                              console.log("No video root name specified; will not upload.");
-                            }
-                          },
-                          function() {
-                            // The first time through, consume the captured
-                            // video and destroy the VideoCapture object.
-                            if (vc) {
-                              vc.stop(function(blob) { upload_video(root, blob); });
-                              vc = null;
-                            }
-                          },
+                          /* on_precanvas */ null,
+                          /* on_playback_finished */ null,
                           function() {
                             $("#playback-background").hide('slide');
                             announce_to_interior('replay-ended');
@@ -402,11 +344,6 @@ $(window).on('resize', function(event) { on_setup(); });
 
 <div id="replay-setup" class="full-window block_buttons">
   <?php make_banner('Replay'); ?>
-  <div id="recorder-warning" class="hidden">
-    <h2>This browser does not support MediaRecorder.</h2>
-    <p>Replay is still possible, but you can't upload videos.</p>
-    <p>Your browser's User Agent string is:<br/><span id="user_agent"></span></p>
-  </div>
 
   <div id="no-camera-warning" class="hidden">
      <h2 id='reject'>Access to cameras is blocked.</h2>
