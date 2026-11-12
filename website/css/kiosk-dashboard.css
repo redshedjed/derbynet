@@ -188,6 +188,20 @@ p.parameters {
   margin: 0;
 }
 
+/* A button with a short note under it */
+.btn-with-note {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+.btn-with-note small {
+  font-size: 0.8125rem;
+}
+#set_up_displays .toolbar {
+  align-items: flex-start;
+}
+
 /* ---------------- Phones ---------------- */
 
 @media (max-width: 720px) {
@@ -204,11 +218,6 @@ p.parameters {
     grid-template-columns: 1fr auto;
     grid-template-areas: "ident  reload"
                          "select select";
-  }
-  #start_display .block_buttons input[type='button'] {
-    width: calc(50% - var(--space-3) / 2);
-    padding-left: var(--space-3);
-    font-size: 1.125rem;
   }
 }
 

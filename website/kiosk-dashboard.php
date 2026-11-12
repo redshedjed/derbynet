@@ -72,7 +72,10 @@ var g_standings_choices = <?php
 <section id="set_up_displays" class="card card-accent accent-other">
   <h2 class="card-title">Set Up the Displays</h2>
   <div class="toolbar">
-    <input id="new_kiosk_window_button" type="button" class="btn btn-secondary" value="New Kiosk Window"/>
+    <span class="btn-with-note">
+      <input id="new_kiosk_window_button" type="button" class="btn btn-secondary" value="New Kiosk Window"/>
+      <small class="text-muted">Stays logged in</small>
+    </span>
     <?php if (have_permission(SET_UP_PERMISSION)) { /* locations and scenes are set-up */ ?>
     <a class="btn btn-secondary" href="kiosk-editor.php">Kiosk Editor</a>
     <a class="btn btn-secondary" href="scenes.php">Scene Editor</a>
@@ -86,13 +89,14 @@ var g_standings_choices = <?php
 
 <section id="start_display" class="card card-accent accent-other tile-buttons">
   <h2 class="card-title">Make this device a display</h2>
-  <p>This logs this device out, then turns it into a kiosk or a camera.
-     Displays don't need a login; you'll need to log in again here to make changes.</p>
+  <p>Turns this device into a kiosk; what it shows (a display, a track camera,
+     a photo stand) is then chosen here on the Kiosk Dashboard.  Kiosks don't
+     need a login; you'll need to log in again on this device to make changes.</p>
   <div class="block_buttons">
-    <input type="button" value="Be a Kiosk" data-href="kiosk.php"/>
-    <input type="button" value="Fullscreen Kiosk" data-href="fullscreen.php"/>
-    <input type="button" value="Replay Kiosk" data-href="replay.php"/>
-    <input type="button" value="Track Camera" data-href="camera.php"/>
+    <span class="btn-with-note">
+      <input type="button" value="Be a Kiosk" data-href="kiosk.php"/>
+      <small class="text-muted">Logs out of DerbyNet</small>
+    </span>
   </div>
 </section>
 </div>
