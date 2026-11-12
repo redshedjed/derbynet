@@ -27,11 +27,11 @@ any combination of:
   server    the DerbyNet web server
   standby   a warm spare that keeps a copy of the server's data (at most about
             40 seconds old)
-  kiosk     a full-screen kiosk display
-  replay    a track camera (USB webcam or Pi camera), named by CAMERA_NAME
-  photo     a photo stand: camera plus barcode scanner (needs its own screen)
+  kiosk     a full-screen kiosk: a display, a track camera (USB webcam or Pi
+            camera) or a photo stand (camera plus barcode scanner), whichever
+            the Kiosk Dashboard makes it
 
-kiosk, replay, and photo need Raspberry Pi OS with desktop.  Lite is enough
+A kiosk needs Raspberry Pi OS with desktop.  Lite is enough
 for a Pi that will only ever be a server or standby, but can't later take on
 the other roles.  On the Pi, as the normal user:
 
@@ -75,8 +75,8 @@ If the server fails, power it off, then on the standby run
 
     sudo derbynet-pi promote
 
-The standby starts announcing itself and takes over the alias.  Kiosks, replay
-cameras, and photo stations notice that the old server has stopped answering
+The standby starts announcing itself and takes over the alias.  Kiosks (displays,
+track cameras and photo stands) notice that the old server has stopped answering
 and switch to the new one on their own, within about a minute.  promote
 refuses to run while the old server is still announcing itself.
 

@@ -8,6 +8,7 @@
 //     video: document.getElementById('preview'),   // required
 //     picker: $("#device-picker"),                   // <select>, optional
 //     remember_as: 'checkin',                        // key for the saved choice
+//     prefer_label: 'Logitech C920',                 // use this camera, if here
 //     constraints: () => ({width: {ideal: 3840}}),   // extra video constraints
 //     extra_choices: [{value: 'remote', label: 'Remote Camera'}],
 //     on_extra_choice: (value) => { ... },           // one of those was picked
@@ -202,16 +203,39 @@ class CameraSource {
     });
   }
 
+  // The names of this device's cameras, as far as known (names only show
+  // once the browser has allowed a camera).
+  device_labels() {
+    return this._labels || [];
+  }
+
+  // With options.prefer_label (a camera's name, chosen elsewhere, e.g. on the
+  // Kiosk Dashboard): once the names are known, switch to that camera, if
+  // it's here and isn't already the one in use.  Tried once per CameraSource.
+  _maybe_use_preferred(cameras) {
+    let want = this.options.prefer_label;
+    if (!want || this._tried_preferred || !this._running || this._is_extra(this._current)) {
+      return;
+    }
+    let cam = cameras.find((c) => c.label == want);
+    if (!cam) {
+      return;  // Not here (or names not known yet): keep what we have
+    }
+    this._tried_preferred = true;
+    if (cam.deviceId != this._current) {
+      this._open(cam.deviceId);
+    }
+  }
+
   _local_cameras() {
     return navigator.mediaDevices.enumerateDevices()
       .then((devices) => devices.filter((d) => d.kind == 'videoinput'))
       .catch(() => []);
   }
 
+  // (Also notes the cameras' names, for device_labels(), with or without a
+  // picker to show them in.)
   _fill_picker() {
-    if (!this.picker) {
-      return;
-    }
     if (!CameraSource.available()) {
       this._fill_picker_with([]);
       return;
@@ -220,6 +244,8 @@ class CameraSource {
   }
 
   _fill_picker_with(cameras) {
+    this._labels = cameras.map((cam) => cam.label).filter((label) => label);
+    this._maybe_use_preferred(cameras);
     if (!this.picker) {
       return;
     }

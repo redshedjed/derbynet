@@ -69,6 +69,9 @@ function render_track_cameras(data) {
   let camera_clients = {};
   let display_clients = {};
   data.clients.forEach(function(c) {
+    if (c.kind != 'camera' && c.kind != 'display') {
+      return;  // e.g., a photo stand (the Kiosk Dashboard shows those)
+    }
     let by_name = c.kind == 'camera' ? camera_clients : display_clients;
     let prev = by_name[c.name];
     if (!prev || c.last_contact > prev.last_contact) {

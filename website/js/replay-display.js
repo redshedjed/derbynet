@@ -226,7 +226,9 @@ function announce_to_interior(msg) {
 // location's name; otherwise, the kiosk address it was opened with, if any.
 var g_display_name = window.g_replay_kiosk ? g_replay_kiosk.name
     : (new URLSearchParams(window.location.search).get('address') || 'Replay display');
-var g_client_id = tab_id_string('display-');
+// As a kiosk, kiosk-<address>: what the Kiosk Dashboard knows it by
+var g_client_id = window.g_replay_kiosk ? 'kiosk-' + g_replay_kiosk.address
+                                        : tab_id_string('display-');
 
 // A command, from polling or the websocket: each is handled once, in order.
 function take_command(seq, cmd) {
@@ -246,7 +248,9 @@ function display_status() {
   } else {
     g_replay.cameras.forEach(function(cam) {
       let entry = g_replay.track[cam.name];
-      parts.push(cam.name + (entry && entry.recorder && entry.remote.connected() ? ' ok' : ' waiting'));
+      // (The display's own webcam has no remote connection to check.)
+      let ok = entry && entry.recorder && (!entry.remote || entry.remote.connected());
+      parts.push(cam.name + (ok ? ' ok' : ' waiting'));
     });
     if (g_replay.cameras.length == 0) {
       parts.push('no track cameras');
@@ -351,7 +355,9 @@ function leave_track_mode() {
 
 function disconnect_track_camera(name) {
   let entry = g_replay.track[name];
-  entry.remote.close();
+  if (entry.remote) {
+    entry.remote.close();
+  }
   if (entry.recorder) {
     entry.recorder.close();
   }
@@ -391,23 +397,38 @@ function connect_track_camera(name) {
   tile.find('.track-tile-label').text(name + ': waiting for the camera');
   let entry = {remote: null, recorder: null, tile: tile};
   g_replay.track[name] = entry;
+  if (g_own_camera && g_own_camera.name == name) {
+    // This display's own webcam: its picture is right here
+    if (g_own_camera.stream()) {
+      use_camera_stream(name, g_own_camera.stream());
+    }
+    return;
+  }
   entry.remote = new RemoteCamera(
     make_id_string('viewer-'),
     {width: $(window).width(), height: $(window).height()},
-    function(stream) {
-      if (entry.recorder) {
-        entry.recorder.close();
-      }
-      entry.recorder = new ReplayRecorder(stream, {
-        length_ms: length_for_camera(name),
-        on_resize: function(w, h) { tile.find('.track-tile-label').text(name + ': ' + w + 'x' + h); }});
-      if (g_replay.state != 'playing') {
-        entry.recorder.start();
-      }
-      tile.find('.track-tile-label').text(name + ': connected');
-      tile.find('video')[0].srcObject = stream;
-    },
+    function(stream) { use_camera_stream(name, stream); },
     name);
+}
+
+// Records a track camera's picture, from now on, for replays.
+function use_camera_stream(name, stream) {
+  let entry = g_replay.track[name];
+  if (!entry) {
+    return;
+  }
+  let tile = entry.tile;
+  if (entry.recorder) {
+    entry.recorder.close();
+  }
+  entry.recorder = new ReplayRecorder(stream, {
+    length_ms: length_for_camera(name),
+    on_resize: function(w, h) { tile.find('.track-tile-label').text(name + ': ' + w + 'x' + h); }});
+  if (g_replay.state != 'playing') {
+    entry.recorder.start();
+  }
+  tile.find('.track-tile-label').text(name + ': connected');
+  tile.find('video')[0].srcObject = stream;
 }
 
 // ---------------- Setup ----------------
@@ -429,15 +450,29 @@ function report_capture_rate() {
 }
 
 var g_camera;
+// As a kiosk whose location has a camera of its own: that TrackCameraStation
+var g_own_camera = null;
 
 $(function() {
   if (window.g_replay_kiosk) {
-    // A kiosk (inc/replay-kiosk.inc): no setup screen; the track cameras,
-    // with the kiosk's page beneath.
-    // (No frame-rate warning: that's for replay.php's setup, not a TV.)
+    // A kiosk (inc/replay-kiosk.inc): no setup screen; the kiosk's page
+    // beneath.  (No frame-rate warning: that's for replay.php's setup, not a
+    // TV.)
     $("#interior").attr('src', g_replay_kiosk.inner_url);
-    enter_track_mode();
-    listen_for_replay_messages();
+    if (g_replay_kiosk.camera) {
+      // This display's own webcam is a track camera
+      g_own_camera = new TrackCameraStation({
+        name: g_replay_kiosk.camera,
+        client_id: 'kiosk-' + g_replay_kiosk.address + '-camera',
+        video: document.getElementById('own-camera'),
+        on_stream: function(stream) { use_camera_stream(g_replay_kiosk.camera, stream); },
+      });
+      g_own_camera.start();
+    }
+    if (g_replay_kiosk.replays) {
+      enter_track_mode();
+      listen_for_replay_messages();
+    }
     console.log('Replay kiosk (re)loaded');
     return;
   }

@@ -1,9 +1,10 @@
 #! /bin/bash
 #
 # One-time setup of a Raspberry Pi for DerbyNet.  Installs everything needed for
-# every role (server, standby, kiosk, replay camera, photo station); which roles
-# the Pi actually performs is chosen by ROLES= in derbynet.conf on the SD card's
-# boot partition, and can be changed later without re-running this script.
+# every role (server, standby, and kiosk -- a display, track camera or photo
+# stand, as the Kiosk Dashboard decides).  Which roles the Pi actually performs
+# is chosen by ROLES= in derbynet.conf on the SD card's boot partition, and can
+# be changed later without re-running this script.
 #
 # Run from a DerbyNet source checkout, as the user who'll be logged in to the
 # desktop (not with sudo; the script calls sudo itself):
@@ -61,7 +62,7 @@ install_text() {  # install_text MODE SRC DEST
 ######## Initial roles
 
 if [ -z "$ROLES_ARG" ] && ! { [ -f "$BOOT_CONF" ] && grep -q '^ROLES=' "$BOOT_CONF" ; } ; then
-    echo "Which roles should this Pi start with?  Any of: server standby kiosk replay photo"
+    echo "Which roles should this Pi start with?  Any of: server standby kiosk"
     echo "(You can change this later by editing $BOOT_CONF.)"
     read -r -p "Roles [kiosk]: " ROLES_ARG
     ROLES_ARG=${ROLES_ARG:-kiosk}
@@ -296,7 +297,7 @@ if [ $HAVE_DESKTOP -eq 1 ] ; then
 Type=Application
 Version=1.0
 Name=DerbyNet
-Comment=Starts the kiosk, track camera, and/or photo stand, per ROLES in derbynet.conf
+Comment=Starts the kiosk browser, per ROLES in derbynet.conf
 Exec=/usr/local/bin/derbynet-pi desktop
 X-GNOME-Autostart-enabled=true
 EOF

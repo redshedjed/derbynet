@@ -15,9 +15,9 @@ function json_replay() {
     $last_contact = max($last_contact, $client['last_contact']);
     if ($client['kind'] == 'display') {
       ++$displays;
-    } else {
+    } else if ($client['kind'] == 'camera') {
       $cameras_up[$client['name']] = true;
-    }
+    }  // (A photo stand doesn't figure in replays.)
   }
   $missing = array();
   foreach (track_cameras(/* enabled_only */ true) as $cam) {

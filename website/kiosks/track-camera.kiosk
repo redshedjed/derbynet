@@ -1,0 +1,100 @@
+<?php
+// Track Camera: this kiosk's camera sends its picture to the replay displays,
+// as the track camera named in its parameters.  Everything is chosen on the
+// Kiosk Dashboard (or in a scene): nothing to set up at the camera.
+// Parameters: {name: (camera name, default "Track"),
+//              device: (which of this device's cameras, by name; default the first)}
+$params = kiosk_parameters();
+$camera_name = isset($params['name']) && trim($params['name']) !== '' ? trim($params['name']) : 'Track';
+$device = isset($params['device']) ? $params['device'] : '';
+?><!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Track Camera</title>
+<link rel="stylesheet" type="text/css" href="css/global.css"/>
+<link rel="stylesheet" type="text/css" href="css/kiosks.css"/>
+<style type="text/css">
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: black;
+}
+#preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+}
+#camera-label {
+  position: fixed;
+  left: 2vh;
+  bottom: 2vh;
+  padding: 0.4em 0.8em;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-family: sans-serif;
+  font-size: 2.6vh;
+}
+#camera-label b {
+  font-size: 3.2vh;
+}
+#no-camera-warning {
+  position: fixed;
+  top: 40%;
+  left: 10%;
+  right: 10%;
+  text-align: center;
+  color: #ddd;
+  font-family: sans-serif;
+  font-size: 3vh;
+}
+</style>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-migrate.js"></script>
+<?php require('inc/kiosk-poller.inc'); ?>
+<script type="text/javascript" src="js/message-poller.js"></script>
+<script type="text/javascript" src="js/camera-signaling.js"></script>
+<script type="text/javascript" src="js/camera-source.js"></script>
+<script type="text/javascript" src="js/track-camera.js"></script>
+<script type="text/javascript">
+var g_websocket_url = <?php echo json_encode(read_raceinfo('_websocket_url', '')); ?>;
+var g_params = <?php echo json_encode(array('name' => $camera_name, 'device' => $device)); ?>;
+
+$(function() {
+  $("#camera-name").text(g_params.name);
+  new TrackCameraStation({
+    name: g_params.name,
+    // (Opened directly with ?page=..., for testing, it has no kiosk address.)
+    client_id: typeof g_kiosk_address != 'undefined' ? 'kiosk-' + g_kiosk_address
+                                                     : tab_id_string('camera-'),
+    video: document.getElementById('preview'),
+    prefer_label: g_params.device,
+    on_status: function(status) { $("#camera-status").text(status); },
+    on_stream: function() { $("#no-camera-warning").addClass('hidden'); },
+    on_trouble: function(message) {
+      $("#no-camera-warning").empty().append(message).removeClass('hidden');
+    },
+  }).start();
+
+  // A new name or camera chosen on the Kiosk Dashboard: start over with it.
+  KioskPoller.param_callback = function(parameters) {
+    let name = (parameters.name || '').trim() || 'Track';
+    if (name != g_params.name || (parameters.device || '') != g_params.device) {
+      location.reload();
+    }
+  };
+});
+</script>
+</head>
+<body>
+<video id="preview" autoplay="autoplay" muted="muted" playsinline="playsinline"></video>
+<div id="no-camera-warning" class="hidden"></div>
+<div id="camera-label"><b id="camera-name"></b> camera &middot; <span id="camera-status">starting</span></div>
+<?php require('inc/ajax-failure.inc'); ?>
+</body>
+</html>

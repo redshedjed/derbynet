@@ -96,7 +96,7 @@ function send_replay_message($cmd) {
 // The client's row, or false
 function replay_client($clientid) {
   $stmt = replay_sql('replay-clients-table',
-                     'SELECT clientid, kind, name, status, last_contact'
+                     'SELECT clientid, kind, name, status, last_contact, devices'
                      .' FROM ReplayClients WHERE clientid = :clientid',
                      array(':clientid' => $clientid));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -108,20 +108,22 @@ function replay_client_is_current($row) {
   return $row && $row['last_contact'] + REPLAY_TIMEOUT_LIMIT >= time();
 }
 
-// Records that a display or camera was just heard from.  Returns the
-// client's row as it was before.
-function replay_client_checkin($clientid, $kind, $name, $status) {
+// Records that a station (display, camera or photo stand) was just heard
+// from.  $devices is a JSON list of the names of its cameras, or ''.
+// Returns the client's row as it was before.
+function replay_client_checkin($clientid, $kind, $name, $status, $devices = '') {
   $now = time();
   $row = replay_client($clientid);
   $params = array(':clientid' => $clientid,
                   ':kind' => $kind,
                   ':name' => substr($name, 0, 100),
                   ':status' => substr($status, 0, 250),
-                  ':last_contact' => $now);
+                  ':last_contact' => $now,
+                  ':devices' => substr($devices, 0, 1000));
   if (!$row) {
     replay_sql('replay-clients-table',
-               'INSERT INTO ReplayClients(clientid, kind, name, status, last_contact)'
-               .' VALUES(:clientid, :kind, :name, :status, :last_contact)',
+               'INSERT INTO ReplayClients(clientid, kind, name, status, last_contact, devices)'
+               .' VALUES(:clientid, :kind, :name, :status, :last_contact, :devices)',
                $params);
     // Now and then, forget clients long gone
     replay_sql('replay-clients-table',
@@ -129,10 +131,10 @@ function replay_client_checkin($clientid, $kind, $name, $status) {
                array(':old' => $now - 3600));
   } else if ($now - $row['last_contact'] >= REPLAY_CHECKIN_INTERVAL ||
              $row['kind'] != $kind || $row['name'] != $params[':name'] ||
-             $row['status'] != $params[':status']) {
+             $row['status'] != $params[':status'] || $row['devices'] != $params[':devices']) {
     replay_sql('replay-clients-table',
                'UPDATE ReplayClients SET kind = :kind, name = :name, status = :status,'
-               .' last_contact = :last_contact'
+               .' last_contact = :last_contact, devices = :devices'
                .' WHERE clientid = :clientid',
                $params);
   }
@@ -143,16 +145,32 @@ function replay_client_checkin($clientid, $kind, $name, $status) {
 // (since last heard from)
 function replay_clients() {
   $stmt = replay_sql('replay-clients-table',
-                     'SELECT clientid, kind, name, status, last_contact FROM ReplayClients'
+                     'SELECT clientid, kind, name, status, last_contact, devices FROM ReplayClients'
                      .' ORDER BY kind, name');
   $now = time();
   $clients = array();
   foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
     $row['seconds'] = $now - $row['last_contact'];
     $row['connected'] = replay_client_is_current($row);
+    $devices = json_decode($row['devices'] ? $row['devices'] : '[]', true);
+    $row['devices'] = is_array($devices) ? $devices : array();
     $clients[] = $row;
   }
   return $clients;
+}
+
+// The stations run by the kiosk at $address (it checks in as
+// kiosk-<address>, and its own webcam, if any, as kiosk-<address>-camera).
+// $clients is from replay_clients().
+function kiosk_stations($address, $clients) {
+  $stations = array();
+  foreach ($clients as $c) {
+    if ($c['clientid'] == 'kiosk-'.$address || $c['clientid'] == 'kiosk-'.$address.'-camera') {
+      $stations[] = array('kind' => $c['kind'], 'name' => $c['name'], 'status' => $c['status'],
+                          'connected' => $c['connected'], 'devices' => $c['devices']);
+    }
+  }
+  return $stations;
 }
 
 // ---------------- Track cameras ----------------

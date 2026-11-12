@@ -61,22 +61,27 @@ function madlib_string($addr) {
   return 'Kiosk '.kiosk_number($addr);
 }
 
-// Whether a kiosk location (a display's name, e.g. 'Main') is set, in the
-// Kiosk Editor, to play track-camera replays over whatever it shows.  The
-// locations are kept in RaceInfo (kiosk-locations); see inc/scenes.inc.
-function location_shows_replays($name) {
+// What the Kiosk Editor says about a kiosk location (a display's name, e.g.
+// 'Main'):
+//   replays: play track-camera replays over whatever it shows
+//   camera:  the display's own webcam is the track camera of this name ('' if
+//            it has none)
+// The locations are kept in RaceInfo (kiosk-locations); see inc/scenes.inc.
+function location_settings($name) {
+  $settings = array('replays' => false, 'camera' => '');
   if ($name === null || $name === '') {
-    return false;
+    return $settings;
   }
   $locations = json_decode(read_raceinfo('kiosk-locations', '[]'), true);
   if (is_array($locations)) {
     foreach ($locations as $loc) {
       if (strtolower($loc['name']) == strtolower($name)) {
-        return !empty($loc['replays']);
+        $settings['replays'] = !empty($loc['replays']);
+        $settings['camera'] = isset($loc['camera']) ? trim($loc['camera']) : '';
       }
     }
   }
-  return false;
+  return $settings;
 }
 
 // Splits $row['page'] into separate ['page'] and ['parameters'] fields.  Since
@@ -99,7 +104,8 @@ function parse_kiosk_params(&$row) {
 // page.
 //
 // Returns an array with a 'page' key and optionally 'name' (of the kiosk) and
-// 'parameters' (a json string), and 'replays': whether replays play over it.
+// 'parameters' (a json string), and from its location (see location_settings)
+// 'replays' and 'camera'.
 function kiosk_page($addr) {
   global $db;
   do {  // Retry loop to allow for having to create the table
@@ -114,7 +120,9 @@ function kiosk_page($addr) {
         if (!isset($row['name'])) {
           $row['name'] = '';
         }
-        $row['replays'] = location_shows_replays($row['name']);
+        $location = location_settings($row['name']);
+        $row['replays'] = $location['replays'];
+        $row['camera'] = $location['camera'];
         if (@$row['page'][0] == '!') {
           $row['page'] = substr($row['page'], 1);
           $row['reload'] = true;
@@ -155,7 +163,8 @@ function kiosk_page($addr) {
                                        'kiosks'.DIRECTORY_SEPARATOR.'identify.kiosk'),
                'parameters' => '{}',
                'reload' => false,
-               'replays' => false);
+               'replays' => false,
+               'camera' => '');
 }
 
 function mark_kiosk_for_reload($addr) {
@@ -180,10 +189,18 @@ function mark_all_kiosks_for_reload() {
 }
 
 // Returns an array of entries, one for each currently-active kiosk.
-// Each entry is {address, name, page, parameters, last_contact}
+// Each entry is {address, name, page, parameters, last_contact, stations}, where
+// stations describes any track camera, photo stand or replay display it runs:
+// [{kind, name, status, connected, devices}] (see kiosk_stations()).
 function all_kiosks() {
   global $db;
+  require_once('inc/replay.inc');
   $kiosks = array();
+  $clients = array();
+  try {
+    $clients = replay_clients();
+  } catch (PDOException $p) {
+  }
   try {
     drop_old_kiosks();
     // Information for "old" kiosks remains in the database but we filter out
@@ -210,7 +227,8 @@ function all_kiosks() {
                         'reload' => $row['reload'],
                         'age' => time() - $row['last_contact'],
                         // parse_kiosk_params() put the JSON string here
-                        'parameters' => $row['parameters']);
+                        'parameters' => $row['parameters'],
+                        'stations' => kiosk_stations($row['address'], $clients));
     }
   } catch (PDOException $p) {
     // Most likely: no kiosks table.

@@ -22,15 +22,25 @@ var g_stand = {
   busy: false,   // Taking a photo (or counting down to it)
   held: null,    // In Space mode: {blob, url}, the photo waiting for a barcode
   failed: [],    // {code, repo, blob, url, reason}
+  sending: 0,    // Uploads under way
+  uploaded: 0,   // Photos uploaded since the page loaded
 };
 var g_stand_camera = null;
 var g_stand_overlay = null;
 
-// ---------------- Settings, kept by this browser ----------------
+// ---------------- Settings ----------------
+//
+// photo-stand.php keeps them in this browser, set on the page.  As a kiosk
+// (g_stand_kiosk), they come from the Kiosk Dashboard; a settings barcode
+// changes one here until the dashboard next changes it.
 
 const k_stand_settings_key = 'derbynet-photo-stand';
 
 function load_stand_settings() {
+  if (window.g_stand_kiosk) {
+    apply_kiosk_settings(g_stand_kiosk);
+    return;
+  }
   try {
     let saved = JSON.parse(window.localStorage.getItem(k_stand_settings_key) || '{}');
     Object.assign(g_stand.settings, saved);
@@ -38,15 +48,47 @@ function load_stand_settings() {
   }
 }
 
+// Kiosk parameters => settings, for those it names
+function apply_kiosk_settings(params) {
+  let s = g_stand.settings;
+  if (params.repo == 'head' || params.repo == 'car') {
+    s.repo = params.repo;
+  }
+  if (['now', 'countdown', 'space'].indexOf(params.when) >= 0) {
+    s.when = params.when;
+  }
+  ['checkin', 'autocrop', 'speak'].forEach(function(key) {
+    if (typeof params[key] == 'boolean') {
+      s[key] = params[key];
+    }
+  });
+}
+
 function save_stand_settings() {
+  if (window.g_stand_kiosk) {
+    return;
+  }
   try {
     window.localStorage.setItem(k_stand_settings_key, JSON.stringify(g_stand.settings));
   } catch (e) {
   }
 }
 
+// In words, for a kiosk's screen and its status on the Kiosk Dashboard
+function describe_stand_settings() {
+  let s = g_stand.settings;
+  return [s.repo == 'car' ? 'Car photos' : 'Racer photos',
+          {now: 'taken as soon as a barcode is scanned',
+           countdown: 'taken 3 seconds after scanning',
+           space: 'taken with Space, then scanned'}[s.when],
+          s.checkin ? 'checking racers in' : 'no check-in',
+          s.repo == 'head' && s.autocrop ? 'cropped to the face' : '']
+    .filter(function(x) { return x; }).join(', ');
+}
+
 function show_stand_settings() {
   let s = g_stand.settings;
+  $("#stand-managed-text").text(describe_stand_settings());
   $("input[name=stand-repo][value=" + s.repo + "]").prop('checked', true);
   $("#stand-when").val(s.when);
   $("#stand-checkin").prop('checked', s.checkin);
@@ -256,7 +298,7 @@ function describe_racer(code) {
   });
 }
 
-function post_form(data, query) {
+function post_form_once(data, query) {
   return new Promise(function(resolve) {
     $.ajax('action.php' + (query ? '?query=' + query : ''),
            {type: 'POST',
@@ -268,6 +310,23 @@ function post_form(data, query) {
               resolve({outcome: {summary: 'failure', code: 'network',
                                  description: 'No answer from the server (' + (err || status) + ')'}});
             }});
+  });
+}
+
+// As a kiosk, the right to upload comes from kiosk.php when it shows this
+// page (inc/kiosk-grants.inc).  If that's been lost (say, the server forgot
+// the session), loading kiosk.php again, unseen, grants it again; then try
+// once more.
+function post_form(data, query) {
+  return post_form_once(data, query).then(function(reply) {
+    if (!window.g_stand_kiosk || typeof g_kiosk_address == 'undefined' ||
+        !reply.outcome || reply.outcome.code != 'notauthorized') {
+      return reply;
+    }
+    return new Promise(function(resolve) {
+      $.ajax('kiosk.php', {type: 'GET', data: {address: g_kiosk_address, inner: 1},
+                           complete: function() { resolve(); }});
+    }).then(function() { return post_form_once(data, query); });
   });
 }
 
@@ -284,6 +343,12 @@ function outcome_text(reply) {
 
 // Resolves when done, whether the upload worked or not.
 function send_photo(code, repo, blob, url) {
+  ++g_stand.sending;
+  return send_photo_inner(code, repo, blob, url)
+    .finally(function() { --g_stand.sending; });
+}
+
+function send_photo_inner(code, repo, blob, url) {
   set_status('working', 'Uploading...');
   // PWDuploadonly: a photo for no particular racer, so nobody to check in
   let checkin = g_stand.settings.checkin && code != 'PWDuploadonly';
@@ -310,6 +375,7 @@ function send_photo(code, repo, blob, url) {
           return;
         }
         URL.revokeObjectURL(url);
+        ++g_stand.uploaded;
         if (checkin_reply && !outcome_ok(checkin_reply)) {
           set_status('bad', racer.text + ': photo uploaded, but check-in failed ('
                      + outcome_text(checkin_reply) + ')');
@@ -430,10 +496,13 @@ $(function() {
   load_stand_settings();
   let preview = document.getElementById('stand-preview');
   g_stand_overlay = new PhotoFrameOverlay(preview);
+  let kiosk = window.g_stand_kiosk;
   g_stand_camera = new CameraSource({
     video: preview,
-    picker: $("#stand-device"),
-    remember_as: 'photo-stand',
+    // As a kiosk, the camera is chosen on the Kiosk Dashboard, by name
+    picker: kiosk ? null : $("#stand-device"),
+    remember_as: kiosk ? null : 'photo-stand',
+    prefer_label: kiosk ? kiosk.device : null,
     // Ask for the camera's best resolution
     constraints: () => ({width: {ideal: 3840}}),
     on_stream: function() {
@@ -470,8 +539,66 @@ $(function() {
   $("#stand-retry-all").on('click', retry_all_failed);
   $(document).on('keydown', on_stand_keydown);
 
-  // Keeps the login from lapsing while the stand sits idle
-  setInterval(function() {
-    $.ajax('action.php', {type: 'GET', data: {query: 'replay.cameras'}});
-  }, 5 * 60 * 1000);
+  // Checking in tells the Kiosk Dashboard (and Settings) how the stand is
+  // doing, and keeps the login from lapsing while it sits idle.
+  stand_check_in();
+  setInterval(stand_check_in, 5000);
+
+  if (kiosk && typeof KioskPoller != 'undefined') {
+    // New settings from the Kiosk Dashboard take effect at once; a different
+    // camera means starting over.
+    KioskPoller.param_callback = function(params) {
+      if ((params.device || '') != (kiosk.device || '')) {
+        if (KioskPoller.can_reload()) {
+          location.reload();
+        }
+        return;
+      }
+      if (JSON.stringify(params) != JSON.stringify(g_stand_kiosk)) {
+        g_stand_kiosk = params;
+        apply_kiosk_settings(params);
+        show_stand_settings();
+      }
+    };
+    // Photos still to upload hold off a reload (a new page for this kiosk)
+    KioskPoller.can_reload = function() {
+      return g_stand.failed.length == 0 && g_stand.sending == 0 && !g_stand.held;
+    };
+  }
 });
+
+function stand_status() {
+  if (!g_stand_camera || !g_stand_camera.stream()) {
+    return 'No camera';
+  }
+  let waiting = g_stand.failed.length + g_stand.sending;
+  return describe_stand_settings() + '. ' + g_stand.uploaded
+    + (g_stand.uploaded == 1 ? ' photo' : ' photos') + ' uploaded'
+    + (waiting ? ', ' + waiting + ' waiting' : '');
+}
+
+function stand_check_in() {
+  $.ajax('action.php',
+         {type: 'POST',
+          data: {action: 'replay.poll',
+                 client: (window.g_stand_kiosk && typeof g_kiosk_address != 'undefined')
+                   ? 'kiosk-' + g_kiosk_address : tab_stand_id(),
+                 kind: 'stand',
+                 name: 'Photo stand',
+                 status: stand_status(),
+                 devices: JSON.stringify(g_stand_camera ? g_stand_camera.device_labels() : [])}});
+}
+
+// For photo-stand.php: the same id after a reload of this tab
+function tab_stand_id() {
+  try {
+    let id = window.sessionStorage.getItem('derbynet-id-stand');
+    if (!id) {
+      id = 'stand-' + Math.random().toString(36).substring(2, 14);
+      window.sessionStorage.setItem('derbynet-id-stand', id);
+    }
+    return id;
+  } catch (e) {
+    return 'stand-page';
+  }
+}

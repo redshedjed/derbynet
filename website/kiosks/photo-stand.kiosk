@@ -1,0 +1,13 @@
+<?php
+// Photo Stand, as a kiosk: a camera and a barcode scanner at a table, taking
+// racer or car photos.  Everything is chosen on the Kiosk Dashboard (or in a
+// scene); the kiosk needs no login, since kiosk.php grants a kiosk showing
+// this page the right to upload photos and check racers in (see
+// inc/kiosk-grants.inc).
+// Parameters: {repo: 'head' | 'car', when: 'now' | 'countdown' | 'space',
+//              checkin: bool, autocrop: bool, speak: bool,
+//              device: (which of this device's cameras, by name)}
+require_once('inc/banner.inc');
+$g_stand_kiosk = kiosk_parameters() ?: array();  // (Never null: that means photo-stand.php)
+require('inc/photo-stand-page.inc');
+?>

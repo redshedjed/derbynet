@@ -230,3 +230,24 @@ p.parameters {
 .reload input[type='button'] + input[type='button'] {
   margin-left: var(--space-1);
 }
+
+/* A station's status: track camera, photo stand or replay display */
+.kiosk-ident .station-status {
+  margin: var(--space-1, 4px) 0 0 0;
+  font-size: var(--text-sm, 0.9rem);
+  color: var(--color-text-muted);
+}
+.station-status .status-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: var(--space-1, 4px);
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.station-status .status-dot.on {
+  background: var(--color-success);
+}
+.station-status .status-dot.off {
+  background: var(--color-border-strong);
+}

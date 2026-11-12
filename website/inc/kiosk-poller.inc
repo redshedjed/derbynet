@@ -13,7 +13,10 @@ if (!isset($_GET['page'])) {
   // $g_kiosk_address is assigned in kiosk.php
   $kpage = kiosk_page($g_kiosk_address);
 ?>
-  
+// Which kiosk this is: stations (track cameras, photo stands) check in as
+// kiosk-<address>, so the Kiosk Dashboard can show how they're doing.
+var g_kiosk_address = <?php echo json_encode($g_kiosk_address); ?>;
+
 $(function() { KioskPoller.start(<?php echo json_encode($g_kiosk_address); ?>,
                                  <?php echo json_encode($kpage['page']); ?>); });
 

@@ -11,6 +11,8 @@
 //   order  -- $_POST['names'], comma-separated, in the new order
 //   replays -- $_POST['name'], $_POST['on'] (0/1): whether a display at this
 //             location plays track-camera replays over what it shows
+//   camera -- $_POST['name'], $_POST['camera']: the display's own webcam is the
+//             track camera of this name ('' for none)
 // Responds with the locations, as 'locations'.
 
 require_once('inc/scenes.inc');
@@ -90,6 +92,15 @@ if (!have_permission(SET_UP_PERMISSION)) {
       }
     }
     $locations = array_merge($reordered, $locations);  // any left out keep their places at the end
+  } else if ($op == 'camera') {
+    // The display's own webcam is the track camera of this name ('' = none)
+    $i = location_index($locations, $name);
+    if ($i < 0) {
+      json_failure('no-such', 'No location named '.$name.'.');
+      $ok = false;
+    } else {
+      $locations[$i]['camera'] = isset($_POST['camera']) ? substr(trim($_POST['camera']), 0, 50) : '';
+    }
   } else if ($op == 'replays') {
     $i = location_index($locations, $name);
     if ($i < 0) {

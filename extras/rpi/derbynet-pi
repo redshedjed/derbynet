@@ -11,7 +11,7 @@
 #   sudo derbynet-pi promote   Turn this standby into the server
 #   sudo derbynet-pi sync      Standby: copy from the server now
 #   sudo derbynet-pi export    Server: refresh the copy the standby pulls
-#   derbynet-pi desktop    Start kiosk/replay/photo (run at desktop login)
+#   derbynet-pi desktop    Start the kiosk browser (run at desktop login)
 #
 # How Pis find the server: a server announces itself on the local network
 # (DNS-SD service _derbynet._tcp, via avahi), and also publishes an alias name,
@@ -37,7 +37,7 @@ RSYNC_SECRETS=/etc/derbynet-rsyncd.secrets
 AVAHI_SERVICE=/etc/avahi/services/derbynet.service
 SERVICE_TYPE=_derbynet._tcp
 SYNC_USER=derbynet
-KNOWN_ROLES="server standby kiosk replay photo"
+KNOWN_ROLES="server standby kiosk"
 # SQLite files are copied with sqlite3's .backup, never directly, since a
 # direct copy of a database being written can be corrupt.
 SQLITE_EXCLUDES=('--exclude=*.sqlite' '--exclude=*.sqlite3' '--exclude=*-journal' '--exclude=*-wal' '--exclude=*-shm')
@@ -56,15 +56,19 @@ load_conf() {
     SERVER_ALIAS="derbynet"
     SYNC_PASSWORD=""
     DERBYNET_SERVER=""
-    CAMERA_NAME="Track"
     for f in "$ETC_CONF" "$BOOT_CONF" ; do
         [ -f "$f" ] && . <(sed -e 's/\r$//' "$f")
     done
     SERVER_ALIAS=${SERVER_ALIAS%.local}
     ROLES=$(echo "$ROLES" | tr ',;A-Z' '  a-z')
-    # Accept a few synonyms
-    ROLES=$(echo " $ROLES " | sed -e 's/ replay-camera / replay /g' -e 's/ photo-station / photo /g' \
-                                  -e 's/ photostand / photo /g' -e 's/ backup / standby /g')
+    # Accept a few synonyms.  A track camera or photo stand is a kiosk now,
+    # given its page on the Kiosk Dashboard, so the old role names for them
+    # mean kiosk.
+    ROLES=$(echo " $ROLES " | sed -e 's/ backup / standby /g' \
+             -e 's/ replay-camera / kiosk /g' -e 's/ replay / kiosk /g' -e 's/ camera / kiosk /g' \
+             -e 's/ photo-station / kiosk /g' -e 's/ photostand / kiosk /g' -e 's/ photo / kiosk /g')
+    # (Each role once)
+    ROLES=$(echo $ROLES | tr ' ' '\n' | awk '!seen[$0]++' | tr '\n' ' ')
     ROLES=$(echo $ROLES)
     BAD_ROLES=""
     for r in $ROLES ; do
@@ -323,7 +327,7 @@ cmd_apply() {
         enable_units off derbynet-sync.timer
     fi
 
-    if has_role replay || has_role kiosk ; then
+    if has_role kiosk ; then
         write_chromium_policy
     fi
 
@@ -566,7 +570,7 @@ cmd_status() {
         [ -z "$SYNC_PASSWORD" ] && echo "  NOTE: SYNC_PASSWORD not set, so no standby can copy from this server"
     fi
 
-    if has_role kiosk || has_role replay || has_role photo || has_role standby ; then
+    if has_role kiosk || has_role standby ; then
         local url list n
         if [ -n "$DERBYNET_SERVER" ] ; then
             url="${DERBYNET_SERVER%/}"
@@ -609,17 +613,14 @@ cmd_doctor() {
     local mem
     mem=$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo)
     echo "Memory:      ${mem} MB"
-    local browsers=0
-    has_role kiosk && browsers=$((browsers + 1))
-    has_role replay && browsers=$((browsers + 1))
-    if [ "$mem" -lt 1500 ] && { has_role server || has_role standby ; } && [ $browsers -ge 2 ] ; then
-        echo "  WARNING: server plus two browsers is a lot for ${mem} MB; expect sluggishness"
+    if [ "$mem" -lt 1500 ] && { has_role server || has_role standby ; } && has_role kiosk ; then
+        echo "  NOTE: server plus a kiosk browser in ${mem} MB; a kiosk with Show replays may be sluggish"
     fi
-    if has_role kiosk || has_role replay || has_role photo ; then
+    if has_role kiosk ; then
         if [ -e /usr/bin/labwc ] || [ -e /usr/bin/wayfire ] || [ -e /usr/bin/startlxde-pi ] ; then
             echo "Desktop:     installed"
         else
-            echo "Desktop:     MISSING; kiosk/replay/photo need Raspberry Pi OS with desktop"
+            echo "Desktop:     MISSING; a kiosk needs Raspberry Pi OS with desktop"
         fi
         if [ -f "$HOME/.config/autostart/derbynet.desktop" ] ; then
             echo "Autostart:   $HOME/.config/autostart/derbynet.desktop"
@@ -627,22 +628,15 @@ cmd_doctor() {
             echo "Autostart:   not set up for $(id -un); run setup.sh as the desktop user"
         fi
     fi
-    if has_role replay || has_role photo ; then
-        echo "Video devices (a camera or photo stand needs a USB webcam or Pi camera):"
+    if has_role kiosk ; then
+        # For a kiosk that's a track camera or photo stand (chosen on the
+        # Kiosk Dashboard), or a display with a camera of its own
+        echo "Cameras (for a track camera, photo stand, or a display's own camera):"
         ls /dev/video* >/dev/null 2>&1 || echo "    none"
         command -v v4l2-ctl >/dev/null && v4l2-ctl --list-devices 2>/dev/null | sed -e 's/^/    /'
-    fi
-    if has_role replay ; then
-        echo "Track camera name: $CAMERA_NAME"
-    fi
-    if has_role photo ; then
-        echo "Keyboards (a USB barcode scanner shows up as one):"
+        echo "Keyboards (a photo stand's USB barcode scanner shows up as one):"
         ls /dev/input/by-id 2>/dev/null | grep -- '-event-kbd$' | sed -e 's/^/    /'
         ls /dev/input/by-id 2>/dev/null | grep -q . || echo "    none"
-        if has_role kiosk ; then
-            echo "  WARNING: the photo stand needs the screen to itself: the scanner types"
-            echo "  into whichever window is in front, which would be the kiosk"
-        fi
     fi
 }
 
@@ -654,11 +648,11 @@ cmd_doctor() {
 # (a promoted standby), restarts everything pointed at the new one.
 cmd_desktop() {
     load_conf
-    if ! has_role kiosk && ! has_role replay && ! has_role photo ; then
+    if ! has_role kiosk ; then
         exit 0
     fi
 
-    if has_role kiosk || has_role replay ; then
+    if has_role kiosk ; then
         # Under Wayland, Raspberry Pi OS blanks the screen via swayidle; under
         # X11, kiosk.sh handles it with xset.
         pkill -x swayidle 2>/dev/null
@@ -711,16 +705,7 @@ ROLE_PIDS=()
 start_desktop_roles() {
     local url=$1
     ROLE_PIDS=()
-    if has_role replay ; then
-        setsid "$0" _replay "$url" &
-        ROLE_PIDS+=($!)
-    fi
-    if has_role photo ; then
-        setsid "$0" _photo "$url" &
-        ROLE_PIDS+=($!)
-    fi
     if has_role kiosk ; then
-        sleep 2
         setsid "$SCRIPTS/kiosk.sh" "$url" &
         ROLE_PIDS+=($!)
     fi
@@ -738,39 +723,6 @@ stop_desktop_roles() {
     ROLE_PIDS=()
 }
 
-# A browser window on one of DerbyNet's camera pages: the track camera
-# (replay role) or the photo stand (photo role).  $2 is the page, $3 names the
-# browser profile.
-camera_page_loop() {
-    local url=$1 page=$2 profile=$3 chromium origin
-    chromium=$(command -v chromium || command -v chromium-browser)
-    [ -n "$chromium" ] || { log "chromium not installed" ; return ; }
-    origin=$(echo "$url" | sed -E -e 's|^([a-z]+://[^/]+).*|\1|')
-    while true ; do
-        logger -t derbynet-$profile "starting $page browser for $url" 2>/dev/null
-        # --unsafely-treat-insecure-origin-as-secure lets the page use the
-        # camera over plain http; --use-fake-ui-for-media-stream grants camera
-        # access without a prompt (this browser profile is used for nothing
-        # else).  --autoplay-policy lets the photo stand's sounds play.  The
-        # background flags keep a track camera working while it's hidden
-        # behind a kiosk window.
-        "$chromium" --user-data-dir="$HOME/.config/derbynet-$profile" \
-                    --password-store=basic \
-                    --no-first-run --noerrdialogs --disable-infobars \
-                    --disable-session-crashed-bubble \
-                    --check-for-update-interval=31536000 \
-                    --disable-background-timer-throttling \
-                    --disable-renderer-backgrounding \
-                    --disable-backgrounding-occluded-windows \
-                    --unsafely-treat-insecure-origin-as-secure="$origin" \
-                    --use-fake-ui-for-media-stream \
-                    --autoplay-policy=no-user-gesture-required \
-                    --start-maximized \
-                    --app="$url/$page"
-        sleep 3
-    done
-}
-
 case "$1" in
     apply) cmd_apply ;;
     alias) cmd_alias ;;
@@ -781,10 +733,5 @@ case "$1" in
     status|"") cmd_status ;;
     doctor) cmd_doctor ;;
     desktop) cmd_desktop ;;
-    _replay) load_conf
-             camera_page_loop "$2" "camera.php?name=$(printf %s "$CAMERA_NAME" | sed -e 's/ /%20/g')" replay ;;
-    # The photo stand's window is the only one on its screen, so it has the
-    # keyboard focus, and the barcode scanner types into it.
-    _photo) camera_page_loop "$2" photo-stand.php photo ;;
     *) sed -n -e '3,20p' "$0" | sed -e 's/^# \{0,1\}//' ; exit 1 ;;
 esac

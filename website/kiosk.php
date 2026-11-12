@@ -18,6 +18,15 @@ if (!isset($_GET['address']) && !isset($_GET['page'])) {
 // action.award.present.inc allows that one request without permission, so a
 // kiosk no longer gains PRESENT_AWARDS_PERMISSION here.
 
+if (!isset($_GET['page'])) {
+  $g_kiosk_address = address_for_current_kiosk();
+  $kpage = kiosk_page($g_kiosk_address);
+  // A photo stand needs to upload photos and check racers in (see
+  // inc/kiosk-grants.inc); granted while the session is still open.
+  require_once('inc/kiosk-grants.inc');
+  grant_kiosk_page_permissions($g_kiosk_address, $kpage['page']);
+}
+
 session_write_close();
 
 
@@ -56,9 +65,10 @@ if (isset($_GET['page'])) {
   $g_kiosk_address = address_for_current_kiosk();
   $kpage = kiosk_page($g_kiosk_address);
   $g_kiosk_parameters_string = $kpage['parameters'];
-  if (!empty($kpage['replays']) && !isset($_GET['inner'])) {
-    // This display's location shows replays: a replay layer, with the
-    // kiosk's page in a frame beneath it (kiosk.php again, with inner=1).
+  if ((!empty($kpage['replays']) || $kpage['camera'] !== '') && !isset($_GET['inner'])) {
+    // This display's location shows replays, or has a camera of its own: a
+    // layer for those, with the kiosk's page in a frame beneath it
+    // (kiosk.php again, with inner=1).
     require('inc/replay-kiosk.inc');
   } else {
     require($kpage['page']);

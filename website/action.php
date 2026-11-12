@@ -67,6 +67,9 @@ if (substr($inc, -7) != '.nodata') {
   // A phone let in by an old Mobile Check-In QR code loses those rights
   require_once('inc/mobile-checkin-key.inc');
   drop_stale_mobile_checkin();
+  // ... and a kiosk no longer showing the Photo Stand page, its photo rights
+  require_once('inc/kiosk-grants.inc');
+  drop_stale_kiosk_grant();
   // We can close the session for writing except for these three that might
   // perform some write to $_SESSION.
   if (strstr($inc, 'ballot.get') === false &&

@@ -92,6 +92,7 @@ function process_polled_data(data) {
     hash = hash_string(hash, kiosk.last_contact);
     hash = hash_string(hash, kiosk.page);
     hash = hash_string(hash, JSON.stringify(kiosk.parameters));
+    hash = hash_string(hash, JSON.stringify(kiosk.stations || []));
 
     $("#kiosk_control_group .kiosk_control .reload p.reloading").eq(i)
       .toggleClass('hidden', !kiosk.reload);
@@ -157,6 +158,8 @@ function generate_kiosk_control(index, kiosk, pages) {
       $("<p class='last_contact'/>")
         .append($("<span class='badge badge-warning'/>").text("No contact for " + kiosk.age + "s")));
   }
+  // A track camera, photo stand or replay display says how it's doing
+  station_status_lines(kiosk_ident, kiosk);
   kiosk_ident.appendTo(kiosk_control);
 
   // Assign (a location, as its name) and Reload, side by side at the right
@@ -196,7 +199,10 @@ function generate_kiosk_control(index, kiosk, pages) {
       kiosk_config_handler.decorate(kiosk_select, kiosk.parameters,
                                     function(params) {
                                       post_new_params(kiosk, params);
-                                    });
+                                    },
+                                    // (So a camera page can offer this
+                                    // kiosk's own cameras)
+                                    kiosk);
     }
   }
 

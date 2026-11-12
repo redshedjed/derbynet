@@ -283,3 +283,115 @@ g_kiosk_page_handlers['kiosks/live-camera.kiosk'] = {
             }});
   }
 };
+
+//////////////////////////////////////////////////////////////////////////
+// track-camera and photo-stand: stations, managed from here
+//////////////////////////////////////////////////////////////////////////
+
+// The names of the cameras a kiosk has reported (Kiosk Dashboard only; the
+// Scene Editor has no particular device in mind).
+function kiosk_device_names(kiosk) {
+  var names = [];
+  ((kiosk && kiosk.stations) || []).forEach(function(station) {
+    (station.devices || []).forEach(function(name) {
+      if (names.indexOf(name) < 0) {
+        names.push(name);
+      }
+    });
+  });
+  return names;
+}
+
+// A labelled <select> in its own row; on change, callback(value)
+function station_select(kiosk_div, label, choices, value, callback) {
+  var id = "station-select-" + Math.floor(Math.random() * 100000);
+  var row = $("<div class='kiosk-param-row'/>").appendTo(kiosk_div);
+  row.append($("<label/>").attr('for', id).text(label));
+  var select = $("<select/>").attr('id', id).appendTo(row);
+  choices.forEach(function(choice) {
+    select.append($("<option/>").val(choice.value).text(choice.text));
+  });
+  select.val(value);
+  select.on('change', function() { callback(select.val()); });
+  mobile_select(select);
+}
+
+// Which of the kiosk's cameras to use, by name
+function station_device_select(kiosk_div, parameters, callback, kiosk) {
+  var names = kiosk_device_names(kiosk);
+  if (parameters.device && names.indexOf(parameters.device) < 0) {
+    names.push(parameters.device);  // Chosen before; not reported now
+  }
+  station_select(kiosk_div, 'Uses camera',
+                 [{value: '', text: 'Its first camera'}].concat(
+                   names.map(function(n) { return {value: n, text: n}; })),
+                 parameters.device || '',
+                 function(value) { callback(Object.assign({}, parameters, {device: value})); });
+}
+
+// A kiosk's station status lines (from its check-ins); see kiosk-dashboard.js
+function station_status_lines(kiosk_div, kiosk) {
+  ((kiosk && kiosk.stations) || []).forEach(function(station) {
+    $("<p class='station-status'/>")
+      .append($("<span class='status-dot'/>").addClass(station.connected ? 'on' : 'off'))
+      .append(document.createTextNode(
+        (station.kind == 'camera' ? station.name + ' camera: '
+         : station.kind == 'stand' ? 'Photo stand: ' : 'Replays: ')
+          + (station.connected ? station.status : 'not connected')))
+      .appendTo(kiosk_div);
+  });
+}
+
+g_kiosk_page_handlers['kiosks/track-camera.kiosk'] = {
+  // Parameters: { name: (track camera name), device: (which camera, by name) }
+  decorate: function(kiosk_div, parameters, callback, kiosk) {
+    var id = "track-camera-name-" + Math.floor(Math.random() * 100000);
+    var row = $("<div class='kiosk-param-row'/>").appendTo(kiosk_div);
+    row.append($("<label/>").attr('for', id).text('Camera name'));
+    $("<input type='text' maxlength='50' placeholder='Track'/>")
+      .attr('id', id)
+      .val(parameters.name || '')
+      .on('change', function() {
+        callback(Object.assign({}, parameters, {name: $(this).val().trim()}));
+      })
+      .appendTo(row);
+    if (kiosk) {
+      station_device_select(kiosk_div, parameters, callback, kiosk);
+    }
+  }
+};
+
+g_kiosk_page_handlers['kiosks/photo-stand.kiosk'] = {
+  // Parameters: { repo: 'head' | 'car', when: 'now' | 'countdown' | 'space',
+  //               checkin, autocrop, speak: (bool), device: (camera, by name) }
+  decorate: function(kiosk_div, parameters, callback, kiosk) {
+    var set = function(key, value) {
+      var p = Object.assign({}, parameters);
+      p[key] = value;
+      callback(p);
+    };
+    station_select(kiosk_div, 'Photos of',
+                   [{value: 'head', text: 'Racers'}, {value: 'car', text: 'Cars'}],
+                   parameters.repo || 'head', function(v) { set('repo', v); });
+    station_select(kiosk_div, 'Take the photo',
+                   [{value: 'now', text: 'As soon as a barcode is scanned'},
+                    {value: 'countdown', text: '3 seconds after scanning'},
+                    {value: 'space', text: 'With the Space bar, then scan'}],
+                   parameters.when || 'now', function(v) { set('when', v); });
+    [['checkin', 'Check in each racer scanned', false],
+     ['autocrop', 'Crop racer photos to the face', false],
+     ['speak', 'Say what happened, out loud', true]].forEach(function(item) {
+      var key = item[0];
+      var on = typeof parameters[key] == 'boolean' ? parameters[key] : item[2];
+      $("<div class='kiosk-param-row'/>")
+        .append($("<label/>")
+                .append($("<input type='checkbox'/>").prop('checked', on)
+                        .on('change', function() { set(key, this.checked); }))
+                .append(document.createTextNode(' ' + item[1])))
+        .appendTo(kiosk_div);
+    });
+    if (kiosk) {
+      station_device_select(kiosk_div, parameters, callback, kiosk);
+    }
+  }
+};
