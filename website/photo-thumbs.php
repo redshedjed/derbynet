@@ -142,6 +142,9 @@ var g_photo_repo_name = '<?php echo $photo_repository->name(); ?>';
 <?php
     echo "<a class='btn btn-secondary' id='refresh-button' href='#'"
         ." onclick='window.location.reload(); return false;'>Refresh</a>\n";
+    // A camera and barcode scanner at a table, taking photos one racer after another
+    echo "<a class='btn btn-secondary' id='photo-stand-button' href='photo-stand.php'"
+        ." title='Take photos with a camera and a barcode scanner'>Photo Stand</a>\n";
 ?>
 
 <span class="toolbar-spacer"></span>

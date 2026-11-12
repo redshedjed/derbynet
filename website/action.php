@@ -87,9 +87,9 @@ if ($is_action) {
                             'description' => 'No outcome defined.'));
   if (isset($db) &&
       !($args['action'] == 'timer-message' && $args['message'] == 'HEARTBEAT') &&
-      // replay.message and replay.poll come several times a second; logging them would
+      // replay.poll comes several times a second; logging it would
       // flood ActionHistory.
-      array_search($args['action'], array('role.login', 'vote.cast', 'replay.message', 'replay.poll')) === false) {
+      array_search($args['action'], array('role.login', 'vote.cast', 'replay.poll')) === false) {
     record_action($args);
   }
 }

@@ -13,7 +13,7 @@
 // Assumes message-poller.js, viewer-signaling.js, camera-source.js,
 // replay-recorder.js and screenfull; g_websocket_url is set by the page.
 //
-// Commands from the server (see docs/Developers- Replay Messages):
+// Commands from the server (see inc/replay.inc):
 //   START <heat>                          a heat is staged
 //   RACE_STARTS <length> <showings> <%>   the gate opened: replay after
 //                                         <length> ms unless REPLAY comes first

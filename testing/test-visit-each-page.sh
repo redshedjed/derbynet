@@ -48,7 +48,8 @@ curl_get "kiosk.php?page=kiosks/please-check-in.kiosk" | sed -n -e "/$PATTERN/ {
 curl_get "kiosk.php?page=kiosks/results-by-racer.kiosk" | sed -n -e "/$PATTERN/ { p; q 1 }"
 curl_get "kiosk.php?page=kiosks/welcome.kiosk" | sed -n -e "/$PATTERN/ { p; q 1 }"
 
-# Should do a more complete test of the interaction between replay and the
-# server.  This just ensures that the basic replay.message code hasn't broken
-# completely.
-curl_postj action.php "action=replay.message&status=-1&finished-replay=0" | check_jsuccess
+curl_get "kiosk.php?page=kiosks/live-camera.kiosk" | sed -n -e "/$PATTERN/ { p; q 1 }"
+
+# test-basic-racing.sh checks the replay commands themselves; this just ensures
+# that a replay display's check-in hasn't broken completely.
+curl_postj action.php "action=replay.poll&client=visit-test&kind=display&name=Test&since=-1" | check_jsuccess

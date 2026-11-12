@@ -2,19 +2,23 @@
 
 // Instant replay, server side.
 //
-// Commands for the replay displays (START, RACE_STARTS, REPLAY, CANCEL, TEST;
-// see docs/Developers- Replay Messages) are appended to the ReplayCommands
-// log.  Each display polls replay.poll with the seq of the last command it
-// has seen, so every display gets every command, however many there are.
-// If a websocket server is configured, commands also go out over it at once.
+// Commands for the replay displays are appended to the ReplayCommands log:
+//   START <heat>                          a heat is staged
+//   RACE_STARTS <length> <showings> <%>   the gate opened: replay after
+//                                         <length> ms unless REPLAY comes first
+//   REPLAY <length> <showings> <%>        the heat finished: replay now
+//   CANCEL                                forget the pending replay
+//   TEST <length> <showings> <%>          replay now, to try the settings
+// (<length> in ms, <%> the playback speed as a percent of normal.)  Each
+// display (js/replay-display.js) polls replay.poll with the seq of the last
+// command it has seen, so every display gets every command, however many
+// there are.  If a websocket server is configured, commands also go out over
+// it at once, with their seq.
 //
 // Displays and track cameras check in with every poll; ReplayClients keeps
 // when each was last heard from, for the status on Settings and the Race
 // Dashboard.  TrackCameras lists the named cameras (camera.php?name=Finish),
 // in the order replays show them, each with optional tuning of its own.
-//
-// The older replay.message action (for outside replay apps) reads the same
-// log, keeping its place in a ReplayClients row of its own.
 
 require_once('inc/data.inc');
 require_once('inc/sql-script.inc');
@@ -92,7 +96,7 @@ function send_replay_message($cmd) {
 // The client's row, or false
 function replay_client($clientid) {
   $stmt = replay_sql('replay-clients-table',
-                     'SELECT clientid, kind, name, status, last_contact, last_seq'
+                     'SELECT clientid, kind, name, status, last_contact'
                      .' FROM ReplayClients WHERE clientid = :clientid',
                      array(':clientid' => $clientid));
   $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -104,21 +108,20 @@ function replay_client_is_current($row) {
   return $row && $row['last_contact'] + REPLAY_TIMEOUT_LIMIT >= time();
 }
 
-// Records that a display or camera was just heard from.  $last_seq is only
-// kept for replay.message.  Returns the client's row as it was before.
-function replay_client_checkin($clientid, $kind, $name, $status, $last_seq = 0) {
+// Records that a display or camera was just heard from.  Returns the
+// client's row as it was before.
+function replay_client_checkin($clientid, $kind, $name, $status) {
   $now = time();
   $row = replay_client($clientid);
   $params = array(':clientid' => $clientid,
                   ':kind' => $kind,
                   ':name' => substr($name, 0, 100),
                   ':status' => substr($status, 0, 250),
-                  ':last_contact' => $now,
-                  ':last_seq' => intval($last_seq));
+                  ':last_contact' => $now);
   if (!$row) {
     replay_sql('replay-clients-table',
-               'INSERT INTO ReplayClients(clientid, kind, name, status, last_contact, last_seq)'
-               .' VALUES(:clientid, :kind, :name, :status, :last_contact, :last_seq)',
+               'INSERT INTO ReplayClients(clientid, kind, name, status, last_contact)'
+               .' VALUES(:clientid, :kind, :name, :status, :last_contact)',
                $params);
     // Now and then, forget clients long gone
     replay_sql('replay-clients-table',
@@ -126,10 +129,10 @@ function replay_client_checkin($clientid, $kind, $name, $status, $last_seq = 0) 
                array(':old' => $now - 3600));
   } else if ($now - $row['last_contact'] >= REPLAY_CHECKIN_INTERVAL ||
              $row['kind'] != $kind || $row['name'] != $params[':name'] ||
-             $row['status'] != $params[':status'] || $row['last_seq'] != $params[':last_seq']) {
+             $row['status'] != $params[':status']) {
     replay_sql('replay-clients-table',
                'UPDATE ReplayClients SET kind = :kind, name = :name, status = :status,'
-               .' last_contact = :last_contact, last_seq = :last_seq'
+               .' last_contact = :last_contact'
                .' WHERE clientid = :clientid',
                $params);
   }

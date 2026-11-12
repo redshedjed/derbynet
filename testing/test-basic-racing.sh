@@ -21,9 +21,10 @@ curl_postj action.php "action=schedule.generate&roundid=3" | check_jsuccess
 # Can't delete a racer who's in a schedule
 curl_postj action.php "action=racer.delete&racer=21" | check_jfailure
 
-# This is testing replay connected before we start racing
-## curl_postj action.php "action=replay.message" | jq -e ".replay == [\"HELLO\"]" \
-##        >/dev/null || test_fails
+# A replay display checks in before racing starts: it's given the latest
+# command's seq, and from then on gets every command after it.
+REPLAY_SEQ=$(curl_postj action.php "action=replay.poll&client=racing-test&kind=display&name=Test&since=-1" | \
+                 jq -r '.seq')
 
 ### Racing for roundid=1: 5 heats
 curl_postj action.php "action=heat.select&roundid=1&now_racing=1" | check_jsuccess
@@ -36,12 +37,12 @@ curl_post action.php "action=timer-message&message=IDENTIFIED&nlanes=4" | check_
 
 run_heat 1 1 101:3.3294 121:3.4179 141:3.8182 111:2.2401
 
-curl_postj action.php "action=replay.message" | \
-    jq -e '.replay == ["CANCEL", "START Lions & Tigers_Round1_Heat01",
-                       "RACE_STARTS 4000 2 50",
-                       "REPLAY 4000 2 50",
-                       "CANCEL",
-                       "START Lions & Tigers_Round1_Heat02"]' \
+curl_postj action.php "action=replay.poll&client=racing-test&kind=display&name=Test&since=$REPLAY_SEQ" | \
+    jq -e '[.commands[].cmd] == ["CANCEL", "START Lions & Tigers_Round1_Heat01",
+                                 "RACE_STARTS 4000 2 50",
+                                 "REPLAY 4000 2 50",
+                                 "CANCEL",
+                                 "START Lions & Tigers_Round1_Heat02"]' \
        >/dev/null || test_fails
 
 run_heat 1 2 111:3.7554 131:2.6205 101:2.3800 121:3.2347

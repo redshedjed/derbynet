@@ -1,0 +1,183 @@
+/* Photo Stand (photo-stand.php): the live camera beside a panel with the
+   status, settings and any photos that didn't upload. */
+
+#stand {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-4);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+@media (max-width: 800px) {
+  #stand {
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--space-3);
+  }
+}
+
+#stand-preview-box {
+  aspect-ratio: 4 / 3;
+  background: #111;
+  border-radius: var(--radius-md, 6px);
+}
+#stand-preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+#stand-countdown {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  color: white;
+  font-size: 12rem;
+  font-weight: 700;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+}
+#stand-flash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 11;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#stand-held {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md, 6px);
+  background: var(--color-warning-bg);
+}
+#stand-held img {
+  height: 90px;
+  border-radius: 4px;
+}
+#stand-held.hidden {
+  display: none;
+}
+
+#no-camera-warning {
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md, 6px);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+#stand-panel .card {
+  margin-bottom: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* The status: big enough to read from where the photos are taken */
+#stand-status {
+  padding: var(--space-3);
+  border-radius: var(--radius-md, 6px);
+  font-size: 1.5rem;
+  font-weight: var(--weight-semibold);
+  line-height: 1.25;
+}
+#stand-status.ready {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+#stand-status.working {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+#stand-status.good {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+#stand-status.bad {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+#stand-hint {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm, 0.9rem);
+}
+
+.stand-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: var(--space-2) 0;
+}
+.stand-row.hidden {
+  display: none;
+}
+.stand-label {
+  font-weight: var(--weight-semibold);
+}
+#stand-settings select {
+  max-width: 100%;
+}
+
+#stand-failed h3 {
+  margin: 0 0 var(--space-1) 0;
+  color: var(--color-danger);
+}
+.stand-note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm, 0.9rem);
+}
+#stand-failed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#stand-failed-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--color-border);
+}
+#stand-failed-list img {
+  height: 48px;
+  border-radius: 4px;
+}
+.stand-failed-text {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm, 0.9rem);
+}
+
+#stand-barcodes {
+  padding: var(--space-3) var(--space-4);
+}
+#stand-barcodes summary {
+  cursor: pointer;
+  font-weight: var(--weight-semibold);
+}
+.stand-barcode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+.stand-barcode-grid figure {
+  margin: 0;
+  text-align: center;
+}
+.stand-barcode-grid img {
+  max-width: 100%;
+}
+.stand-barcode-grid figcaption {
+  font-size: var(--text-sm, 0.9rem);
+}

@@ -574,7 +574,7 @@ class HistoryActionFormatter {
     }
     case 'rank.order':
       return 'Re-order subgroups';
-    case 'replay.message':  return "";
+    case 'replay.message':  return "";  // (Retired; older databases logged it)
     case 'replay.poll':  return "";
     case 'track-camera.edit':  return "";
     case 'replay.test':  return "";

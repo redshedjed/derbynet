@@ -9,8 +9,8 @@ necessary first to create the .config/autostart/ folder.)
 It's unlikely that you would want to autostart ALL the files in this folder.
 
 
-A kiosk or replay camera on a Raspberry Pi
-------------------------------------------
+A kiosk, track camera or photo stand on a Raspberry Pi
+------------------------------------------------------
 
 For a Pi 4 or 5 with current Raspberry Pi OS (with desktop):
 
@@ -22,9 +22,17 @@ For a Pi 4 or 5 with current Raspberry Pi OS (with desktop):
 
        DERBYNET_SERVER="http://192.168.1.100/derbynet"
 
-   For a replay camera rather than a kiosk, also:
+   For a track camera rather than a kiosk, also (any name: Start, Finish...):
 
-       KIOSK_PAGE=camera.php
+       KIOSK_PAGE="camera.php?name=Finish"
+
+   For a photo stand (a camera and a USB barcode scanner taking racer or
+   car photos), also:
+
+       KIOSK_PAGE=photo-stand.php
+
+   A photo stand asks for a login the first time, and again after the Pi
+   restarts: choose Photo (password flashbulb, unless changed).
 
    (If DerbyNet's extras package isn't installed, create the file.)
 

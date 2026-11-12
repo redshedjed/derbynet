@@ -29,10 +29,11 @@ function logstream(txt) {
 // websocket.  If using WebSockets, the MessagePoller sends an initial
 // subscriber identification message, just {subscriber: recipient}.
 //
-// MessagePoller is used for webrtc communication between a viewer (replay
-// kiosk) and a remote camera, when using a remote camera.  If websocket support
-// is available, replay.php also creates an additional MessagePoller to receive
-// replay commands, rather than poll (4x per second) for replay.message.
+// MessagePoller is used for webrtc communication between a viewer (a replay
+// display, or the Live Camera kiosk page) and a track camera.  If websocket
+// support is available, a replay display also creates a MessagePoller to
+// receive replay commands as they're sent, rather than only by polling
+// replay.poll (4x per second).
 
 function make_id_string(stem) {
   var alphabet = "abcdefghjklmnpqrstuvwz0123456789";

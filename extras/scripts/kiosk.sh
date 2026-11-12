@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # Shows DerbyNet full-screen in Chromium: a kiosk (a TV by the track, the
-# awards screen, ...) or a replay camera.  For current Raspberry Pi OS
+# awards screen, ...), a track camera, or a photo stand.  For current Raspberry Pi OS
 # (Bookworm and later, whose desktop is Wayland) as well as the older X11
 # desktop.  Copy the companion kiosk.desktop file into ~/.config/autostart/ to
 # start it when the Pi starts; see ../autostart/00README.
@@ -17,8 +17,9 @@
 #                    the Pi's serial number, so it keeps its name (and the page
 #                    assigned to it) across restarts.  No two kiosks may share
 #                    one.
-#   KIOSK_PAGE       What to show, if not a kiosk: e.g. KIOSK_PAGE=camera.php
-#                    for a replay camera.
+#   KIOSK_PAGE       What to show, if not a kiosk: e.g.
+#                    KIOSK_PAGE="camera.php?name=Finish" for a track camera,
+#                    or KIOSK_PAGE=photo-stand.php for a photo stand.
 #   BROWSER          The browser command, if not chromium or chromium-browser.
 #
 # The screen shouldn't go blank: on the Wayland desktop, turn off Screen
@@ -114,7 +115,7 @@ while true ; do
     fi
     log "Starting $BROWSER at $URL"
     # --unsafely-treat-insecure-origin-as-secure and
-    # --use-fake-ui-for-media-stream: a replay camera can use the camera over
+    # --use-fake-ui-for-media-stream: a track camera or photo stand can use the camera over
     # plain http, without asking.  --autoplay-policy: replays and sounds play
     # without a tap.  The rest: no prompts, bubbles, swipe-back or pinch zoom.
     "$BROWSER" --kiosk \

@@ -8,8 +8,7 @@ return array(
 ."  kind          VARCHAR(20),"   // 'display' or 'camera'
 ."  name          VARCHAR(100),"  // Camera name, or what the display calls itself
 ."  status        VARCHAR(250),"
-."  last_contact  INTEGER,"       // Unix timestamp
-."  last_seq      INTEGER"        // Last command handed to it (replay.message)
+."  last_contact  INTEGER"        // Unix timestamp
 ."  )",
 
 );
