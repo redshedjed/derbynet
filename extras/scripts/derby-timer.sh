@@ -4,6 +4,7 @@ TIMER_ARGS=
 
 test -f /etc/derbynet.conf  && . /etc/derbynet.conf
 test -f /boot/derbynet.conf && . /boot/derbynet.conf
+test -f /boot/firmware/derbynet.conf && . /boot/firmware/derbynet.conf
 
 # Wait for server and network to come up
 CONTACT_OK=0

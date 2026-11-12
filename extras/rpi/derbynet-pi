@@ -1,0 +1,790 @@
+#! /bin/bash
+#
+# derbynet-pi: manages the DerbyNet roles of a Raspberry Pi, as configured by
+# ROLES= in derbynet.conf on the boot partition.  Installed by
+# extras/rpi/setup.sh.
+#
+#   derbynet-pi status     What this Pi is doing, and whether it's healthy
+#   derbynet-pi doctor     status, plus hardware checks (cameras, scanners)
+#   derbynet-pi servers    List DerbyNet servers announced on the network
+#   sudo derbynet-pi apply     Apply ROLES now (also runs at every boot)
+#   sudo derbynet-pi promote   Turn this standby into the server
+#   sudo derbynet-pi sync      Standby: copy from the server now
+#   sudo derbynet-pi export    Server: refresh the copy the standby pulls
+#   derbynet-pi desktop    Start kiosk/replay/photo (run at desktop login)
+#
+# How Pis find the server: a server announces itself on the local network
+# (DNS-SD service _derbynet._tcp, via avahi), and also publishes an alias name,
+# derbynet.local by default, for people's laptops and phones.  Its own hostname
+# never changes.  When a standby is promoted, it starts announcing and takes
+# over the alias, and kiosks etc. switch to it.
+
+ETC_CONF=/etc/derbynet.conf
+if [ -f /boot/firmware/config.txt ] ; then
+    BOOT_DIR=/boot/firmware
+else
+    BOOT_DIR=/boot
+fi
+BOOT_CONF="$BOOT_DIR/derbynet.conf"
+
+WWW=/var/www/html/derbynet
+DATA=/var/lib/derbynet
+EXPORT=/var/lib/derbynet-export
+STATE=/var/lib/derbynet-pi
+SCRIPTS=/usr/share/derbynet/scripts
+RSYNCD_CONF=/etc/rsyncd.conf
+RSYNC_SECRETS=/etc/derbynet-rsyncd.secrets
+AVAHI_SERVICE=/etc/avahi/services/derbynet.service
+SERVICE_TYPE=_derbynet._tcp
+SYNC_USER=derbynet
+KNOWN_ROLES="server standby kiosk replay photo"
+# SQLite files are copied with sqlite3's .backup, never directly, since a
+# direct copy of a database being written can be corrupt.
+SQLITE_EXCLUDES=('--exclude=*.sqlite' '--exclude=*.sqlite3' '--exclude=*-journal' '--exclude=*-wal' '--exclude=*-shm')
+
+log() { echo "derbynet-pi: $*" ; }
+die() { echo "derbynet-pi: $*" >&2 ; exit 1 ; }
+
+need_root() {
+    [ "$(id -u)" -eq 0 ] || die "'$1' must be run with sudo"
+}
+
+# Reads the config files, tolerating Windows (CRLF) line endings, which an
+# editor on another computer may have introduced.
+load_conf() {
+    ROLES=""
+    SERVER_ALIAS="derbynet"
+    SYNC_PASSWORD=""
+    DERBYNET_SERVER=""
+    CAMERA_NAME="Track"
+    for f in "$ETC_CONF" "$BOOT_CONF" ; do
+        [ -f "$f" ] && . <(sed -e 's/\r$//' "$f")
+    done
+    SERVER_ALIAS=${SERVER_ALIAS%.local}
+    ROLES=$(echo "$ROLES" | tr ',;A-Z' '  a-z')
+    # Accept a few synonyms
+    ROLES=$(echo " $ROLES " | sed -e 's/ replay-camera / replay /g' -e 's/ photo-station / photo /g' \
+                                  -e 's/ photostand / photo /g' -e 's/ backup / standby /g')
+    ROLES=$(echo $ROLES)
+    BAD_ROLES=""
+    for r in $ROLES ; do
+        case " $KNOWN_ROLES " in
+            *" $r "*) ;;
+            *) BAD_ROLES="$BAD_ROLES $r" ;;
+        esac
+    done
+    if has_role server && has_role standby ; then
+        # Announcing while also copying from another server makes no sense, so
+        # standby wins.
+        CONFLICT="ROLES has both server and standby; acting as standby only"
+        ROLES=$(echo " $ROLES " | sed -e 's/ server / /g')
+        ROLES=$(echo $ROLES)
+    else
+        CONFLICT=""
+    fi
+}
+
+has_role() {
+    case " $ROLES " in
+        *" $1 "*) return 0 ;;
+    esac
+    return 1
+}
+
+my_ips() {
+    hostname -I 2>/dev/null
+}
+
+# This Pi's main IPv4 address: the one it would use to reach the network.
+primary_ipv4() {
+    local ip
+    ip=$(ip -4 route get 1.1.1.1 2>/dev/null | sed -n -e 's/.* src \([0-9.]*\).*/\1/p')
+    [ -n "$ip" ] || ip=$(my_ips | tr ' ' '\n' | grep -E '^[0-9]+\.' | head -n 1)
+    echo "$ip"
+}
+
+# Resolves an mDNS name to an IPv4 address, or prints nothing.
+resolve_local() {
+    timeout 5 avahi-resolve-host-name -4 "$1" 2>/dev/null | awk 'NR==1 {print $2}'
+}
+
+# Prints the URL of each DerbyNet server announced by some OTHER machine that's
+# actually answering, one per line.  The answering check matters: a server
+# that lost power doesn't get to withdraw its announcement, and other machines
+# keep it cached for a while.  The one holding the alias comes first, so that
+# if two servers are up (which shouldn't happen), every Pi agrees on one.
+discover_servers() {
+    local url
+    for url in $(announced_servers) ; do
+        reachable "$url" 4 && echo "$url"
+    done
+}
+
+# Same, but including servers that aren't answering (cached announcements).
+announced_servers() {
+    command -v avahi-browse >/dev/null || return
+    local mine alias_ip
+    mine=" $(my_ips) "
+    [ -n "$SERVER_ALIAS" ] && alias_ip=$(resolve_local "$SERVER_ALIAS.local")
+    timeout 10 avahi-browse -rtpk "$SERVICE_TYPE" 2>/dev/null \
+        | awk -F';' -v mine="$mine" -v alias_ip="$alias_ip" '
+            $1 == "=" && $3 == "IPv4" {
+                addr = $8 ; port = $9 ; path = "/derbynet"
+                if (match($10, /"path=[^"]*"/)) path = substr($10, RSTART + 6, RLENGTH - 7)
+                if ($2 == "lo" || addr ~ /^127\./ || index(mine, " " addr " ")) next
+                url = "http://" addr (port == 80 ? "" : ":" port) path
+                print (addr == alias_ip ? "0" : "1") " " url
+            }' \
+        | sort -u | sort -k1,1 -s | cut -d' ' -f2 | awk '!seen[$0]++'
+}
+
+# The URL that kiosks, cameras, photo stations, and the standby on this Pi
+# should use right now.
+server_url() {
+    local url
+    if [ -n "$DERBYNET_SERVER" ] ; then
+        echo "${DERBYNET_SERVER%/}"
+    elif has_role server ; then
+        echo "http://localhost/derbynet"
+    else
+        url=$(discover_servers | head -n 1)
+        if [ -z "$url" ] && [ -n "$SERVER_ALIAS" ] ; then
+            # Not announced (e.g. the server isn't a Pi)?  Try the alias.
+            url="http://$SERVER_ALIAS.local/derbynet"
+        fi
+        echo "$url"
+    fi
+}
+
+# True if the server URL is pinned (no discovery, so never switches).
+server_is_pinned() {
+    [ -n "$DERBYNET_SERVER" ] || has_role server
+}
+
+url_host() {
+    echo "$1" | sed -E -e 's|^[a-z]+://||' -e 's|[:/].*$||'
+}
+
+reachable() {  # reachable URL [timeout-seconds]
+    curl --insecure --silent --max-time "${2:-6}" --output /dev/null "$1/index.php"
+}
+
+php_fpm_unit() {
+    systemctl list-unit-files --type=service --no-legend 'php*-fpm.service' 2>/dev/null \
+        | awk '{print $1}' | sort -V | tail -n 1
+}
+
+# enable_units on|off unit...  Persistent, so the last-applied state survives
+# a reboot even if derbynet-roles.service were to fail.
+enable_units() {
+    local how=$1 ; shift
+    for u in "$@" ; do
+        [ -n "$u" ] || continue
+        if [ "$how" = on ] ; then
+            systemctl enable --now --no-block "$u" >/dev/null 2>&1 || log "couldn't start $u"
+        else
+            systemctl disable --now --no-block "$u" >/dev/null 2>&1
+        fi
+    done
+}
+
+# Announce (or stop announcing) this Pi as a DerbyNet server.  avahi notices
+# changes to its services directory; the reload makes sure.
+set_announcement() {
+    if [ "$1" = on ] ; then
+        mkdir -p "$(dirname "$AVAHI_SERVICE")"
+        cat > "$AVAHI_SERVICE" <<'EOF'
+<?xml version="1.0" standalone='no'?>
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<!-- Written by derbynet-pi: announces this Pi as a DerbyNet server. -->
+<service-group>
+  <name replace-wildcards="yes">DerbyNet on %h</name>
+  <service>
+    <type>_derbynet._tcp</type>
+    <port>80</port>
+    <txt-record>path=/derbynet</txt-record>
+  </service>
+  <service>
+    <type>_http._tcp</type>
+    <port>80</port>
+    <txt-record>path=/derbynet</txt-record>
+  </service>
+</service-group>
+EOF
+    else
+        [ -f "$AVAHI_SERVICE" ] || return
+        rm -f "$AVAHI_SERVICE"
+    fi
+    systemctl reload --no-block avahi-daemon >/dev/null 2>&1
+}
+
+write_rsyncd_conf() {
+    if [ -f "$RSYNCD_CONF" ] && ! grep -q 'Written by derbynet-pi' "$RSYNCD_CONF" ; then
+        log "$RSYNCD_CONF exists and isn't ours; not touching it.  Standby copying won't work."
+        return 1
+    fi
+    umask 077
+    echo "$SYNC_USER:$SYNC_PASSWORD" > "$RSYNC_SECRETS"
+    umask 022
+    cat > "$RSYNCD_CONF" <<EOF
+# Written by derbynet-pi; rewritten by "derbynet-pi apply".
+# Lets a DerbyNet standby Pi copy this server's data (read-only, password
+# protected, local networks only).
+pid file = /run/rsyncd.pid
+use chroot = yes
+read only = yes
+uid = root
+gid = root
+auth users = $SYNC_USER
+secrets file = $RSYNC_SECRETS
+hosts allow = 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 169.254.0.0/16 127.0.0.1
+
+[derbynet-data]
+    path = $DATA
+    comment = DerbyNet photos, slides, and logs (not databases)
+    exclude = *.sqlite *.sqlite3 *-journal *-wal *-shm
+
+[derbynet-export]
+    path = $EXPORT
+    comment = Consistent copies of DerbyNet databases and configuration
+EOF
+}
+
+write_chromium_policy() {
+    for dir in /etc/chromium/policies/managed /etc/chromium-browser/policies/managed ; do
+        mkdir -p "$dir"
+        cat > "$dir/derbynet.json" <<'EOF'
+{
+  "TranslateEnabled": false,
+  "PasswordManagerEnabled": false
+}
+EOF
+    done
+}
+
+cmd_apply() {
+    need_root apply
+    # Normalize the boot copy's line endings so the other DerbyNet scripts,
+    # which source it directly, don't see stray CRs.
+    if [ -f "$BOOT_CONF" ] && grep -q $'\r' "$BOOT_CONF" ; then
+        sed -i -e 's/\r$//' "$BOOT_CONF"
+    fi
+    load_conf
+    [ -n "$BAD_ROLES" ] && log "ignoring unknown role(s):$BAD_ROLES"
+    [ -n "$CONFLICT" ] && log "$CONFLICT"
+    log "applying roles: ${ROLES:-(none)}"
+
+    mkdir -p "$STATE"
+
+    # Web server: on for server and standby (a standby is "warm": ready to
+    # serve the moment it's promoted).
+    local fpm
+    fpm=$(php_fpm_unit)
+    if has_role server || has_role standby ; then
+        enable_units on nginx "$fpm"
+    else
+        enable_units off nginx "$fpm"
+    fi
+
+    # Announcement and alias: only the server.
+    if has_role server ; then
+        set_announcement on
+        if [ -n "$SERVER_ALIAS" ] ; then
+            enable_units on derbynet-alias.service
+            systemctl restart --no-block derbynet-alias.service >/dev/null 2>&1
+        else
+            enable_units off derbynet-alias.service
+        fi
+    else
+        set_announcement off
+        enable_units off derbynet-alias.service
+    fi
+
+    # Server side of standby copying
+    if has_role server ; then
+        mkdir -p "$EXPORT"
+        enable_units on derbynet-export.timer
+        if [ -n "$SYNC_PASSWORD" ] && write_rsyncd_conf ; then
+            systemctl enable --no-block rsync >/dev/null 2>&1
+            systemctl restart --no-block rsync
+        else
+            [ -z "$SYNC_PASSWORD" ] && log "SYNC_PASSWORD not set; a standby won't be able to copy from this server"
+            enable_units off rsync
+        fi
+    else
+        enable_units off derbynet-export.timer rsync
+    fi
+
+    # Standby side
+    if has_role standby ; then
+        [ -z "$SYNC_PASSWORD" ] && log "SYNC_PASSWORD not set; standby can't copy from the server"
+        enable_units on derbynet-sync.timer
+    else
+        enable_units off derbynet-sync.timer
+    fi
+
+    if has_role replay || has_role kiosk ; then
+        write_chromium_policy
+    fi
+
+    echo "$ROLES" > "$STATE/applied-roles"
+}
+
+# Server (run by derbynet-alias.service): publish SERVER_ALIAS.local as an
+# extra name for this Pi's address.  If another machine already holds the
+# name, avahi-publish fails; keep retrying, so the name comes to us if the
+# other machine goes away.  Republish if our address changes.
+cmd_alias() {
+    load_conf
+    [ -n "$SERVER_ALIAS" ] || exit 0
+    local name="$SERVER_ALIAS.local" ip pid=
+    # Sleeps are backgrounded and waited for, so a TERM is handled immediately.
+    nap() { sleep "$1" & wait $! ; }
+    trap '[ -n "$pid" ] && kill $pid 2>/dev/null ; exit 0' TERM INT
+    while true ; do
+        ip=$(primary_ipv4)
+        if [ -z "$ip" ] ; then
+            nap 5
+            continue
+        fi
+        log "publishing $name -> $ip"
+        avahi-publish -a -R "$name" "$ip" &
+        pid=$!
+        while nap 10 ; do
+            kill -0 $pid 2>/dev/null || break
+            if [ "$(primary_ipv4)" != "$ip" ] ; then
+                log "address changed; republishing"
+                kill $pid 2>/dev/null
+                break
+            fi
+        done
+        wait $pid 2>/dev/null
+        pid=
+        nap 5
+    done
+}
+
+# Server: make consistent copies of every database (only those that changed)
+# and of the config directory, for a standby to pull.
+cmd_export() {
+    need_root export
+    mkdir -p "$EXPORT/db" "$EXPORT/local"
+    local db rel out
+    while IFS= read -r -d '' db ; do
+        rel=${db#$DATA/}
+        out="$EXPORT/db/$rel"
+        if [ ! -f "$out" ] || [ "$db" -nt "$out" ] || { [ -f "$db-wal" ] && [ "$db-wal" -nt "$out" ] ; } ; then
+            mkdir -p "$(dirname "$out")"
+            if sqlite3 "$db" ".timeout 10000" ".backup '$out.tmp'" ; then
+                mv -f "$out.tmp" "$out"
+            else
+                rm -f "$out.tmp"
+                log "couldn't back up $db"
+            fi
+        fi
+    done < <(find "$DATA" -type f \( -name '*.sqlite' -o -name '*.sqlite3' \) -print0 2>/dev/null)
+    # Drop copies of databases that no longer exist
+    while IFS= read -r -d '' out ; do
+        [ -f "$DATA/${out#$EXPORT/db/}" ] || rm -f "$out"
+    done < <(find "$EXPORT/db" -type f -print0)
+    [ -d "$WWW/local" ] && rsync -a --delete "$WWW/local/" "$EXPORT/local/"
+    date +%s > "$EXPORT/exported-at"
+}
+
+# Standby: pull photos etc., then databases, then config, from the server.
+cmd_sync() {
+    need_root sync
+    load_conf
+    has_role standby || die "this Pi isn't a standby (ROLES=\"$ROLES\")"
+    [ -n "$SYNC_PASSWORD" ] || die "SYNC_PASSWORD isn't set in $BOOT_CONF"
+    local url host incoming f rel target
+    url=$(server_url)
+    host=$(url_host "$url")
+    [ -n "$host" ] || die "no DerbyNet server found on the network"
+    incoming="$STATE/incoming"
+    mkdir -p "$incoming" "$DATA"
+    export RSYNC_PASSWORD="$SYNC_PASSWORD"
+
+    # SQLITE_EXCLUDES on our side too, so --delete doesn't remove our
+    # database copies (the server never lists them).
+    rsync -a --delete --timeout=20 "${SQLITE_EXCLUDES[@]}" \
+          "rsync://$SYNC_USER@$host/derbynet-data/" "$DATA/" \
+        || die "couldn't copy data from $host"
+    rsync -a --delete --timeout=20 \
+          "rsync://$SYNC_USER@$host/derbynet-export/" "$incoming/" \
+        || die "couldn't copy databases from $host"
+
+    while IFS= read -r -d '' f ; do
+        rel=${f#$incoming/db/}
+        target="$DATA/$rel"
+        cmp -s "$f" "$target" && continue
+        mkdir -p "$(dirname "$target")"
+        cp "$f" "$target.incoming"
+        # A stale journal next to the replaced file could be "rolled back"
+        # into it; the standby never writes, so these are safe to remove.
+        rm -f "$target-journal" "$target-wal" "$target-shm"
+        mv -f "$target.incoming" "$target"
+    done < <(find "$incoming/db" -type f -print0 2>/dev/null)
+
+    if [ -d "$incoming/local" ] ; then
+        mkdir -p "$WWW/local"
+        rsync -a --delete "$incoming/local/" "$WWW/local/"
+    fi
+    chown -R www-data:www-data "$DATA" "$WWW/local"
+    cp "$incoming/exported-at" "$STATE/synced-export-time" 2>/dev/null
+    echo "$host" > "$STATE/synced-from"
+    date +%s > "$STATE/last-sync"
+}
+
+cmd_promote() {
+    need_root promote
+    load_conf
+    has_role standby || die "this Pi isn't a standby (ROLES=\"$ROLES\")"
+    # Two servers at once would split the kiosks between them, so refuse while
+    # the old server is still on the network.
+    if [ "$2" != "--force" ] ; then
+        local others alias_ip
+        others=$(discover_servers)
+        [ -n "$others" ] && die "a DerbyNet server is still announcing itself: $(echo $others)
+Power it off first (or, if you're sure, run: sudo derbynet-pi promote --force)"
+        if [ -n "$SERVER_ALIAS" ] ; then
+            # (Again, a cached answer for a machine that's gone doesn't count.)
+            alias_ip=$(resolve_local "$SERVER_ALIAS.local")
+            if [ -n "$alias_ip" ] && ! my_ips | grep -qw "$alias_ip" \
+                    && ping -c 1 -W 2 "$alias_ip" >/dev/null 2>&1 ; then
+                die "$SERVER_ALIAS.local is still held by $alias_ip.  Power that machine off first
+(or, if you're sure, run: sudo derbynet-pi promote --force)"
+            fi
+        fi
+    fi
+    log "trying a final copy from the server (fine if it fails)"
+    ( cmd_sync ) 2>&1 | sed -e 's/^/  /'
+    local newroles
+    newroles=$(echo " $ROLES " | sed -e 's/ standby / server /')
+    newroles=$(echo $newroles)
+    if [ -f "$BOOT_CONF" ] && grep -q '^ROLES=' "$BOOT_CONF" ; then
+        sed -i -e "s/^ROLES=.*/ROLES=\"$newroles\"/" "$BOOT_CONF"
+    else
+        echo "ROLES=\"$newroles\"" >> "$BOOT_CONF"
+    fi
+    cmd_apply
+    echo
+    echo "This Pi is now the server, at http://$(hostname).local/derbynet"
+    [ -n "$SERVER_ALIAS" ] && echo "and (within a few seconds) http://$SERVER_ALIAS.local/derbynet"
+    cat <<EOF
+Kiosks, cameras, and photo stations switch to it on their own, within about a
+minute.  (Any that have DERBYNET_SERVER set need it changed by hand.)
+
+Data is current as of the last successful copy: $(last_sync_text)
+
+If the old server comes back, it will announce itself again, too.  Before
+powering it on, change its ROLES (e.g. to standby) by editing derbynet.conf on
+its SD card.
+EOF
+}
+
+last_sync_text() {
+    if [ -f "$STATE/synced-export-time" ] ; then
+        local t age
+        t=$(cat "$STATE/synced-export-time")
+        age=$(( $(date +%s) - t ))
+        echo "$(date -d "@$t" '+%H:%M:%S') ($age seconds ago)"
+    else
+        echo "never"
+    fi
+}
+
+svc_state() {
+    local s
+    s=$(systemctl is-active "$1" 2>/dev/null)
+    echo "${s:-unknown}"
+}
+
+cmd_servers() {
+    load_conf
+    local list url
+    list=$(announced_servers)
+    if [ -z "$list" ] ; then
+        echo "No DerbyNet servers announced (besides this Pi, if it's one)."
+        return
+    fi
+    for url in $list ; do
+        if reachable "$url" 4 ; then
+            echo "$url"
+        else
+            echo "$url  (not answering; probably a stale announcement)"
+        fi
+    done
+}
+
+cmd_status() {
+    load_conf
+    echo "Roles:       ${ROLES:-(none)}"
+    [ -n "$BAD_ROLES" ] && echo "  WARNING: unknown role(s):$BAD_ROLES"
+    [ -n "$CONFLICT" ] && echo "  WARNING: $CONFLICT"
+    if [ -f "$STATE/applied-roles" ] && [ "$(cat "$STATE/applied-roles")" != "$ROLES" ] ; then
+        echo "  NOTE: config changed since last applied; reboot or run: sudo derbynet-pi apply"
+    fi
+    echo "This Pi:     $(hostname).local  ($(primary_ipv4))"
+    echo "Config:      $BOOT_CONF"
+
+    if has_role server ; then
+        echo "Announcing:  $([ -f "$AVAHI_SERVICE" ] && echo yes || echo NO)"
+        if [ -n "$SERVER_ALIAS" ] ; then
+            local alias_ip
+            alias_ip=$(resolve_local "$SERVER_ALIAS.local")
+            if [ -z "$alias_ip" ] ; then
+                echo "Alias:       $SERVER_ALIAS.local not published yet (derbynet-alias $(svc_state derbynet-alias.service))"
+            elif my_ips | grep -qw "$alias_ip" ; then
+                echo "Alias:       $SERVER_ALIAS.local -> $alias_ip (this Pi)"
+            else
+                echo "Alias:       WARNING: $SERVER_ALIAS.local is held by another machine, $alias_ip"
+            fi
+        fi
+        local others
+        others=$(discover_servers)
+        [ -n "$others" ] && echo "  WARNING: another server is also announcing: $(echo $others)"
+    fi
+
+    if has_role server || has_role standby ; then
+        local fpm db
+        fpm=$(php_fpm_unit)
+        echo "Web server:  nginx $(svc_state nginx), ${fpm%.service} $(svc_state "$fpm")"
+        db=$(sed -n -e "s/.*'sqlite:\([^']*\)'.*/\1/p" "$WWW/local/config-database.inc" 2>/dev/null)
+        if [ -n "$db" ] ; then
+            echo "Database:    $db"
+            case "$db" in
+                "$DATA"/*) ;;
+                *) echo "  WARNING: database is outside $DATA, so a standby won't get it" ;;
+            esac
+        elif has_role server ; then
+            echo "Database:    not set up yet (open http://$(hostname).local/derbynet to set up)"
+        fi
+    fi
+    if has_role server ; then
+        echo "Standby feed: rsync $(svc_state rsync), export timer $(svc_state derbynet-export.timer)"
+        [ -z "$SYNC_PASSWORD" ] && echo "  NOTE: SYNC_PASSWORD not set, so no standby can copy from this server"
+    fi
+
+    if has_role kiosk || has_role replay || has_role photo || has_role standby ; then
+        local url list n
+        if [ -n "$DERBYNET_SERVER" ] ; then
+            url="${DERBYNET_SERVER%/}"
+            echo "Server:      $url (set by DERBYNET_SERVER)"
+        elif has_role server ; then
+            url="http://localhost/derbynet"
+        else
+            list=$(discover_servers)
+            n=$(echo "$list" | grep -c .)
+            url=$(server_url)
+            if [ "$n" -eq 0 ] ; then
+                echo "Server:      no announced server is answering; trying $url"
+            else
+                echo "Server:      $url (announced)"
+                [ "$n" -gt 1 ] && echo "  WARNING: $n servers announcing: $(echo $list)"
+            fi
+        fi
+        if [ -n "$url" ] && reachable "$url" ; then
+            echo "Reachable:   yes"
+        else
+            echo "Reachable:   NO"
+        fi
+    fi
+
+    if has_role standby ; then
+        echo "Copying:     timer $(svc_state derbynet-sync.timer), last from $(cat "$STATE/synced-from" 2>/dev/null || echo -)"
+        echo "Data as of:  $(last_sync_text)"
+        [ -z "$SYNC_PASSWORD" ] && echo "  WARNING: SYNC_PASSWORD not set; can't copy"
+        if [ "$(svc_state derbynet-sync.service)" = failed ] ; then
+            echo "  WARNING: last copy failed:"
+            journalctl -u derbynet-sync.service -n 3 --no-pager -o cat 2>/dev/null | sed -e 's/^/    /'
+        fi
+    fi
+}
+
+cmd_doctor() {
+    cmd_status
+    echo
+    load_conf
+    local mem
+    mem=$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo)
+    echo "Memory:      ${mem} MB"
+    local browsers=0
+    has_role kiosk && browsers=$((browsers + 1))
+    has_role replay && browsers=$((browsers + 1))
+    if [ "$mem" -lt 1500 ] && { has_role server || has_role standby ; } && [ $browsers -ge 2 ] ; then
+        echo "  WARNING: server plus two browsers is a lot for ${mem} MB; expect sluggishness"
+    fi
+    if has_role kiosk || has_role replay || has_role photo ; then
+        if [ -e /usr/bin/labwc ] || [ -e /usr/bin/wayfire ] || [ -e /usr/bin/startlxde-pi ] ; then
+            echo "Desktop:     installed"
+        else
+            echo "Desktop:     MISSING; kiosk/replay/photo need Raspberry Pi OS with desktop"
+        fi
+        if [ -f "$HOME/.config/autostart/derbynet.desktop" ] ; then
+            echo "Autostart:   $HOME/.config/autostart/derbynet.desktop"
+        else
+            echo "Autostart:   not set up for $(id -un); run setup.sh as the desktop user"
+        fi
+    fi
+    if has_role replay || has_role photo ; then
+        echo "Video devices (a camera or photo stand needs a USB webcam or Pi camera):"
+        ls /dev/video* >/dev/null 2>&1 || echo "    none"
+        command -v v4l2-ctl >/dev/null && v4l2-ctl --list-devices 2>/dev/null | sed -e 's/^/    /'
+    fi
+    if has_role replay ; then
+        echo "Track camera name: $CAMERA_NAME"
+    fi
+    if has_role photo ; then
+        echo "Keyboards (a USB barcode scanner shows up as one):"
+        ls /dev/input/by-id 2>/dev/null | grep -- '-event-kbd$' | sed -e 's/^/    /'
+        ls /dev/input/by-id 2>/dev/null | grep -q . || echo "    none"
+        if has_role kiosk ; then
+            echo "  WARNING: the photo stand needs the screen to itself: the scanner types"
+            echo "  into whichever window is in front, which would be the kiosk"
+        fi
+    fi
+}
+
+######## Desktop session
+
+# Started from the desktop session (autostart).  Finds the server, starts the
+# on-screen roles pointed at it (kiosk last, so it ends up on top), then keeps
+# watching: if the server stops answering and a different one is announced
+# (a promoted standby), restarts everything pointed at the new one.
+cmd_desktop() {
+    load_conf
+    if ! has_role kiosk && ! has_role replay && ! has_role photo ; then
+        exit 0
+    fi
+
+    if has_role kiosk || has_role replay ; then
+        # Under Wayland, Raspberry Pi OS blanks the screen via swayidle; under
+        # X11, kiosk.sh handles it with xset.
+        pkill -x swayidle 2>/dev/null
+        # Park the mouse pointer in a corner, where it's out of the way.
+        command -v wlrctl >/dev/null && [ -n "$WAYLAND_DISPLAY" ] && wlrctl pointer move 10000 10000
+    fi
+
+    trap 'stop_desktop_roles ; exit 0' TERM INT
+    local url next fails
+    while true ; do
+        url=$(wait_for_a_server)
+        log "using server $url"
+        start_desktop_roles "$url"
+        fails=0
+        while sleep 15 ; do
+            if reachable "$url" ; then
+                fails=0
+                continue
+            fi
+            fails=$((fails + 1))
+            log "server $url not answering ($fails)"
+            [ $fails -ge 3 ] || continue
+            server_is_pinned && continue
+            next=$(server_url)
+            if [ -n "$next" ] && [ "$next" != "$url" ] && reachable "$next" ; then
+                log "switching to server $next"
+                stop_desktop_roles
+                break
+            fi
+        done
+    done
+}
+
+wait_for_a_server() {
+    local url
+    while true ; do
+        url=$(server_url)
+        if [ -n "$url" ] && reachable "$url" ; then
+            echo "$url"
+            return
+        fi
+        sleep 5
+    done
+}
+
+# Each role runs in its own session (setsid), so it can be stopped as a group,
+# browser and all.
+ROLE_PIDS=()
+
+start_desktop_roles() {
+    local url=$1
+    ROLE_PIDS=()
+    if has_role replay ; then
+        setsid "$0" _replay "$url" &
+        ROLE_PIDS+=($!)
+    fi
+    if has_role photo ; then
+        setsid "$0" _photo "$url" &
+        ROLE_PIDS+=($!)
+    fi
+    if has_role kiosk ; then
+        sleep 2
+        setsid "$SCRIPTS/kiosk.sh" "$url" &
+        ROLE_PIDS+=($!)
+    fi
+}
+
+stop_desktop_roles() {
+    local p
+    for p in "${ROLE_PIDS[@]}" ; do
+        kill -TERM -- "-$p" 2>/dev/null
+    done
+    sleep 3
+    for p in "${ROLE_PIDS[@]}" ; do
+        kill -KILL -- "-$p" 2>/dev/null
+    done
+    ROLE_PIDS=()
+}
+
+# A browser window on one of DerbyNet's camera pages: the track camera
+# (replay role) or the photo stand (photo role).  $2 is the page, $3 names the
+# browser profile.
+camera_page_loop() {
+    local url=$1 page=$2 profile=$3 chromium origin
+    chromium=$(command -v chromium || command -v chromium-browser)
+    [ -n "$chromium" ] || { log "chromium not installed" ; return ; }
+    origin=$(echo "$url" | sed -E -e 's|^([a-z]+://[^/]+).*|\1|')
+    while true ; do
+        logger -t derbynet-$profile "starting $page browser for $url" 2>/dev/null
+        # --unsafely-treat-insecure-origin-as-secure lets the page use the
+        # camera over plain http; --use-fake-ui-for-media-stream grants camera
+        # access without a prompt (this browser profile is used for nothing
+        # else).  --autoplay-policy lets the photo stand's sounds play.  The
+        # background flags keep a track camera working while it's hidden
+        # behind a kiosk window.
+        "$chromium" --user-data-dir="$HOME/.config/derbynet-$profile" \
+                    --password-store=basic \
+                    --no-first-run --noerrdialogs --disable-infobars \
+                    --disable-session-crashed-bubble \
+                    --check-for-update-interval=31536000 \
+                    --disable-background-timer-throttling \
+                    --disable-renderer-backgrounding \
+                    --disable-backgrounding-occluded-windows \
+                    --unsafely-treat-insecure-origin-as-secure="$origin" \
+                    --use-fake-ui-for-media-stream \
+                    --autoplay-policy=no-user-gesture-required \
+                    --start-maximized \
+                    --app="$url/$page"
+        sleep 3
+    done
+}
+
+case "$1" in
+    apply) cmd_apply ;;
+    alias) cmd_alias ;;
+    export) cmd_export ;;
+    sync) cmd_sync ;;
+    promote) cmd_promote "$@" ;;
+    servers) cmd_servers ;;
+    status|"") cmd_status ;;
+    doctor) cmd_doctor ;;
+    desktop) cmd_desktop ;;
+    _replay) load_conf
+             camera_page_loop "$2" "camera.php?name=$(printf %s "$CAMERA_NAME" | sed -e 's/ /%20/g')" replay ;;
+    # The photo stand's window is the only one on its screen, so it has the
+    # keyboard focus, and the barcode scanner types into it.
+    _photo) camera_page_loop "$2" photo-stand.php photo ;;
+    *) sed -n -e '3,20p' "$0" | sed -e 's/^# \{0,1\}//' ; exit 1 ;;
+esac

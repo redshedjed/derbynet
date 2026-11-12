@@ -1,21 +1,92 @@
 Utilities for Raspberry Pi
 ==========================
 
-About the /boot Partition
--------------------------
+About the Boot Partition
+------------------------
 
 The Raspberry Pi boots from an SD or micro-SD card.  The card includes a
-small-ish /boot partition plus a larger main partition.  While the main
-partition uses one of the Linux-only 'ext' file systems, the /boot partition is
-a vfat file system.  This means the /boot partition can be read and written by
-Windows, Mac, and Linux systems.
+small boot partition plus a larger main partition.  While the main partition
+uses one of the Linux-only 'ext' file systems, the boot partition is a vfat
+file system, so it can be read and written by Windows, Mac, and Linux systems.
+On current Raspberry Pi OS it's mounted at /boot/firmware (formerly /boot).
 
-When installed on a Raspberry Pi, the DerbyNet package installs two small files
-in the /boot partition.  These files are intended to be edited by the user.
-Placing them in the /boot partition makes it possible to change network
-parameters, server address, and passwords without having to bring keyboard,
-mouse, and monitor to attach to the Raspberry Pi.  Rather, with the Pi powered
-off, mount the SD card in a Windows, Mac, or Linux machine, and edit the
-configuration files directly in the /boot partition; then replace the card in
-the Pi and reboot.
+DerbyNet keeps its Pi settings in a derbynet.conf file on the boot partition.
+That makes it possible to change what a Pi does without bringing a keyboard,
+mouse, and monitor: with the Pi powered off, put the SD card in a Windows, Mac,
+or Linux machine, edit derbynet.conf, then put the card back in the Pi and
+power it on.  (Network settings such as WiFi are set in Raspberry Pi Imager
+when the card is written, not here.)
 
+
+Setting Up a Pi for DerbyNet
+----------------------------
+
+setup.sh turns a fresh Raspberry Pi OS install into a DerbyNet Pi that can be
+any combination of:
+
+  server    the DerbyNet web server
+  standby   a warm spare that keeps a copy of the server's data (at most about
+            40 seconds old)
+  kiosk     a full-screen kiosk display
+  replay    a track camera (USB webcam or Pi camera), named by CAMERA_NAME
+  photo     a photo stand: camera plus barcode scanner (needs its own screen)
+
+kiosk, replay, and photo need Raspberry Pi OS with desktop.  Lite is enough
+for a Pi that will only ever be a server or standby, but can't later take on
+the other roles.  On the Pi, as the normal user:
+
+    sudo apt install -y git        # if git isn't already installed
+    git clone https://github.com/redshedjed/derbynet.git
+    bash derbynet/extras/rpi/setup.sh --roles "server kiosk"
+    sudo reboot
+
+setup.sh installs everything for every role, so changing roles later doesn't
+need re-running it, or internet access: edit ROLES in derbynet.conf on the
+boot partition and reboot (or run "sudo derbynet-pi apply").  The
+derbynet.conf that setup.sh installs documents all the settings.  Re-run
+setup.sh to deploy updated website code from the checkout.
+
+
+Finding the Server
+------------------
+
+The server announces itself on the local network (as a DNS-SD service, like a
+network printer does), and the other Pis find it automatically; nothing needs
+to be configured on them.  The server also publishes an alias, so people's
+laptops and phones can browse to
+
+    http://derbynet.local/derbynet
+
+The server's own hostname isn't changed.  Some Android devices don't resolve
+.local names; use the server's IP address there ("derbynet-pi status" on the
+server shows it).
+
+If the server isn't a Pi set up this way (e.g. it's a laptop), set
+DERBYNET_SERVER in derbynet.conf on each Pi instead.
+
+
+Standby and Failover
+--------------------
+
+For a standby, set the same SYNC_PASSWORD in derbynet.conf on both the server
+and the standby; without it, the standby can't copy anything.
+
+If the server fails, power it off, then on the standby run
+
+    sudo derbynet-pi promote
+
+The standby starts announcing itself and takes over the alias.  Kiosks, replay
+cameras, and photo stations notice that the old server has stopped answering
+and switch to the new one on their own, within about a minute.  promote
+refuses to run while the old server is still announcing itself.
+
+Before powering the old server back on, change its ROLES (e.g. to standby) so
+the two don't both act as the server.
+
+
+Checking on a Pi
+----------------
+
+    derbynet-pi status     what this Pi is doing, and whether it's healthy
+    derbynet-pi doctor     status, plus hardware checks (cameras, scanners)
+    derbynet-pi servers    DerbyNet servers announced on the network
