@@ -80,7 +80,7 @@ uasort($doc_classes, 'order_by_name');
 <script type="text/javascript" src="js/print.js"></script>
 <script type="text/javascript">
     var doc_classes = <?php echo json_encode($doc_classes); ?>;
-    var g_emblems = <?php echo json_encode(all_emblem_image_stems()); ?>;
+    var g_emblems = <?php echo json_encode(emblem_choices()); ?>;
 </script>
 </head>
 <body>
@@ -208,7 +208,7 @@ foreach ($doc_classes as $c => $details) {
       $century_assignments = $emblems_default['centuries'];
       $partition_assignments = $emblems_default['partitions'];
 
-      echo "<label for='${ctrl_name}'>Emblems:</label>";
+      echo "<label for='{$ctrl_name}'>Emblems:</label>";
       echo "<select id='{$ctrl_name}' name='{$ctrl_name}' style='font-size:24px;' onchange='on_emblems_select_change(this)'>";
       echo "<option value='by-carno' selected='selected'>By car number</option>";
       // TODO
@@ -216,33 +216,44 @@ foreach ($doc_classes as $c => $details) {
       echo "<option value='none'>None</option>";
       echo "</select>";
       
+      $emblem_refs = all_emblem_image_stems();
+      // An emblem's index among the choices (data-emblem), and its <img>
+      $emblem_index = function($ref) use ($emblem_refs) {
+        $i = $ref === null ? false : array_search($ref, $emblem_refs, true);
+        return $i === false ? -1 : $i;
+      };
+      $emblem_img = function($ref) {
+        $style = 'max-height:60px; position: absolute; top: 0; right: 0;';
+        if ($ref === null) {
+          return " <img style='{$style} display: none;'/>";
+        }
+        return " <img style='{$style}' src='"
+            .htmlspecialchars(emblem_ref_url($ref), ENT_QUOTES, 'UTF-8')."'/>";
+      };
+
       echo "<div id='{$ctrl_name}-bycarno'><ul class='mlistview has-alts'>\n";
       $max_carno = read_single_value('SELECT COALESCE(MAX(carnumber), 999) FROM RegistrationInfo');
       $max_century = 1 + intdiv($max_carno, 100);
       for ($century = 0; $century < $max_century; ++$century) {
-        echo "<li data-emblem='{$century}' style='height: 60px; background-color: #f6f6f6;'>";
+        $ref = isset($century_assignments[$century]) ? $century_assignments[$century] : null;
+        echo "<li data-emblem='".$emblem_index($ref)."' style='height: 60px; background-color: #f6f6f6;'>";
         echo "<p style='height: 60px; font-weight: bold; font-size: 16px;'>{$century}00-{$century}99";
-        if (!is_null($century_assignments[$century])) {
-          $image_url = "image.php/{$century_assignments[$century]}";
-          echo " <img style='max-height:60px; position: absolute; top: 0; right: 0;' src='{$image_url}'/>";
-        }
+        echo $emblem_img($ref);
         echo "</p>";
         echo "<a onclick='on_cartags_image_click(this)'></a>";
         echo "</li>\n";
       }
       echo "</ul></div>\n";
 
-      echo "<div id='${ctrl_name}-bypart' class='hidden'><ul class='mlistview has-alts'>\n";
+      echo "<div id='{$ctrl_name}-bypart' class='hidden'><ul class='mlistview has-alts'>\n";
       $century = -1;
       foreach (all_partitions() as $partition) {  // all_partitions returns in sort order
         ++$century;
-        echo "<li data-emblem='{$century}' style='height: 60px; background-color: #f6f6f6;'>";
+        $ref = isset($partition_assignments[$century]) ? $partition_assignments[$century] : null;
+        echo "<li data-emblem='".$emblem_index($ref)."' style='height: 60px; background-color: #f6f6f6;'>";
         echo "<p style='height: 60px; font-weight: bold; font-size: 16px;'>";
         echo htmlspecialchars($partition, ENT_QUOTES, 'UTF-8');
-        if (!is_null($partition_assignments[$century])) {
-          $image_url = "image.php/{$partition_assignments[$century]}";
-          echo " <img style='max-height:60px; position: absolute; top: 0; right: 0;' src='{$image_url}'/>";
-        }
+        echo $emblem_img($ref);
         echo "</p>";
         echo "<a onclick='on_cartags_image_click(this)'></a>";
         echo "</li>\n";
@@ -283,11 +294,9 @@ foreach ($doc_classes as $c => $details) {
 
  <select id="image-picker-select" class='not-mobile'>
   <?php
-    $stem_index = 0;
-    foreach (all_emblem_image_stems() as $stem) {
-      $image_url = "image.php/{$stem}";
+    foreach (emblem_choices() as $stem_index => $choice) {
+      $image_url = htmlspecialchars($choice['url'], ENT_QUOTES, 'UTF-8');
       echo "<option data-img-src='$image_url'  data-img-class='image-picker-thumb'>$stem_index</option>\n";
-      ++$stem_index;
     }
   ?>
  </select>

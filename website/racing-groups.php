@@ -31,6 +31,7 @@ if (schema_version() < PARTITION_SCHEMA) {
 <script type="text/javascript" src="js/racing-groups.js"></script>
 <script type="text/javascript" src="js/racing-groups-add.js"></script>
 <script type="text/javascript" src="js/racing-groups-edit.js"></script>
+<script type="text/javascript" src="js/racing-groups-images.js"></script>
 <script type="text/javascript">
 $(function() {
     var rule = <?php echo json_encode(group_formation_rule()); ?>;
@@ -121,6 +122,11 @@ $(function() {
                value="<?php echo read_raceinfo('n-rank-trophies', 0); ?>"/>
         <label for="n-rank">speed trophies per subgroup</label>
 </div>
+
+<h3><span class="partition-label"><?php echo partition_label(); ?></span> Images</h3>
+<p class="rg-hint">Each <span class="partition-label-lc"><?php echo partition_label_lc(); ?></span>'s
+  image, for car tags.  Click one to change it.</p>
+<ul id="den-images"></ul>
 
 </div><!-- race-rules -->
 
@@ -298,6 +304,19 @@ $(function() {
   </form>
 </div>
 
+
+<div id="den_image_modal" class="modal_dialog wide_modal hidden block_buttons">
+  <h3>Image for <span id="den-image-name"></span></h3>
+  <div id="den-image-choices"></div>
+  <p id="den-image-message" class="hidden"></p>
+  <form>
+    <input id="den-image-file" type="file" class="hidden"
+           accept="image/png,image/jpeg,image/gif"/>
+    <input id="den-image-upload" type="button" value="Choose From Computer..."/>
+    <input id="den-image-default" type="button" value="Use Default"/>
+    <input type="button" value="Cancel" onclick="close_modal('#den_image_modal');"/>
+  </form>
+</div>
 
 <div id="add_partition_modal" class="modal_dialog hidden block_buttons">
   <h3>Add New <span class="partition-label"><?php echo partition_label(); ?></span></h3>

@@ -9,8 +9,10 @@
 require_once('inc/path-info.inc');
 require_once('inc/emblems.inc');
 
+// Default emblems, as emblem references (inc/emblems.inc), or null for none:
+// by car number, the image set's emblem0 for 0-99, emblem1 for 100-199, ...
 function default_century_image_assignments() {
-  $all_emblem_images = all_emblem_image_stems();
+  $all_emblem_images = set_emblem_stems();
   $assignments = array();
   $max_carno = read_single_value('SELECT COALESCE(MAX(carnumber), 999) FROM RegistrationInfo');
   $max_century = intdiv($max_carno, 100);
@@ -24,16 +26,11 @@ function default_century_image_assignments() {
   return $assignments;
 }
 
+// ... and by den, each den's image (Racing Groups), in den order
 function default_partition_image_assignments() {
-  $all_emblem_images = all_emblem_image_stems();
   $assignments = array();
-  $n_parts = read_single_value('SELECT COUNT(*) FROM Partitions');
-  for ($p = 0; $p < $n_parts; ++$p) {
-    if ($p < count($all_emblem_images)) {
-      $assignments[] = $all_emblem_images[$p];
-    } else {
-      $assignments[] = null;
-    }
+  foreach (partition_images() as $den) {
+    $assignments[] = $den['image'];
   }
   return $assignments;
 }

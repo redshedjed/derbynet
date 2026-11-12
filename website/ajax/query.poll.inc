@@ -73,6 +73,12 @@ function json_common_1($key, &$now_running) {
     require_once('inc/json-partitions.inc');
     json_out('partitions', json_partitions());
     break;
+  case 'partition-images':
+    // Each den's emblem, and the emblems to choose from (inc/emblems.inc)
+    require_once('inc/emblems.inc');
+    json_out('partition-images', partition_images());
+    json_out('emblems', emblem_choices());
+    break;
   case 'precision':
     json_out('precision', get_finishtime_formatting_string() == "%6.4f" ? 4 : 3);
     break;

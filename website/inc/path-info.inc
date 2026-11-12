@@ -40,6 +40,16 @@ function image_base_dir() {
   return  dirname(__FILE__, 2).DIRECTORY_SEPARATOR."Images";
 }
 
+// The selected image set's folder, or Generic's if the selected set is gone
+// (e.g., the Cub Scouts set, no longer part of the project).
+function image_set_dir() {
+  $dir = image_base_dir().DIRECTORY_SEPARATOR.read_raceinfo("images-dir", 'Generic');
+  if (!is_dir($dir)) {
+    $dir = image_base_dir().DIRECTORY_SEPARATOR.'Generic';
+  }
+  return $dir;
+}
+
 // The image $stemname (e.g., "emblem") omits the file extension
 function image_file_path($stemname) {
   global $homedir;
@@ -56,9 +66,7 @@ function image_file_path($stemname) {
     return $g[0];
   }
   // Finally, look in selected image set
-  $g = glob(image_base_dir().DIRECTORY_SEPARATOR
-       .read_raceinfo("images-dir", 'Generic').DIRECTORY_SEPARATOR
-            .$stemname.".*");
+  $g = glob(image_set_dir().DIRECTORY_SEPARATOR.$stemname.".*");
   if ($g !== false && count($g) > 0) {
     return $g[0];
   }
@@ -105,8 +113,7 @@ function slide_file_path($slide_glob) {
   if ($cand) return $cand;
 
   // Finally, look in the 'slides' subfolder of the currently-selected image set
-  $selected_image_set_dir = image_base_dir().DIRECTORY_SEPARATOR
-                          .read_raceinfo("images-dir", 'Generic');
+  $selected_image_set_dir = image_set_dir();
   return slide_file_glob($selected_image_set_dir.DIRECTORY_SEPARATOR
                          .'slides'.DIRECTORY_SEPARATOR.$slide_glob);
 }

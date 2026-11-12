@@ -309,7 +309,7 @@ function on_cartags_image_click(element) {
   $("#image-picker-select").data('picker').sync_picker_with_select();
   $("#image-picker-close").off('click').on('click',  function(event) {
     var emblem_index = $("#image-picker-select").val();
-    $(element).parent().find('img').attr('src', "image.php/" + g_emblems[emblem_index]);
+    $(element).parent().find('img').attr('src', g_emblems[emblem_index].url).show();
     $(element).parent().attr('data-emblem', emblem_index);
     close_modal("#image-picker-modal");
   });

@@ -41,3 +41,6 @@ adapter-webrtc/
 .idea
 *.iml
 .DS_Store
+
+# Images uploaded from outside (e.g. den images); not part of the project
+website/user_images/

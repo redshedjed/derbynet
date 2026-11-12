@@ -130,9 +130,10 @@ function poll_for_structure() {
   $.ajax('action.php',
          {type: 'GET',
           data: {query: 'poll',
-                 values: 'classes,partitions,race-structure'},
+                 values: 'classes,partitions,race-structure,partition-images'},
           success: function(data) {
             process_polling_data(data);
+            show_den_images(data);
           }
          });
 }
