@@ -9,6 +9,8 @@
 //   delete -- $_POST['name']; also drops it from every scene, and any display
 //             that has it as its name goes back to having none
 //   order  -- $_POST['names'], comma-separated, in the new order
+//   replays -- $_POST['name'], $_POST['on'] (0/1): whether a display at this
+//             location plays track-camera replays over what it shows
 // Responds with the locations, as 'locations'.
 
 require_once('inc/scenes.inc');
@@ -61,7 +63,9 @@ if (!have_permission(SET_UP_PERMISSION)) {
         $stmt = $db->prepare('UPDATE Kiosks SET name = :new WHERE name = :old');
         $stmt->execute(array(':new' => $new_name, ':old' => $old));
       }
-      $locations[$i] = array('name' => $new_name, 'note' => $note);
+      // (Keeping anything else about the location, such as 'replays')
+      $locations[$i]['name'] = $new_name;
+      $locations[$i]['note'] = $note;
     }
   } else if ($op == 'delete') {
     $i = location_index($locations, $name);
@@ -86,6 +90,14 @@ if (!have_permission(SET_UP_PERMISSION)) {
       }
     }
     $locations = array_merge($reordered, $locations);  // any left out keep their places at the end
+  } else if ($op == 'replays') {
+    $i = location_index($locations, $name);
+    if ($i < 0) {
+      json_failure('no-such', 'No location named '.$name.'.');
+      $ok = false;
+    } else {
+      $locations[$i]['replays'] = !empty($_POST['on']);
+    }
   } else {
     json_failure('unknown-op', 'Unrecognized operation.');
     $ok = false;

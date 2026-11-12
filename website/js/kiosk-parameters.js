@@ -245,3 +245,41 @@ g_kiosk_page_handlers['kiosks/qrcode.kiosk'] = {
       .appendTo(kiosk_div);
     }
 };
+
+//////////////////////////////////////////////////////////////////////////
+// live-camera
+//////////////////////////////////////////////////////////////////////////
+g_kiosk_page_handlers['kiosks/live-camera.kiosk'] = {
+  // Parameters: { camera: (name) }; none means the first track camera that's on
+  decorate: function(kiosk_div, parameters, callback) {
+    var select_id = "live-camera-select-" + Math.floor(Math.random() * 10000);
+    var row = $("<div class='kiosk-param-row'/>").appendTo(kiosk_div);
+    row.append($("<label/>").attr('for', select_id).text('Camera'));
+    var select = $("<select/>").attr('id', select_id)
+        .append($("<option value=''/>").text('First camera that\'s on'))
+        .appendTo(row);
+    select.on("change", function() {
+      callback({camera: select.val()});
+    });
+    // The track cameras come from Settings > Cameras
+    $.ajax('action.php',
+           {type: 'GET',
+            data: {query: 'replay.cameras'},
+            success: function(data) {
+              (data.cameras || []).forEach(function(cam) {
+                select.append($("<option/>").val(cam.name)
+                              .text(cam.name + (cam.enabled ? '' : ' (off)')));
+              });
+              if (parameters.camera) {
+                if (select.find("option").filter(function() {
+                      return $(this).val() == parameters.camera; }).length == 0) {
+                  // Chosen once, since removed: keep showing it
+                  select.append($("<option/>").val(parameters.camera)
+                                .text(parameters.camera + ' (removed)'));
+                }
+                select.val(parameters.camera);
+              }
+              mobile_select(select);
+            }});
+  }
+};

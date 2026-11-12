@@ -6,8 +6,11 @@ require_once('inc/permissions.inc');
 require_once('inc/servername.inc');
 
 if (!isset($_GET['address']) && !isset($_GET['page'])) {
-  header('Location: ' . request_path() . '?' .
-           http_build_query(array('address' => address_for_current_kiosk())));
+  $query = array('address' => address_for_current_kiosk());
+  if (isset($_GET['inner'])) {
+    $query['inner'] = $_GET['inner'];
+  }
+  header('Location: ' . request_path() . '?' . http_build_query($query));
   exit();
 }
 
@@ -53,6 +56,12 @@ if (isset($_GET['page'])) {
   $g_kiosk_address = address_for_current_kiosk();
   $kpage = kiosk_page($g_kiosk_address);
   $g_kiosk_parameters_string = $kpage['parameters'];
-  require($kpage['page']);
+  if (!empty($kpage['replays']) && !isset($_GET['inner'])) {
+    // This display's location shows replays: a replay layer, with the
+    // kiosk's page in a frame beneath it (kiosk.php again, with inner=1).
+    require('inc/replay-kiosk.inc');
+  } else {
+    require($kpage['page']);
+  }
 }
 ?>

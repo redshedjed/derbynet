@@ -92,7 +92,7 @@ var g_standings_choices = <?php
     <input type="button" value="Be a Kiosk" data-href="kiosk.php"/>
     <input type="button" value="Fullscreen Kiosk" data-href="fullscreen.php"/>
     <input type="button" value="Replay Kiosk" data-href="replay.php"/>
-    <input type="button" value="Be a Camera" data-href="camera.php"/>
+    <input type="button" value="Track Camera" data-href="camera.php"/>
   </div>
 </section>
 </div>

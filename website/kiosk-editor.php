@@ -64,6 +64,12 @@ function h($s) {
   flex: 0 1 200px;
   font-weight: var(--weight-semibold);
 }
+.location .replays-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap;
+}
 .location input[type=text],
 #add-location input[type=text] {
   box-sizing: border-box;
@@ -143,6 +149,12 @@ function on_move(button, delta) {
   names.splice(j, 0, names.splice(i, 1)[0]);
   kiosk_location({op: 'order', names: names.join(',')});
 }
+// Replays over this location's display: saved at once; the display picks it
+// up within a few seconds.
+function on_replays(checkbox) {
+  kiosk_location({op: 'replays', name: location_row(checkbox).attr('data-name'),
+                  on: checkbox.checked ? 1 : 0});
+}
 function on_add() {
   kiosk_location({op: 'add', name: $("#new-name").val()});
   return false;
@@ -165,7 +177,9 @@ $(function() {
     lobby, the screen at the awards stage.  The
     <a href="scenes.php?back=kiosk-editor.php">Scene Editor</a> sets what each location
     shows in each scene.  On the Kiosk Dashboard, give each display its location with
-    <b>Assign Name</b>.</p>
+    <b>Assign Name</b>.  <b>Show replays</b> plays the track cameras' replay over whatever
+    that display shows, at the end of each heat (cameras are set up in
+    <a href="settings.php">Settings &gt; Cameras</a>).</p>
 
 <?php foreach ($locations as $i => $loc) {
   $here = isset($displays[strtolower($loc['name'])]) ? $displays[strtolower($loc['name'])] : array();
@@ -174,6 +188,12 @@ $(function() {
     <div class="fields">
       <input type="text" name="name" value="<?php echo h($loc['name']); ?>"
              placeholder="Kiosk Name" aria-label="Kiosk Name"/>
+      <label class="replays-toggle"
+             title="Play track-camera replays over whatever this display shows">
+        <input type="checkbox" onchange="on_replays(this);"<?php
+          if (!empty($loc['replays'])) echo ' checked="checked"'; ?>/>
+        Show replays
+      </label>
     </div>
     <div class="shown-on">
 <?php if (count($here) > 0) { ?>

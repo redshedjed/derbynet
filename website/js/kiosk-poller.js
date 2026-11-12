@@ -12,6 +12,25 @@ var KioskPoller = (function(KioskPoller) {
     // console.log("Params: " + param_string);
   };
 
+  // A kiosk whose location shows replays runs inside a replay layer
+  // (inc/replay-kiosk.inc).  True if that's turned on or off since this page
+  // loaded, so the whole window should reload to add or drop the layer.
+  function replay_layer_out_of_date(setting) {
+    var framed = window.top !== window;
+    var in_layer = false;
+    try {
+      in_layer = framed && !!window.top.g_replay_kiosk;
+    } catch (e) {
+    }
+    if (framed && !in_layer) {
+      return false;  // e.g., beneath replay.php, which does its own replays
+    }
+    if (!framed && /[?&]inner=/.test(window.location.search)) {
+      return false;  // Asked for without a layer
+    }
+    return !!setting.replays != in_layer;
+  }
+
   KioskPoller.start = function(address, kiosk_page) {
     var interval = setInterval(function() {
       $.ajax('action.php',
@@ -37,6 +56,12 @@ var KioskPoller = (function(KioskPoller) {
 	            if (setting.reload) {
                   console.log("Forcing a reload because it was explicitly requested.");
                   location.reload(true);
+                  return;
+                }
+                if (replay_layer_out_of_date(setting)) {
+                  console.log("Reloading: replays turned " + (setting.replays ? "on" : "off")
+                              + " for this kiosk's location");
+                  window.top.location.reload();
                   return;
                 }
                 KioskPoller.param_callback(JSON.parse(setting.parameters));

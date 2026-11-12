@@ -61,6 +61,24 @@ function madlib_string($addr) {
   return 'Kiosk '.kiosk_number($addr);
 }
 
+// Whether a kiosk location (a display's name, e.g. 'Main') is set, in the
+// Kiosk Editor, to play track-camera replays over whatever it shows.  The
+// locations are kept in RaceInfo (kiosk-locations); see inc/scenes.inc.
+function location_shows_replays($name) {
+  if ($name === null || $name === '') {
+    return false;
+  }
+  $locations = json_decode(read_raceinfo('kiosk-locations', '[]'), true);
+  if (is_array($locations)) {
+    foreach ($locations as $loc) {
+      if (strtolower($loc['name']) == strtolower($name)) {
+        return !empty($loc['replays']);
+      }
+    }
+  }
+  return false;
+}
+
 // Splits $row['page'] into separate ['page'] and ['parameters'] fields.  Since
 // PHP doesn't distinguish between an empty array and an empty (json) object, we
 // return a json string as 'parameters', and leave it for the client to parse.
@@ -81,7 +99,7 @@ function parse_kiosk_params(&$row) {
 // page.
 //
 // Returns an array with a 'page' key and optionally 'name' (of the kiosk) and
-// 'parameters' (a json string).
+// 'parameters' (a json string), and 'replays': whether replays play over it.
 function kiosk_page($addr) {
   global $db;
   do {  // Retry loop to allow for having to create the table
@@ -96,6 +114,7 @@ function kiosk_page($addr) {
         if (!isset($row['name'])) {
           $row['name'] = '';
         }
+        $row['replays'] = location_shows_replays($row['name']);
         if (@$row['page'][0] == '!') {
           $row['page'] = substr($row['page'], 1);
           $row['reload'] = true;
@@ -135,7 +154,8 @@ function kiosk_page($addr) {
   return array('page' => read_raceinfo('kiosk-page',
                                        'kiosks'.DIRECTORY_SEPARATOR.'identify.kiosk'),
                'parameters' => '{}',
-               'reload' => false);
+               'reload' => false,
+               'replays' => false);
 }
 
 function mark_kiosk_for_reload($addr) {

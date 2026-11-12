@@ -22,10 +22,13 @@ if ($last === false) {
 }
 
 // Don't force http !
-$kiosk_url = '//'.substr($url, 0, $last + 1).'kiosk.php';
+// inner=1: this page does the replays, so the kiosk beneath shouldn't add
+// its own replay layer (see inc/replay-kiosk.inc), whatever its location.
+$kiosk_query = array('inner' => 1);
 if (isset($_REQUEST['address'])) {
-  $kiosk_url .= "?address=".$_REQUEST['address'];
+  $kiosk_query = array('address' => $_REQUEST['address'], 'inner' => 1);
 }
+$kiosk_url = '//'.substr($url, 0, $last + 1).'kiosk.php?'.http_build_query($kiosk_query);
 ?>
 <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/replay.css"/>

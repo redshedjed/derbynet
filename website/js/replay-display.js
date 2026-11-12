@@ -177,7 +177,9 @@ function trigger_replay(why) {
   }
   all_recorders().forEach(function(r) { r.stop(); });
   set_replay_state('playing', why);
-  let delay = $("#delay")[0].valueAsNumber * 1000;
+  // replay.php's setup screen can hold the replay back a little; a kiosk
+  // doesn't.
+  let delay = $("#delay").length > 0 ? $("#delay")[0].valueAsNumber * 1000 : 0;
   setTimeout(show_replay, delay > 0 ? delay : 0);
 }
 
@@ -220,9 +222,10 @@ function announce_to_interior(msg) {
 
 // ---------------- Checking in, and listening for commands ----------------
 
-// What this display calls itself on Settings > Cameras: the kiosk address it
-// was opened with, if any.
-var g_display_name = new URLSearchParams(window.location.search).get('address') || 'Replay display';
+// What this display calls itself on Settings > Cameras: as a kiosk, its
+// location's name; otherwise, the kiosk address it was opened with, if any.
+var g_display_name = window.g_replay_kiosk ? g_replay_kiosk.name
+    : (new URLSearchParams(window.location.search).get('address') || 'Replay display');
 var g_client_id = tab_id_string('display-');
 
 // A command, from polling or the websocket: each is handled once, in order.
@@ -428,6 +431,19 @@ function report_capture_rate() {
 var g_camera;
 
 $(function() {
+  if (window.g_replay_kiosk) {
+    // A kiosk (inc/replay-kiosk.inc): no setup screen; the track cameras,
+    // with the kiosk's page beneath.
+    // (No frame-rate warning: that's for replay.php's setup, not a TV.)
+    $("#interior").attr('src', g_replay_kiosk.inner_url);
+    enter_track_mode();
+    listen_for_replay_messages();
+    console.log('Replay kiosk (re)loaded');
+    return;
+  }
+
+  $(window).on('resize', function(event) { on_setup(); });
+
   // "Remote Camera" became "Track cameras"
   try {
     if (window.localStorage.getItem('derbynet-camera-replay') == 'remote') {
@@ -489,5 +505,3 @@ function on_setup() {
   $("#click-shield").addClass('hidden');
   $("#replay-setup").show('slide', {direction: 'down'});
 }
-
-$(window).on('resize', function(event) { on_setup(); });
