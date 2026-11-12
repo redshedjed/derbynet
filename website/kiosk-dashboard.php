@@ -67,37 +67,28 @@ var g_standings_choices = <?php
 <div id="kiosk_control_group" class="kiosk_control_group">
 </div>
 
-<!-- Setting up the displays: another kiosk window on this computer, and (for
-     the Administrator) the kiosk locations and the scenes -->
+<!-- Setting up kiosks: (for the Administrator) the kiosk locations and the
+     scenes; another kiosk window on this computer; or make this device a kiosk -->
 <section id="set_up_displays" class="card card-accent accent-other">
-  <h2 class="card-title">Set Up the Displays</h2>
+  <h2 class="card-title">Set Up Kiosks</h2>
   <div class="toolbar">
-    <span class="btn-with-note">
-      <input id="new_kiosk_window_button" type="button" class="btn btn-secondary" value="New Kiosk Window"/>
-      <small class="text-muted">Stays logged in</small>
-    </span>
     <?php if (have_permission(SET_UP_PERMISSION)) { /* locations and scenes are set-up */ ?>
     <a class="btn btn-secondary" href="kiosk-editor.php">Kiosk Editor</a>
     <a class="btn btn-secondary" href="scenes.php">Scene Editor</a>
     <?php } ?>
+    <span class="btn-with-note">
+      <input id="new_kiosk_window_button" type="button" class="btn btn-secondary" value="New Kiosk Window"/>
+      <small class="text-muted">Stays logged in</small>
+    </span>
+    <span class="btn-with-note">
+      <input id="be_a_kiosk_button" type="button" class="btn btn-secondary" value="Be a Kiosk"/>
+      <small class="text-muted">Logs out of DerbyNet</small>
+    </span>
   </div>
 <?php if (have_permission(SET_UP_PERMISSION)) { ?>
   <p class="text-muted">The Kiosk Editor lists the locations a display can be (the TV by
     the track, the lobby, ...); the Scene Editor sets what each location shows.</p>
 <?php } ?>
-</section>
-
-<section id="start_display" class="card card-accent accent-other tile-buttons">
-  <h2 class="card-title">Make this device a display</h2>
-  <p>Turns this device into a kiosk; what it shows (a display, a track camera,
-     a photo stand) is then chosen here on the Kiosk Dashboard.  Kiosks don't
-     need a login; you'll need to log in again on this device to make changes.</p>
-  <div class="block_buttons">
-    <span class="btn-with-note">
-      <input type="button" value="Be a Kiosk" data-href="kiosk.php"/>
-      <small class="text-muted">Logs out of DerbyNet</small>
-    </span>
-  </div>
 </section>
 </div>
 <?php require_once('inc/ajax-failure.inc'); ?>

@@ -171,23 +171,6 @@ p.parameters {
   margin-bottom: 20px;
 }
 
-/* ---------------- Make this device a display ---------------- */
-
-#start_display {
-  margin: var(--space-5) 0 0 0;
-}
-#start_display .block_buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-#start_display .block_buttons input[type='button'] {
-  box-sizing: border-box;
-  width: 200px;
-  min-height: 52px;
-  margin: 0;
-}
-
 /* A button with a short note under it */
 .btn-with-note {
   display: inline-flex;
