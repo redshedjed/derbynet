@@ -4,8 +4,9 @@
    and marks the heat racing now (.curheat) and the next one (.nextheat),
    which also show car photos.
 
-   Text sizes scale with the window, as before, but with a floor, so the
-   page is readable on a phone and still large on a TV. */
+   Text sizes are the kiosk scale (--kiosk-text-*, tokens.css), which
+   follows the screen with a floor; on a regular monitor (body.as-desk,
+   at the end) they're the ordinary sizes. */
 
 .group_spacer {
   height: 30px;
@@ -18,7 +19,7 @@
 /* Round title: "Fake Lions, Round 1" */
 th.divider {
   padding: var(--space-3) var(--space-3) var(--space-1) var(--space-3);
-  font-size: clamp(1rem, 1.6vw, 2rem);
+  font-size: var(--kiosk-text-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-brand-strong);
   text-align: center;
@@ -34,7 +35,7 @@ tr {
 .curgroup .d0 th,
 .curgroup .d1 th {
   padding: var(--space-1);
-  font-size: clamp(0.7rem, 1.2vw, 1.5rem);
+  font-size: var(--kiosk-text-xs);
   font-weight: var(--weight-semibold);
   line-height: 1.2;
   background-color: var(--color-brand);
@@ -73,13 +74,13 @@ td.in_prev {
 }
 
 th {
-  font-size: clamp(0.7rem, 1.5vw, 1.8rem);
+  font-size: var(--kiosk-text-sm);
 }
 th.masterheat {
-  font-size: clamp(1rem, 3vw, 3.5rem);
+  font-size: var(--kiosk-text-lg);
 }
 td {
-  font-size: clamp(0.8rem, 2vw, 2.6rem);
+  font-size: var(--kiosk-text-base);
   padding: 0.5vw;
   border: 0;
   border-bottom: 1px solid var(--gray-200);
@@ -191,7 +192,7 @@ td.heat_winner {
 p.race_start {
   margin: 0;
   padding: var(--space-2) var(--space-4);
-  font-size: clamp(1rem, 1.6vw, 2rem);
+  font-size: var(--kiosk-text-sm);
   text-align: center;
   color: var(--color-brand-strong);
   background: #E8EFF8;

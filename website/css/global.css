@@ -217,13 +217,15 @@ td, th {
   font-variant-numeric: tabular-nums;
 }
 
-body.as-kiosk td {
+/* :where() keeps these as weak as a plain "td" rule, so a kiosk's own
+   stylesheet (Now Racing's black cell borders, say) still wins */
+:where(body.as-kiosk) td {
   border: 1px solid var(--color-border);
   padding: 13px;
 }
-body.as-kiosk th {
+:where(body.as-kiosk) th {
   padding: 1px 10px 1px 1px;
-  font-size: var(--text-xl);
+  font-size: var(--kiosk-text-sm);
 }
 
 /* ---------------- Buttons ---------------- */

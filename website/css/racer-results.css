@@ -60,7 +60,7 @@ td {
   border-bottom: 1px solid var(--gray-200);
 }
 td span.time {
-  font-size: 32px;
+  font-size: var(--kiosk-text-base);
   font-variant-numeric: tabular-nums;
 }
 
@@ -194,6 +194,21 @@ td.heat_winner {
    racer, rounds they're not in) aren't worth a title and an empty header */
 .main_table tbody:not(:has(tr.d0)):not(:has(tr.d1)) {
   display: none;
+}
+
+/* ---------------- On a kiosk ----------------
+   The kiosk text scale (tokens.css), the same as the Race Schedule kiosk:
+   round titles and racer names the size of its round titles and names. */
+body.as-kiosk .group_title,
+body.as-kiosk h2.now_running {
+  font-size: var(--kiosk-text-sm);
+}
+body.as-kiosk .main_table tr:not(.d0):not(.d1) > th:not(.group_title):not(.pre_group_title):not(.group_spacer) {
+  font-size: var(--kiosk-text-xs);
+}
+body.as-kiosk th.nrows1, body.as-kiosk th.nrows2,
+body.as-kiosk th.nrows3, body.as-kiosk th.nrows4 {
+  font-size: var(--kiosk-text-base);
 }
 
 /* ---------------- On a regular monitor ----------------

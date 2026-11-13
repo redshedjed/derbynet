@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="css/kiosks.css"/>
 <style>
 p {
-    font-size: 40px;
+    font-size: var(--kiosk-text-base);
     text-align: center;
 }
 </style>

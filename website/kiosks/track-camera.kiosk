@@ -37,11 +37,10 @@ html, body {
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.6);
   color: white;
-  font-family: sans-serif;
-  font-size: 2.6vh;
+  font-size: var(--kiosk-text-sm);
 }
 #camera-label b {
-  font-size: 3.2vh;
+  font-size: var(--kiosk-text-base);
 }
 #no-camera-warning {
   position: fixed;
@@ -50,8 +49,7 @@ html, body {
   right: 10%;
   text-align: center;
   color: #ddd;
-  font-family: sans-serif;
-  font-size: 3vh;
+  font-size: var(--kiosk-text-base);
 }
 </style>
 <script type="text/javascript" src="js/jquery.js"></script>

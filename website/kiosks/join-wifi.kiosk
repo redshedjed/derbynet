@@ -54,7 +54,7 @@ body {
 }
 #join-wifi h1 {
   margin: 0 0 3vh 0;
-  font-size: 5.5vh;
+  font-size: var(--kiosk-text-xl);
   text-align: center;
   color: var(--color-text);
 }
@@ -80,7 +80,7 @@ body {
 }
 .step h2 {
   margin: 0 0 2vh 0;
-  font-size: 4.2vh;
+  font-size: var(--kiosk-text-lg);
   color: var(--color-brand);
 }
 .step .qr {
@@ -93,7 +93,7 @@ body {
 }
 .step .detail {
   margin: 2.5vh 0 0 0;
-  font-size: 3.4vh;
+  font-size: var(--kiosk-text-base);
   text-align: center;
   line-height: 1.35;
 }
@@ -103,7 +103,7 @@ body {
 }
 .step .note {
   margin: 1vh 0 0 0;
-  font-size: 2.4vh;
+  font-size: var(--kiosk-text-sm);
   color: var(--color-text-muted);
   text-align: center;
 }

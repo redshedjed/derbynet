@@ -17,6 +17,13 @@ require_once('inc/standings.inc');
 <link rel="stylesheet" type="text/css" href="css/kiosks.css"/>
 <style type="text/css">
 body { overflow: hidden; }
+/* The kiosk text scale (tokens.css), like the Race Schedule kiosk */
+.main_table th {
+  font-size: var(--kiosk-text-sm);
+}
+.main_table td {
+  font-size: var(--kiosk-text-base);
+}
 /* This draws a divider line above the very first visible row, useful for scrolling */
 .main_table tr.first_visible {
   border-top: 3px solid black;

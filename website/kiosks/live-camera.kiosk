@@ -42,8 +42,7 @@ html, body {
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.55);
   color: white;
-  font-family: sans-serif;
-  font-size: 3vh;
+  font-size: var(--kiosk-text-sm);
   font-weight: 600;
 }
 #live-label .dot {
@@ -60,8 +59,7 @@ html, body {
   width: 100%;
   text-align: center;
   color: #ccc;
-  font-family: sans-serif;
-  font-size: 4vh;
+  font-size: var(--kiosk-text-base);
 }
 </style>
 <script type="text/javascript" src="js/jquery.js"></script>

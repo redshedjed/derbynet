@@ -21,6 +21,11 @@
   background: #111;
   border-radius: var(--radius-md, 6px);
 }
+/* As a kiosk, the preview never runs below the screen (the video keeps its
+   shape inside it), leaving room for the note under it */
+body.stand-kiosk #stand-preview-box {
+  max-height: calc(100vh - 2 * var(--space-4) - 96px);
+}
 #stand-preview {
   display: block;
   width: 100%;
