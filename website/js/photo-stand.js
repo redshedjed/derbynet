@@ -106,7 +106,7 @@ function show_stand_settings() {
   set_ready_status();
 }
 
-// ---------------- Feedback: on screen, sounds, and speech ----------------
+// ---------------- Feedback: on screen and speech ----------------
 
 function set_status(kind, text) {
   $("#stand-status").removeClass('ready working good bad').addClass(kind).text(text);
@@ -119,13 +119,6 @@ function set_ready_status() {
     set_status('ready', 'Press Space to take a photo');
   } else {
     set_status('ready', 'Ready: scan a racer\'s barcode');
-  }
-}
-
-function play_sound(name) {
-  try {
-    new Audio('sounds/' + name + '.mp3').play().catch(function() {});
-  } catch (e) {
   }
 }
 
@@ -195,7 +188,6 @@ function on_barcode(code) {
   }
   if (!code.startsWith('PWD')) {
     set_status('bad', 'Not a racer barcode: ' + code);
-    play_sound('dundundunnn');
     say('Unrecognized bar code');
     return;
   }
@@ -207,7 +199,6 @@ function on_barcode(code) {
   if (g_stand.settings.when == 'space') {
     if (!g_stand.held) {
       set_status('bad', 'Take the photo first (Space), then scan');
-      play_sound('dundundunnn');
       say('Take the photo first');
       return;
     }
@@ -226,7 +217,6 @@ function on_barcode(code) {
 
 function capture_failed(err) {
   set_status('bad', 'Photo capture failed: ' + err.message);
-  play_sound('dundundunnn');
   say('Photo capture failed');
 }
 
@@ -249,7 +239,6 @@ function take_photo(seconds) {
     let photo = capture_still(document.getElementById('stand-preview'),
                               g_photo_aspects[g_stand.settings.repo]);
     $("#stand-flash").stop(true).css('opacity', 0.8).animate({opacity: 0}, 500);
-    play_sound('magic-wand');
     return photo;
   }).finally(function() {
     g_stand.busy = false;
@@ -370,7 +359,6 @@ function send_photo_inner(code, repo, blob, url) {
         if (!outcome_ok(reply)) {
           add_failed(code, repo, blob, url, outcome_text(reply));
           set_status('bad', racer.text + ': not uploaded (' + outcome_text(reply) + ')');
-          play_sound('dundundunnn');
           say('Upload failed');
           return;
         }
@@ -379,11 +367,9 @@ function send_photo_inner(code, repo, blob, url) {
         if (checkin_reply && !outcome_ok(checkin_reply)) {
           set_status('bad', racer.text + ': photo uploaded, but check-in failed ('
                      + outcome_text(checkin_reply) + ')');
-          play_sound('dundundunnn');
           say('Upload okay but check-in failed');
         } else {
           set_status('good', racer.text + ': photo uploaded' + (checkin_reply ? ', checked in' : ''));
-          play_sound('tada-fanfare-f');
           say(checkin_reply && racer.name ? 'Checked in ' + racer.name : 'Upload complete');
         }
         setTimeout(function() {
@@ -477,7 +463,6 @@ function speed_test() {
     let ok = results.filter(function(r) { return r.ok; });
     if (ok.length == 0) {
       set_status('bad', 'Speed test: uploads failed');
-      play_sound('dundundunnn');
       say('Speed test failed');
       return;
     }
@@ -485,7 +470,6 @@ function speed_test() {
     let verdict = kbps > 200 ? 'good' : (kbps > 50 ? 'fair' : 'poor');
     set_status(verdict == 'poor' ? 'bad' : 'good',
                'Upload speed: ' + kbps + ' KB per second (' + verdict + ')');
-    play_sound(verdict == 'good' ? 'tada-fanfare-f' : (verdict == 'fair' ? 'saddertrombones' : 'dundundunnn'));
     say(kbps + ' kilobytes per second');
   });
 }
