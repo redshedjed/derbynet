@@ -285,13 +285,14 @@ g_kiosk_page_handlers['kiosks/live-camera.kiosk'] = {
 };
 
 //////////////////////////////////////////////////////////////////////////
-// track-camera and photo-stand: stations, managed from here
+// photo-stand: a station, managed from here
 //////////////////////////////////////////////////////////////////////////
 
 // The names of the cameras a kiosk has reported (Kiosk Dashboard only; the
-// Scene Editor has no particular device in mind).
+// Scene Editor has no particular device in mind): every kiosk reports them
+// (js/kiosk-poller.js), and so does a photo stand.
 function kiosk_device_names(kiosk) {
-  var names = [];
+  var names = ((kiosk && kiosk.devices) || []).slice();
   ((kiosk && kiosk.stations) || []).forEach(function(station) {
     (station.devices || []).forEach(function(name) {
       if (names.indexOf(name) < 0) {
@@ -341,25 +342,6 @@ function station_status_lines(kiosk_div, kiosk) {
       .appendTo(kiosk_div);
   });
 }
-
-g_kiosk_page_handlers['kiosks/track-camera.kiosk'] = {
-  // Parameters: { name: (track camera name), device: (which camera, by name) }
-  decorate: function(kiosk_div, parameters, callback, kiosk) {
-    var id = "track-camera-name-" + Math.floor(Math.random() * 100000);
-    var row = $("<div class='kiosk-param-row'/>").appendTo(kiosk_div);
-    row.append($("<label/>").attr('for', id).text('Camera name'));
-    $("<input type='text' maxlength='50' placeholder='Track'/>")
-      .attr('id', id)
-      .val(parameters.name || '')
-      .on('change', function() {
-        callback(Object.assign({}, parameters, {name: $(this).val().trim()}));
-      })
-      .appendTo(row);
-    if (kiosk) {
-      station_device_select(kiosk_div, parameters, callback, kiosk);
-    }
-  }
-};
 
 g_kiosk_page_handlers['kiosks/photo-stand.kiosk'] = {
   // Parameters: { repo: 'head' | 'car', when: 'now' | 'countdown' | 'space',

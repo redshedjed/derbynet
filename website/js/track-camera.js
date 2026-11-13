@@ -5,9 +5,9 @@
 // and checks in every 2 seconds so Settings > Cameras and the Kiosk Dashboard
 // know how it's doing.
 //
-// Used by camera.php, the Track Camera kiosk page, and the replay layer of a
-// display whose own webcam is a track camera.  Assumes message-poller.js,
-// camera-signaling.js and camera-source.js.
+// Used by a kiosk's replay layer (inc/replay-kiosk.inc), one for each of the
+// kiosk's cameras assigned a track camera on the Kiosk Dashboard.  Assumes
+// message-poller.js, camera-signaling.js and camera-source.js.
 //
 //   let station = new TrackCameraStation({
 //     name: 'Finish',

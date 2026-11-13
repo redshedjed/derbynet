@@ -18,8 +18,9 @@
 #                    assigned to it) across restarts.  No two kiosks may share
 #                    one.
 #   KIOSK_PAGE       What to show, if not a kiosk: e.g.
-#                    KIOSK_PAGE="camera.php?name=Finish" for a track camera,
-#                    or KIOSK_PAGE=photo-stand.php for a photo stand.
+#                    KIOSK_PAGE=photo-stand.php for a photo stand.  (A track
+#                    camera is a kiosk: its cameras are assigned on the Kiosk
+#                    Dashboard.)
 #   BROWSER          The browser command, if not chromium or chromium-browser.
 #
 # The screen shouldn't go blank: on the Wayland desktop, turn off Screen

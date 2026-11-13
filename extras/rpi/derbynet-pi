@@ -629,9 +629,9 @@ cmd_doctor() {
         fi
     fi
     if has_role kiosk ; then
-        # For a kiosk that's a track camera or photo stand (chosen on the
-        # Kiosk Dashboard), or a display with a camera of its own
-        echo "Cameras (for a track camera, photo stand, or a display's own camera):"
+        # For a kiosk's track cameras or a photo stand (both chosen on the
+        # Kiosk Dashboard)
+        echo "Cameras (for track cameras or a photo stand):"
         ls /dev/video* >/dev/null 2>&1 || echo "    none"
         command -v v4l2-ctl >/dev/null && v4l2-ctl --list-devices 2>/dev/null | sed -e 's/^/    /'
         echo "Keyboards (a photo stand's USB barcode scanner shows up as one):"

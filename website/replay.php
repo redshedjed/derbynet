@@ -77,9 +77,9 @@ var g_websocket_url = <?php echo json_encode(read_raceinfo('_websocket_url', '')
     </video>
     <!-- "Track cameras": one tile per camera, in replay order -->
     <div id="track-previews" class="hidden">
-      <p id="no-track-cameras" class="hidden">No track cameras are switched on.  Open
-        <b>camera.php?name=Finish</b> (for example) on a phone or laptop at the track;
-        it appears in <b>Settings &gt; Cameras</b>.</p>
+      <p id="no-track-cameras" class="hidden">No track cameras are switched on.  Add them
+        in <b>Settings &gt; Cameras</b>, then on the <b>Kiosk Dashboard</b> make a kiosk's
+        camera each one.</p>
     </div>
   </div>
 

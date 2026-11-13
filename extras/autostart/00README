@@ -22,9 +22,9 @@ For a Pi 4 or 5 with current Raspberry Pi OS (with desktop):
 
        DERBYNET_SERVER="http://192.168.1.100/derbynet"
 
-   For a track camera rather than a kiosk, also (any name: Start, Finish...):
-
-       KIOSK_PAGE="camera.php?name=Finish"
+   A track camera is a kiosk too: on the Kiosk Dashboard, when you give the
+   kiosk its name, make each of its cameras one of the track cameras set up
+   in Settings > Cameras (Start, Finish...).
 
    For a photo stand (a camera and a USB barcode scanner taking racer or
    car photos), also:

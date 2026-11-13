@@ -219,6 +219,13 @@ class CameraSource {
     }
     let cam = cameras.find((c) => c.label == want);
     if (!cam) {
+      // Chosen as 'Camera 2' before the browser showed the cameras' names
+      let m = /^Camera (\d+)$/.exec(want);
+      if (m && cameras[parseInt(m[1]) - 1]) {
+        cam = cameras[parseInt(m[1]) - 1];
+      }
+    }
+    if (!cam) {
       return;  // Not here (or names not known yet): keep what we have
     }
     this._tried_preferred = true;

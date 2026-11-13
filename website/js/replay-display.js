@@ -7,8 +7,8 @@
 // What it records, chosen on its setup screen:
 //   - a camera on this computer, or
 //   - "Track cameras": every track camera switched on in Settings > Cameras
-//     (phones or laptops running camera.php?name=...), played one after
-//     another in that order, each with any tuning of its own.
+//     (each a kiosk's camera, assigned on the Kiosk Dashboard), played one
+//     after another in that order, each with any tuning of its own.
 //
 // Assumes message-poller.js, viewer-signaling.js, camera-source.js,
 // replay-recorder.js and screenfull; g_websocket_url is set by the page.
@@ -397,10 +397,10 @@ function connect_track_camera(name) {
   tile.find('.track-tile-label').text(name + ': waiting for the camera');
   let entry = {remote: null, recorder: null, tile: tile};
   g_replay.track[name] = entry;
-  if (g_own_camera && g_own_camera.name == name) {
-    // This display's own webcam: its picture is right here
-    if (g_own_camera.stream()) {
-      use_camera_stream(name, g_own_camera.stream());
+  if (g_own_cameras[name]) {
+    // One of this kiosk's own cameras: its picture is right here
+    if (g_own_cameras[name].stream()) {
+      use_camera_stream(name, g_own_cameras[name].stream());
     }
     return;
   }
@@ -450,8 +450,8 @@ function report_capture_rate() {
 }
 
 var g_camera;
-// As a kiosk whose location has a camera of its own: that TrackCameraStation
-var g_own_camera = null;
+// As a kiosk streaming track cameras: a TrackCameraStation for each, by name
+var g_own_cameras = {};
 
 $(function() {
   if (window.g_replay_kiosk) {
@@ -459,16 +459,20 @@ $(function() {
     // beneath.  (No frame-rate warning: that's for replay.php's setup, not a
     // TV.)
     $("#interior").attr('src', g_replay_kiosk.inner_url);
-    if (g_replay_kiosk.camera) {
-      // This display's own webcam is a track camera
-      g_own_camera = new TrackCameraStation({
-        name: g_replay_kiosk.camera,
-        client_id: 'kiosk-' + g_replay_kiosk.address + '-camera',
-        video: document.getElementById('own-camera'),
-        on_stream: function(stream) { use_camera_stream(g_replay_kiosk.camera, stream); },
+    // Each of this kiosk's cameras assigned a track camera (Kiosk Dashboard)
+    // sends its picture under that name, from whichever page the kiosk shows.
+    (g_replay_kiosk.cameras || []).forEach(function(cam, i) {
+      let video = $("<video autoplay muted playsinline disablepictureinpicture></video>")
+          .appendTo("#own-cameras")[0];
+      g_own_cameras[cam.name] = new TrackCameraStation({
+        name: cam.name,
+        client_id: 'kiosk-' + g_replay_kiosk.address + '-camera-' + (i + 1),
+        video: video,
+        prefer_label: cam.device,
+        on_stream: function(stream) { use_camera_stream(cam.name, stream); },
       });
-      g_own_camera.start();
-    }
+      g_own_cameras[cam.name].start();
+    });
     if (g_replay_kiosk.replays) {
       enter_track_mode();
       listen_for_replay_messages();

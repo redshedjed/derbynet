@@ -1,6 +1,6 @@
 <?php
-// The layer for a kiosk whose location (Kiosk Editor) shows replays, or has a
-// camera of its own.  Included by kiosk.php; $g_kiosk_address and $kpage come
+// The layer for a kiosk whose location (Kiosk Editor) shows replays, or that
+// streams track cameras (assigned on the Kiosk Dashboard).  Included by kiosk.php; $g_kiosk_address and $kpage come
 // from there.
 //
 // The kiosk's own page (Now Racing, Live Camera, Standings...) fills the
@@ -9,9 +9,10 @@
 //   - Show replays: this layer records the track cameras switched on in
 //     Settings > Cameras, and when a heat finishes slides the replay in over
 //     the page, then back out.
-//   - A camera of its own: this display's webcam is the track camera of that
-//     name, sending its picture to every replay display (this one included).
-// If either setting changes, the page in the frame notices
+//   - Track cameras: each of this kiosk's cameras assigned a track camera
+//     (Start, Finish...) sends its picture, under that name, to every replay
+//     display (this one included).
+// If either changes, the page in the frame notices
 // (js/kiosk-poller.js) and reloads this whole window.
 
 $inner_url = 'kiosk.php?'.http_build_query(array('address' => $g_kiosk_address, 'inner' => 1));
@@ -52,7 +53,8 @@ var g_replay_kiosk = {
   inner_url: <?php echo json_encode($inner_url); ?>,
   name: <?php echo json_encode($kpage['name'] !== '' ? $kpage['name'] : madlib_string($g_kiosk_address)); ?>,
   replays: <?php echo json_encode(!empty($kpage['replays'])); ?>,
-  camera: <?php echo json_encode($kpage['camera']); ?>
+  // [{name: the track camera, device: which of this kiosk's cameras}]
+  cameras: <?php echo json_encode($kpage['cameras']); ?>
 };
 </script>
 <script type="text/javascript" src="js/replay-display.js"></script>
@@ -63,7 +65,8 @@ var g_replay_kiosk = {
   <div id="playback-background" class="hidden full-window">
     <canvas id="playback" class="full-window"></canvas>
   </div>
-  <!-- This display's own camera, if it has one (unseen; replays show it) -->
-  <video id="own-camera" class="hidden" autoplay="autoplay" muted="muted" playsinline="playsinline" disablepictureinpicture="disablepictureinpicture"></video>
+  <!-- This kiosk's track cameras are added here, unseen (replays show them):
+       js/replay-display.js -->
+  <div id="own-cameras" class="hidden"></div>
 </body>
 </html>

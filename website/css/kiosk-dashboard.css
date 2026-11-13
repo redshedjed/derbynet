@@ -116,6 +116,16 @@ div.mselect-inner select {
   font-size: var(--text-base);
 }
 
+/* The kiosk's cameras, each a track camera or not */
+.kiosk-camera-note {
+  margin: var(--space-2) 0 0 0;
+  font-size: var(--text-sm);
+}
+#kiosk_modal_cameras {
+  margin: var(--space-3) 0;
+  text-align: left;
+}
+
 /* Which racing groups a slideshow or check-in kiosk shows */
 p.parameters {
   margin: var(--space-2) 0 0 0;

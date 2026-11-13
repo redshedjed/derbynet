@@ -118,6 +118,12 @@
   margin: 0;
 }
 
+/* The camera choice above the preview (js/mcheckin.js sizes the preview
+   from what's left) */
+#device-picker-div {
+  min-height: 50px;
+}
+
 #preview-container {
   position: relative;
 }

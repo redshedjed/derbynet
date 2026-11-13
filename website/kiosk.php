@@ -65,8 +65,8 @@ if (isset($_GET['page'])) {
   $g_kiosk_address = address_for_current_kiosk();
   $kpage = kiosk_page($g_kiosk_address);
   $g_kiosk_parameters_string = $kpage['parameters'];
-  if ((!empty($kpage['replays']) || $kpage['camera'] !== '') && !isset($_GET['inner'])) {
-    // This display's location shows replays, or has a camera of its own: a
+  if ((!empty($kpage['replays']) || count($kpage['cameras']) > 0) && !isset($_GET['inner'])) {
+    // This display's location shows replays, or it streams track cameras: a
     // layer for those, with the kiosk's page in a frame beneath it
     // (kiosk.php again, with inner=1).
     require('inc/replay-kiosk.inc');

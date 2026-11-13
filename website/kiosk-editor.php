@@ -59,15 +59,11 @@ function h($s) {
   flex: 0 1 200px;
   font-weight: var(--weight-semibold);
 }
-.location .replays-toggle,
-.location .camera-field {
+.location .replays-toggle {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
   white-space: nowrap;
-}
-.location .camera-field input[type=text] {
-  width: 8em;
 }
 .location input[type=text],
 #add-location input[type=text] {
@@ -150,11 +146,6 @@ function on_move(button, delta) {
 }
 // Replays over this location's display: saved at once; the display picks it
 // up within a few seconds.
-// The display's own webcam as a track camera (its name, or empty for none)
-function on_camera(input) {
-  kiosk_location({op: 'camera', name: location_row(input).attr('data-name'),
-                  camera: input.value});
-}
 function on_replays(checkbox) {
   kiosk_location({op: 'replays', name: location_row(checkbox).attr('data-name'),
                   on: checkbox.checked ? 1 : 0});
@@ -183,9 +174,8 @@ $(function() {
     shows in each scene.  On the Kiosk Dashboard, give each display its location with
     <b>Assign Name</b>.  <b>Show replays</b> plays the track cameras' replay over whatever
     that display shows, at the end of each heat (cameras are set up in
-    <a href="settings.php">Settings &gt; Cameras</a>).  <b>Camera</b>: if the display has a
-    webcam of its own pointed at the track, the name of that track camera (Start,
-    Finish...).</p>
+    <a href="settings.php">Settings &gt; Cameras</a>; which kiosk's camera is which is
+    chosen when you assign the kiosk its name).</p>
 
 <?php foreach ($locations as $i => $loc) {
   $here = isset($displays[strtolower($loc['name'])]) ? $displays[strtolower($loc['name'])] : array();
@@ -199,13 +189,6 @@ $(function() {
         <input type="checkbox" onchange="on_replays(this);"<?php
           if (!empty($loc['replays'])) echo ' checked="checked"'; ?>/>
         Show replays
-      </label>
-      <label class="camera-field"
-             title="This display's own webcam is the track camera of this name; leave empty if it has none">
-        Camera
-        <input type="text" name="camera" placeholder="none" maxlength="50"
-               value="<?php echo h(isset($loc['camera']) ? $loc['camera'] : ''); ?>"
-               onchange="on_camera(this);"/>
       </label>
     </div>
     <div class="shown-on">

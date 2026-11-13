@@ -64,11 +64,11 @@ function madlib_string($addr) {
 // What the Kiosk Editor says about a kiosk location (a display's name, e.g.
 // 'Main'):
 //   replays: play track-camera replays over whatever it shows
-//   camera:  the display's own webcam is the track camera of this name ('' if
-//            it has none)
 // The locations are kept in RaceInfo (kiosk-locations); see inc/scenes.inc.
+// (Which cameras a kiosk streams belongs to the kiosk itself, not its
+// location: see cameras_for_kiosk() in inc/replay.inc.)
 function location_settings($name) {
-  $settings = array('replays' => false, 'camera' => '');
+  $settings = array('replays' => false);
   if ($name === null || $name === '') {
     return $settings;
   }
@@ -77,7 +77,6 @@ function location_settings($name) {
     foreach ($locations as $loc) {
       if (strtolower($loc['name']) == strtolower($name)) {
         $settings['replays'] = !empty($loc['replays']);
-        $settings['camera'] = isset($loc['camera']) ? trim($loc['camera']) : '';
       }
     }
   }
@@ -104,10 +103,12 @@ function parse_kiosk_params(&$row) {
 // page.
 //
 // Returns an array with a 'page' key and optionally 'name' (of the kiosk) and
-// 'parameters' (a json string), and from its location (see location_settings)
-// 'replays' and 'camera'.
+// 'parameters' (a json string); 'replays', from its location (see
+// location_settings); and 'cameras', the track cameras it streams,
+// [{name, device}] (see cameras_for_kiosk()).
 function kiosk_page($addr) {
   global $db;
+  require_once('inc/replay.inc');
   do {  // Retry loop to allow for having to create the table
     $retry = false;
     try {
@@ -122,7 +123,7 @@ function kiosk_page($addr) {
         }
         $location = location_settings($row['name']);
         $row['replays'] = $location['replays'];
-        $row['camera'] = $location['camera'];
+        $row['cameras'] = cameras_for_kiosk($addr);
         if (@$row['page'][0] == '!') {
           $row['page'] = substr($row['page'], 1);
           $row['reload'] = true;
@@ -164,7 +165,7 @@ function kiosk_page($addr) {
                'parameters' => '{}',
                'reload' => false,
                'replays' => false,
-               'camera' => '');
+               'cameras' => cameras_for_kiosk($addr));
 }
 
 function mark_kiosk_for_reload($addr) {
@@ -189,9 +190,11 @@ function mark_all_kiosks_for_reload() {
 }
 
 // Returns an array of entries, one for each currently-active kiosk.
-// Each entry is {address, name, page, parameters, last_contact, stations}, where
-// stations describes any track camera, photo stand or replay display it runs:
-// [{kind, name, status, connected, devices}] (see kiosk_stations()).
+// Each entry is {address, name, page, parameters, last_contact, stations,
+// devices, cameras}, where stations describes any track camera, photo stand or
+// replay display it runs: [{kind, name, status, connected, devices}] (see
+// kiosk_stations()); devices names the cameras it has; and cameras lists the
+// track cameras it streams, [{name, device}] (see cameras_for_kiosk()).
 function all_kiosks() {
   global $db;
   require_once('inc/replay.inc');
@@ -228,13 +231,32 @@ function all_kiosks() {
                         'age' => time() - $row['last_contact'],
                         // parse_kiosk_params() put the JSON string here
                         'parameters' => $row['parameters'],
-                        'stations' => kiosk_stations($row['address'], $clients));
+                        'stations' => kiosk_stations($row['address'], $clients),
+                        'devices' => kiosk_devices($row['address'], $clients),
+                        'cameras' => cameras_for_kiosk($row['address']));
     }
   } catch (PDOException $p) {
     // Most likely: no kiosks table.
     // One will be created if a kiosk actually connects.
   }
   return $kiosks;
+}
+
+// What to call the kiosk at $address: its assigned name, or its number
+// ("Kiosk 427"), whether or not it's connected now
+function kiosk_display_name($address) {
+  global $db;
+  try {
+    $stmt = $db->prepare('SELECT name FROM Kiosks WHERE address = :address');
+    $stmt->execute(array(':address' => $address));
+    $name = $stmt->fetchColumn();
+    $stmt->closeCursor();
+    if ($name) {
+      return $name;
+    }
+  } catch (PDOException $p) {
+  }
+  return madlib_string($address);
 }
 
 function all_kiosk_pages_with_prefix($prefix) {

@@ -40,16 +40,25 @@ function tuning_select(field, value, choices, describe, default_value) {
   return select;
 }
 
-function client_status_cell(client) {
+// Where the camera comes from (a kiosk's camera, chosen on the Kiosk
+// Dashboard), and how it's doing.  kiosks: {address: name}
+function camera_source_cell(cam, client, kiosks) {
   let cell = $("<td class='camera-status'/>");
-  if (!client) {
-    cell.append($("<span class='status-dot off'/>")).append(document.createTextNode('Never connected'));
-  } else if (client.connected) {
+  if (!cam.kiosk) {
+    cell.attr('title', "On the Kiosk Dashboard, make one of a kiosk's cameras the "
+              + cam.name + ' camera')
+      .append($("<span class='status-dot off'/>"))
+      .append(document.createTextNode('Not assigned to a kiosk yet'));
+    return cell;
+  }
+  let where = (kiosks[cam.kiosk] || 'a kiosk') + ', ' + cam.device;
+  if (client && client.connected) {
     cell.append($("<span class='status-dot on'/>"))
-      .append(document.createTextNode(client.status || 'Connected'));
+      .append(document.createTextNode(where + ': ' + (client.status || 'connected')));
   } else {
     cell.append($("<span class='status-dot off'/>"))
-      .append(document.createTextNode('Not connected (last seen ' + describe_age(client.seconds) + ')'));
+      .append(document.createTextNode(where + ': not connected'
+                                      + (client ? ' (last seen ' + describe_age(client.seconds) + ')' : '')));
   }
   return cell;
 }
@@ -90,7 +99,15 @@ function render_track_cameras(data) {
                .append($("<button type='button' class='btn btn-secondary btn-sm' title='Later'>&#x25BC;</button>")
                        .prop('disabled', i == data.cameras.length - 1)
                        .on('click', function() { edit_track_camera(cam.name, {op: 'down'}); })));
-    row.append($("<td class='camera-name'/>").text(cam.name));
+    row.append($("<td class='camera-name'/>")
+               .append($("<button type='button' class='btn btn-ghost btn-sm' title='Rename'/>")
+                       .text(cam.name)
+                       .on('click', function() {
+                         let new_name = prompt('New name for the ' + cam.name + ' camera:', cam.name);
+                         if (new_name && new_name.trim() && new_name.trim() != cam.name) {
+                           edit_track_camera(cam.name, {op: 'rename', new_name: new_name.trim()});
+                         }
+                       })));
     row.append($("<td/>").append(
       $("<input type='checkbox' class='not-mobile' title='Show this camera in replays'/>")
         .prop('checked', cam.enabled)
@@ -103,12 +120,11 @@ function render_track_cameras(data) {
                                                describe_showings, g_replay_defaults.showings)));
     row.append($("<td/>").append(tuning_select('rate', cam.rate, k_rate_choices,
                                                describe_rate, g_replay_defaults.rate)));
-    row.append(client_status_cell(camera_clients[cam.name]));
+    row.append(camera_source_cell(cam, camera_clients[cam.name], data.kiosks || {}));
     row.append($("<td/>").append(
       $("<button type='button' class='btn btn-secondary btn-sm'>Remove</button>")
         .on('click', function() {
-          if (confirm('Remove the ' + cam.name + ' camera?  If it\'s still running, it will'
-                      + ' come back when it next checks in.')) {
+          if (confirm('Remove the ' + cam.name + ' camera?')) {
             edit_track_camera(cam.name, {op: 'delete'});
           }
         })));
@@ -133,7 +149,8 @@ function render_track_cameras(data) {
     list.append(item);
   });
   if (displays.length == 0) {
-    list.append($("<li/>").text('None yet.  Open replay.php on the computer driving a display.'));
+    list.append($("<li/>").text('None yet.  In the Kiosk Editor, tick Show replays for the'
+                                + " locations whose displays should show them."));
   }
 }
 

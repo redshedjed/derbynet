@@ -5,7 +5,7 @@
 // viewer_id is a string identifying this viewer.
 // ideal is the ideal video stream width and height.
 // stream_cb gets called with each new stream from the camera.
-// camera_name is the camera's name (camera.php?name=...).
+// camera_name is the track camera's name (Settings > Cameras).
 function RemoteCamera(viewer_id, ideal, stream_cb, camera_name) {
   let camera = 'camera-' + camera_name;
   let pc = null;

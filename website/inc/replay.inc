@@ -17,8 +17,12 @@
 //
 // Displays and track cameras check in with every poll; ReplayClients keeps
 // when each was last heard from, for the status on Settings and the Race
-// Dashboard.  TrackCameras lists the named cameras (camera.php?name=Finish),
-// in the order replays show them, each with optional tuning of its own.
+// Dashboard.  TrackCameras lists the named cameras (Start, Finish...), set up
+// in Settings > Cameras, in the order replays show them, each with optional
+// tuning of its own.  Each camera's source -- which kiosk, and which of that
+// kiosk's cameras -- is chosen on the Kiosk Dashboard and kept in RaceInfo
+// (camera-sources); a kiosk streams the cameras assigned to it, whatever page
+// it shows.
 
 require_once('inc/data.inc');
 require_once('inc/sql-script.inc');
@@ -160,17 +164,30 @@ function replay_clients() {
 }
 
 // The stations run by the kiosk at $address (it checks in as
-// kiosk-<address>, and its own webcam, if any, as kiosk-<address>-camera).
-// $clients is from replay_clients().
+// kiosk-<address>, and each track camera it streams as
+// kiosk-<address>-camera-<n>).  $clients is from replay_clients().
 function kiosk_stations($address, $clients) {
   $stations = array();
   foreach ($clients as $c) {
-    if ($c['clientid'] == 'kiosk-'.$address || $c['clientid'] == 'kiosk-'.$address.'-camera') {
+    if ($c['clientid'] == 'kiosk-'.$address
+        || strpos($c['clientid'], 'kiosk-'.$address.'-camera') === 0) {
       $stations[] = array('kind' => $c['kind'], 'name' => $c['name'], 'status' => $c['status'],
                           'connected' => $c['connected'], 'devices' => $c['devices']);
     }
   }
   return $stations;
+}
+
+// The names of the cameras the kiosk at $address has, as it last reported
+// them (js/kiosk-poller.js; 'Camera 1', ... until the browser allows a
+// camera and shows their names).  $clients is from replay_clients().
+function kiosk_devices($address, $clients) {
+  foreach ($clients as $c) {
+    if ($c['clientid'] == 'kiosk-'.$address.'-devices') {
+      return $c['devices'];
+    }
+  }
+  return array();
 }
 
 // ---------------- Track cameras ----------------
@@ -183,8 +200,13 @@ function track_cameras($enabled_only = false) {
                      .($enabled_only ? ' WHERE enabled <> 0' : '')
                      .' ORDER BY sortorder, name');
   $cameras = array();
+  $sources = camera_sources();
   foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+    $src = isset($sources[$row['name']]) ? $sources[$row['name']] : null;
     $cameras[] = array('name' => $row['name'],
+                       // Where it comes from: a kiosk's address and camera, or ''
+                       'kiosk' => $src ? $src['kiosk'] : '',
+                       'device' => $src ? $src['device'] : '',
                        'sortorder' => intval($row['sortorder']),
                        'enabled' => $row['enabled'] != 0,
                        'skipback' => intval($row['skipback']),
@@ -203,7 +225,7 @@ function track_camera_exists($name) {
   return $n > 0;
 }
 
-// A camera that checks in under a new name joins the end of the list, on.
+// A new camera joins the end of the list, on.
 function add_track_camera($name) {
   if ($name === '' || track_camera_exists($name)) {
     return false;
@@ -237,6 +259,61 @@ function update_track_camera($name, $fields) {
 function delete_track_camera($name) {
   replay_sql('track-cameras-table', 'DELETE FROM TrackCameras WHERE name = :name',
              array(':name' => $name));
+  set_camera_source($name, '', '');
+}
+
+// Renames a camera, keeping its place, tuning and source.  False if the new
+// name is empty or taken.
+function rename_track_camera($name, $new_name) {
+  if ($new_name === '' || $new_name == $name || track_camera_exists($new_name)) {
+    return false;
+  }
+  replay_sql('track-cameras-table', 'UPDATE TrackCameras SET name = :new WHERE name = :name',
+             array(':new' => $new_name, ':name' => $name));
+  $sources = camera_sources();
+  if (isset($sources[$name])) {
+    $sources[$new_name] = $sources[$name];
+    unset($sources[$name]);
+    write_raceinfo('camera-sources', json_encode((object) $sources));
+  }
+  return true;
+}
+
+// ---------------- Where each camera comes from ----------------
+
+// {camera name: {kiosk: address, device: the kiosk's name for its camera}}
+function camera_sources() {
+  $sources = json_decode(read_raceinfo('camera-sources', '{}'), true);
+  return is_array($sources) ? $sources : array();
+}
+
+// Makes the kiosk at $kiosk's camera $device the source of track camera
+// $name ($kiosk '' for none).  A kiosk's camera feeds at most one track
+// camera, so any other camera it fed loses it.
+function set_camera_source($name, $kiosk, $device) {
+  $sources = camera_sources();
+  foreach ($sources as $n => $src) {
+    if ($n == $name || ($kiosk !== '' && $src['kiosk'] == $kiosk && $src['device'] == $device)) {
+      unset($sources[$n]);
+    }
+  }
+  if ($kiosk !== '') {
+    $sources[$name] = array('kiosk' => $kiosk, 'device' => $device);
+  }
+  write_raceinfo('camera-sources', json_encode((object) $sources));
+}
+
+// The track cameras the kiosk at $address streams: [{name, device}], in
+// replay order
+function cameras_for_kiosk($address) {
+  $sources = camera_sources();
+  $mine = array();
+  foreach (track_cameras() as $cam) {
+    if (isset($sources[$cam['name']]) && $sources[$cam['name']]['kiosk'] == $address) {
+      $mine[] = array('name' => $cam['name'], 'device' => $sources[$cam['name']]['device']);
+    }
+  }
+  return $mine;
 }
 
 // Moves a camera one place earlier ($delta = -1) or later (+1) in the order.

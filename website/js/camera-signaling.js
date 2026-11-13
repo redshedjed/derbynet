@@ -2,7 +2,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //
-// Signaling for a track camera (camera.php): sends the camera's stream over
+// Signaling for a track camera (a kiosk's camera; see js/track-camera.js):
+// sends the camera's stream over
 // WebRTC to each replay display that asks for it.
 //
 // Usage:

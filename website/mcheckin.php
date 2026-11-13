@@ -36,7 +36,6 @@ session_write_close();
 <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/>
 <?php require('inc/stylesheet.inc'); ?>
 <link rel="stylesheet" type="text/css" href="css/mobile.css"/>
-<link rel="stylesheet" type="text/css" href="css/camera.css"/>
 <link rel="stylesheet" type="text/css" href="css/mcheckin.css"/>
 <link rel="stylesheet" type="text/css" href="css/photo-frame.css"/>
 <script type="text/javascript" src="js/jquery.js"></script>

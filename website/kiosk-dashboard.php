@@ -98,6 +98,8 @@ var g_standings_choices = <?php
     <label for="kiosk_name_field">Name for kiosk:</label>
     <div id="preferred_kiosk_names"></div>
     <input type="text" id="kiosk_name_field"/>
+    <!-- The kiosk's cameras, each made a track camera or not (js/kiosk-dashboard.js) -->
+    <div id="kiosk_modal_cameras"></div>
     <input type="submit" value="Assign"/>
     <input type="button" value="Cancel"
       onclick='close_modal("#kiosk_modal");'/>

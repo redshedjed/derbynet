@@ -52,6 +52,8 @@ $(function() { poll_kiosk_all(); });
 // there's a detectable change, and for that, we keep a hash of what
 // the last state of the kiosk data was.
 var g_kiosk_hash = -1;
+// The track cameras' names, from Settings > Cameras
+var g_track_cameras = [];
 
 function hash_string(hash, str) {
   for (i = 0; i < str.length; i++) {
@@ -69,6 +71,9 @@ function process_polled_data(data) {
   }
   var pages = data['kiosk-pages'];
   var kiosks = data['kiosks'];
+  if (data.hasOwnProperty('track-cameras')) {
+    g_track_cameras = data['track-cameras'];
+  }
   for (var i = 0; i < kiosks.length; ++i) {
     kiosks[i].parameters = kiosks[i].hasOwnProperty('parameters') && kiosks[i].parameters
       ? JSON.parse(kiosks[i].parameters) : {};
@@ -92,10 +97,13 @@ function process_polled_data(data) {
     hash = hash_string(hash, kiosk.page);
     hash = hash_string(hash, JSON.stringify(kiosk.parameters));
     hash = hash_string(hash, JSON.stringify(kiosk.stations || []));
+    hash = hash_string(hash, JSON.stringify(kiosk.devices || []));
+    hash = hash_string(hash, JSON.stringify(kiosk.cameras || []));
 
     $("#kiosk_control_group .kiosk_control .reload p.reloading").eq(i)
       .toggleClass('hidden', !kiosk.reload);
   }
+  hash = hash_string(hash, JSON.stringify(g_track_cameras));
   if (hash != g_kiosk_hash) {
     g_kiosk_hash = hash;
     generate_kiosk_control_group(pages, kiosks);
@@ -167,7 +175,7 @@ function generate_kiosk_control(index, kiosk, pages) {
                                .attr('title', 'Give this display a location (Kiosk Editor) as its name')
                                .on('click', function() {
                                  show_kiosk_naming_modal(kiosk.address ? kiosk.address.toString() : '',
-                                                         kiosk.name);
+                                                         kiosk.name, kiosk);
                                }))
                        .append($("<input type='button' class='btn btn-secondary btn-sm'"
                                  + " value='Reload' onclick='reload_kiosk(this)'/>")
@@ -205,9 +213,74 @@ function generate_kiosk_control(index, kiosk, pages) {
     }
   }
 
+  kiosk_camera_rows(kiosk_select, kiosk);
+
   kiosk_select.appendTo(kiosk_control);
   
   kiosk_control.appendTo("#kiosk_control_group");
+}
+
+//////////////////////////////////////////////////////////////////////////
+// The kiosk's cameras, as track cameras
+//////////////////////////////////////////////////////////////////////////
+
+// For each camera the kiosk has, a dropdown choosing which track camera
+// (Settings > Cameras) it is, or none.  The kiosk then streams it under that
+// name, whatever page it shows.  Shown on the kiosk's card and when it's
+// assigned a name.
+function kiosk_camera_rows(container, kiosk) {
+  var devices = (kiosk.devices || []).slice();
+  // A camera assigned before, but not reported now (unplugged?)
+  (kiosk.cameras || []).forEach(function(cam) {
+    if (devices.indexOf(cam.device) < 0) {
+      devices.push(cam.device);
+    }
+  });
+  if (devices.length == 0) {
+    return;
+  }
+  if (g_track_cameras.length == 0) {
+    $("<p class='kiosk-camera-note text-muted'/>")
+      .append(document.createTextNode('Has ' + devices.length + ' camera'
+                                      + (devices.length == 1 ? '' : 's') + '.  To use '
+                                      + (devices.length == 1 ? 'it' : 'them')
+                                      + ' as a track camera, add the cameras in '))
+      .append($("<a href='settings.php'>Settings &gt; Cameras</a>"))
+      .append(document.createTextNode('.'))
+      .appendTo(container);
+    return;
+  }
+  devices.forEach(function(device) {
+    var current = (kiosk.cameras || []).find(function(cam) { return cam.device == device; });
+    var id = 'kiosk-camera-' + Math.floor(Math.random() * 1000000);
+    var row = $("<div class='kiosk-param-row kiosk-camera-row'/>").appendTo(container);
+    row.append($("<label/>").attr('for', id).text(device));
+    var select = $("<select/>").attr('id', id).appendTo(row);
+    select.append($("<option value=''/>").text('Not a track camera'));
+    g_track_cameras.forEach(function(name) {
+      select.append($("<option/>").val(name).text(name + ' camera'));
+    });
+    select.val(current ? current.name : '');
+    select.on('change', function() {
+      assign_kiosk_camera(kiosk.address, device, current ? current.name : '', select.val());
+    });
+    mobile_select(select);
+  });
+}
+
+// Makes the kiosk's camera `device` the track camera `name` ('' for none),
+// replacing `previous` (the track camera it was, if any)
+function assign_kiosk_camera(address, device, previous, name) {
+  var data = {action: 'track-camera.edit', op: 'assign'};
+  if (name) {
+    Object.assign(data, {name: name, kiosk: address, device: device});
+  } else if (previous) {
+    Object.assign(data, {name: previous, kiosk: ''});
+  } else {
+    return;
+  }
+  $.ajax(g_action_url, {type: 'POST', data: data,
+                        success: function() { g_kiosk_hash = -1; }});
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -242,8 +315,13 @@ function on_click_preferred_name(event) {
   return false;
 }
 
-function show_kiosk_naming_modal(address, name) {
+function show_kiosk_naming_modal(address, name, kiosk) {
   $("#kiosk_name_field").val(name);
+  // Its cameras, as track cameras (applied as they're chosen)
+  $("#kiosk_modal_cameras").empty();
+  if (kiosk) {
+    kiosk_camera_rows($("#kiosk_modal_cameras"), kiosk);
+  }
   $("#preferred_kiosk_names").empty();
   for (var i = 0; i < g_all_scene_kiosk_names.length; ++i) {
     $("#preferred_kiosk_names")

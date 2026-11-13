@@ -338,16 +338,18 @@ function photo_aspect_select($repo_name, $label, $choices) {
   <section class="settings_group card card-accent accent-during" id="cameras-group">
     <h2 class="card-title">Cameras</h2>
     <div class="settings_group_settings">
-      <p class="settings-hint">Track cameras are phones or laptops at the track running
-        <b>camera.php?name=Finish</b> (any name: Start, Finish, Side...).  Each appears here
-        when it connects.  Replay displays set to <b>Track cameras</b> show the cameras that
-        are on, one after another, in this order.  Length, showings and speed follow the
-        Race Dashboard's Replay Settings unless set here.</p>
+      <p class="settings-hint">The track cameras, by name (Start, Finish, Side...): set them
+        up here before race day, with or without any kiosks running.  When a kiosk is given
+        its name on the <a href="kiosk-dashboard.php">Kiosk Dashboard</a>, each camera it
+        has can be made one of these; it then streams that camera whatever it's showing.
+        Displays whose location has <b>Show replays</b> (Kiosk Editor) show the cameras
+        that are on, one after another, in this order.  Length, showings and speed follow
+        the Race Dashboard's Replay Settings unless set here.</p>
       <div class="track-cameras-scroll">
       <table id="track-cameras-table">
         <thead>
           <tr><th>Order</th><th>Camera</th><th>On</th><th>Length</th><th>Showings</th>
-              <th>Speed</th><th>Status</th><th></th></tr>
+              <th>Speed</th><th>Comes from</th><th></th></tr>
         </thead>
         <tbody></tbody>
       </table>

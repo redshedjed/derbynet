@@ -8,7 +8,6 @@ $mobile_ready_pages = array(
   'about.php',
   'awards-editor.php',
   'awards-presentation.php',
-  'camera.php',
   'coordinator.php',
   'export.php',
   'fakeroster.php',
