@@ -391,7 +391,7 @@ function sync_track_cameras() {
 
 function connect_track_camera(name) {
   let tile = $("<div class='track-tile'>"
-               + "<video autoplay muted playsinline></video>"
+               + "<video autoplay muted playsinline disablepictureinpicture></video>"
                + "<div class='track-tile-label'></div>"
                + "</div>");
   tile.find('.track-tile-label').text(name + ': waiting for the camera');

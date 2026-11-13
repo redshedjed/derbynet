@@ -318,7 +318,7 @@ mobile_select_refresh($("#bulk_who"));
     </h3>
 
     <div id="preview-box">
-      <video id="preview" autoplay="true" muted="true" playsinline="true"></video>
+      <video id="preview" autoplay="true" muted="true" playsinline="true" disablepictureinpicture="disablepictureinpicture"></video>
     </div>
     <div id="no-camera-warning" class="hidden"></div>
 

@@ -73,7 +73,7 @@ var g_websocket_url = <?php echo json_encode(read_raceinfo('_websocket_url', '')
   <div id="no-camera-warning" class="hidden"></div>
 
   <div id="preview-container">
-    <video id="preview" autoplay="true" muted="true" playsinline="true">
+    <video id="preview" autoplay="true" muted="true" playsinline="true" disablepictureinpicture="disablepictureinpicture">
     </video>
     <!-- "Track cameras": one tile per camera, in replay order -->
     <div id="track-previews" class="hidden">

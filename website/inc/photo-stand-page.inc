@@ -32,7 +32,8 @@ var g_stand_kiosk = <?php echo $as_kiosk ? json_encode((object) $g_stand_kiosk) 
 <div id="stand">
   <div id="stand-camera">
     <div id="stand-preview-box">
-      <video id="stand-preview" autoplay="autoplay" muted="muted" playsinline="playsinline"></video>
+      <video id="stand-preview" autoplay="autoplay" muted="muted" playsinline="playsinline"
+             disablepictureinpicture="disablepictureinpicture"></video>
       <div id="stand-countdown" class="hidden"></div>
       <div id="stand-flash"></div>
     </div>

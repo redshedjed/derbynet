@@ -85,7 +85,7 @@ $(function() {
   </div>
 
   <div id="preview-container">
-    <video id="preview" autoplay="autoplay" muted="muted" playsinline="playsinline"> </video>
+    <video id="preview" autoplay="autoplay" muted="muted" playsinline="playsinline" disablepictureinpicture="disablepictureinpicture"> </video>
     <div id="preview-overlay">
       <div id="preview-overlay-content">
          Point at a racer's barcode

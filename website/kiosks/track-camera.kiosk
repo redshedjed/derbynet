@@ -90,7 +90,7 @@ $(function() {
 </script>
 </head>
 <body>
-<video id="preview" autoplay="autoplay" muted="muted" playsinline="playsinline"></video>
+<video id="preview" autoplay="autoplay" muted="muted" playsinline="playsinline" disablepictureinpicture="disablepictureinpicture"></video>
 <div id="no-camera-warning" class="hidden"></div>
 <div id="camera-label"><b id="camera-name"></b> camera &middot; <span id="camera-status">starting</span></div>
 <?php require('inc/ajax-failure.inc'); ?>

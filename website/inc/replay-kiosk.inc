@@ -64,6 +64,6 @@ var g_replay_kiosk = {
     <canvas id="playback" class="full-window"></canvas>
   </div>
   <!-- This display's own camera, if it has one (unseen; replays show it) -->
-  <video id="own-camera" class="hidden" autoplay="autoplay" muted="muted" playsinline="playsinline"></video>
+  <video id="own-camera" class="hidden" autoplay="autoplay" muted="muted" playsinline="playsinline" disablepictureinpicture="disablepictureinpicture"></video>
 </body>
 </html>

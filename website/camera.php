@@ -107,7 +107,7 @@ function toggle_preview() {
     <label for="show-preview">Show preview</label>
   </div>
 
-  <video id="preview" autoplay="true" muted="true" playsinline="true"></video>
+  <video id="preview" autoplay="true" muted="true" playsinline="true" disablepictureinpicture="disablepictureinpicture"></video>
   <p id="camera-status"></p>
 </section>
 </div>
