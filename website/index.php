@@ -94,6 +94,14 @@ div.index_background {
   width: 100%;
 }
 
+/* The two columns stay together in the middle of a wide window, rather than
+   each taking half of it */
+div.index_columns {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flow-root;
+}
+
 div.index_column {
   width: 50%;
   display: inline-block;
@@ -275,6 +283,7 @@ if ($show_voting_button && !have_permission(SET_UP_PERMISSION | CONTROL_RACE_PER
 // With two columns (for those who run the race), blue and silver are on the
 // left and the rest on the right.
 if ($two_columns) {
+  echo "<div class='index_columns'>\n";
   echo "<div class='index_column'>\n";
 }
 
@@ -340,6 +349,7 @@ end_tile_group();
 echo "</div>\n";  // block_buttons
 if ($two_columns) {
   echo "</div>\n";  // index_column
+  echo "</div>\n";  // index_columns
 }
 
 echo "</div>\n";  // index_background
