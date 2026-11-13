@@ -185,8 +185,9 @@ p.photo_dir_status_message:empty {
   min-width: 0;
   padding: 2px 6px;
 }
-#track-cameras-table select {
-  font-size: var(--text-sm, 0.9rem);
+#track-cameras-table .mselect {
+  margin: 0;
+  font-size: var(--text-sm);
 }
 #track-cameras-table td.camera-status {
   font-size: var(--text-sm, 0.9rem);

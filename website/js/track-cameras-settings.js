@@ -27,7 +27,7 @@ function describe_age(seconds) {
 
 // A <select> whose first choice, 0, means "the Race Dashboard's setting"
 function tuning_select(field, value, choices, describe, default_value) {
-  let select = $("<select class='not-mobile'/>").attr('data-field', field);
+  let select = $("<select/>").attr('data-field', field);
   select.append($("<option/>").val(0).text('Default (' + describe(default_value) + ')'));
   choices.forEach(function(c) {
     select.append($("<option/>").val(c).text(describe(c)));
@@ -119,6 +119,7 @@ function render_track_cameras(data) {
       $(this).trigger('blur');
     });
     tbody.append(row);
+    mobile_select(row.find('select'));  // the site's dropdowns (mobile.js)
   });
   $("#no-track-cameras-yet").toggleClass('hidden', data.cameras.length > 0);
 

@@ -1,3 +1,6 @@
+/* Track Camera (camera.php): a narrow page with one card -- the camera's
+   name, which camera to use, and its preview.  #log is a debugging panel
+   (camera.php?debug). */
 
 #log {
   position: fixed;
@@ -6,8 +9,8 @@
   top: 65px;
   bottom: 0;
   z-index: 100;
-  background-color: white;
-  padding-left: 15px;
+  background-color: var(--color-surface);
+  padding-left: var(--space-4);
   line-height: 1.0;
 }
 #log p {
@@ -25,32 +28,18 @@
   text-align: center;
 }
 
-#device-picker-div {
-  min-height: 50px;
+#camera-name-form input[type=text] {
+  width: 14em;
 }
 
 #preview {
-  max-width: 640px;
-}
-
-/* camera.php: the camera's name, and how it's doing */
-#camera-name-form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2, 8px);
-  margin: var(--space-3, 12px) 0;
-}
-#camera-name-form input[type=text] {
-  width: 12em;
-  margin: 0;
-}
-#camera-name-form input[type=submit] {
-  width: auto;
-  margin: 0;
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
 }
 #camera-status {
+  margin: var(--space-2) 0 0 0;
   text-align: center;
-  color: var(--color-text-muted, #555);
+  color: var(--color-text-muted);
 }

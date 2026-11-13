@@ -105,10 +105,10 @@ function award_group_options() {
   <span class="drag-handle"></span>
   <input type="text" id="quick_award_name" class="award-name not-mobile" placeholder="New award name"
          aria-label="New award name" autocomplete="off"/>
-  <select id="quick_award_type" class="award-type not-mobile" aria-label="Award type">
+  <select id="quick_award_type" class="award-type" aria-label="Award type">
 <?php award_type_options(); ?>
   </select>
-  <select id="quick_award_group" class="award-group not-mobile" aria-label="Award for">
+  <select id="quick_award_group" class="award-group" aria-label="Award for">
 <?php award_group_options(); ?>
   </select>
   <span class="row-buttons">

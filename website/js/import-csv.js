@@ -187,6 +187,8 @@ function buildEncodingSelector() {
     }
   }
   select.val("65001");  // UTF-8
+  select.attr('data-wrapper-class', 'mselect-inline');
+  mobile_select(select);
   select.on('change', onEncodingChange);
 }
 
@@ -209,7 +211,8 @@ function buildWorksheetSelector(sheet_index) {
   if (select.length == 0) {
     var sheet = $("#sheet");
     sheet.append("<label for='select-sheet'>Sheet:</label>");
-    select = $("<select id='select-sheet'></select>").appendTo(sheet);
+    select = $("<select id='select-sheet' data-wrapper-class='mselect-inline'></select>").appendTo(sheet);
+    mobile_select(select);
     select.off('change');
   }
 
@@ -219,6 +222,7 @@ function buildWorksheetSelector(sheet_index) {
     option.text(g_workbook.SheetNames[i]);
   }
   select.val(sheet_index);
+  mobile_select_refresh(select);
 
   select.on('change', onWorksheetChange);
 }

@@ -215,6 +215,20 @@ div.mselect-inner:after {
   right: .5625em;
 }
 
+/* A dropdown in a line of text ("Encoding: [UTF-8]"): add
+   data-wrapper-class="mselect-inline" to the <select> */
+div.mselect.mselect-inline {
+  display: inline-block;
+  min-width: 12em;
+  max-width: 100%;
+  margin: 0 0 0 var(--space-1);
+  vertical-align: middle;
+}
+div.mselect.mselect-inline div.mselect-inner {
+  padding-top: .25em;
+  padding-bottom: .25em;
+}
+
 div.mini-mselect {
   font-size: var(--text-base);
 }

@@ -9,10 +9,12 @@ session_write_close();
 <title>Track Camera</title>
 <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/>
 <?php require('inc/stylesheet.inc'); ?>
+<link rel="stylesheet" type="text/css" href="css/mobile.css"/>
 <link rel="stylesheet" type="text/css" href="css/camera.css"/>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery-migrate.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/mobile.js"></script>
 <script type="text/javascript" src="js/message-poller.js"></script>
 <script type="text/javascript" src="js/camera-signaling.js"></script>
 <script type="text/javascript" src="js/camera-source.js"></script>
@@ -83,27 +85,31 @@ function toggle_preview() {
 
 <div id="log" <?php if (!isset($_GET['debug'])) echo 'class="hidden"'; ?> ></div>
 
-<div class="block_buttons">
-  <form id="camera-name-form" onsubmit="return on_rename();">
-    <label for="camera-name">Camera name:</label>
-    <input type="text" id="camera-name" maxlength="50" autocomplete="off"/>
+<div class="page-content narrow">
+<section class="card card-accent accent-during">
+  <h2 class="card-title">This Camera</h2>
+  <form id="camera-name-form" class="form-row" onsubmit="return on_rename();">
+    <label for="camera-name">Name</label>
+    <input type="text" id="camera-name" class="not-mobile" maxlength="50" autocomplete="off"/>
     <input type="submit" class="btn btn-secondary btn-sm" value="Rename"/>
   </form>
 
-  <video id="preview" autoplay="true" muted="true" playsinline="true"></video>
-  <p id="camera-status"></p>
+  <div id="device-picker-div" class="form-row">
+    <label for="device-picker">Camera</label>
+    <select id="device-picker" data-wrapper-class="mselect-inline"><option>Please wait</option></select>
+  </div>
 
   <div id="no-camera-warning" class="hidden"></div>
 
-  <div id="device-picker-div">
-    <select id="device-picker"><option>Please wait</option></select>
-  </div>
-
-  <div>
+  <div class="form-row">
     <input type="checkbox" id="show-preview" checked="checked"
         onclick="toggle_preview();"/>
-    <label for="show-preview">Show preview?</label>
+    <label for="show-preview">Show preview</label>
   </div>
+
+  <video id="preview" autoplay="true" muted="true" playsinline="true"></video>
+  <p id="camera-status"></p>
+</section>
 </div>
 
 </body>

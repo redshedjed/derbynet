@@ -270,7 +270,7 @@ function photo_aspect_select($repo_name, $label, $choices) {
   $id = 'photo-aspect-'.$repo_name;
   $current = photo_aspect($repo_name);
   echo '<p><label for="'.$id.'">'.$label.'</label>'."\n";
-  echo '  <select id="'.$id.'" name="'.$id.'" class="not-mobile">'."\n";
+  echo '  <select id="'.$id.'" name="'.$id.'" data-wrapper-class="mselect-inline">'."\n";
   foreach ($choices as $value => $text) {
     echo '    <option value="'.$value.'"'.($value == $current ? ' selected="selected"' : '').'>'
         .htmlspecialchars($text, ENT_QUOTES, 'UTF-8')."</option>\n";
@@ -378,7 +378,7 @@ function photo_aspect_select($repo_name, $label, $choices) {
          empty to hide it.</p>
       <p>
         <label for="n-times-per-lane">Times each racer runs in each lane</label>
-        <select id="n-times-per-lane" name="n-times-per-lane" class="not-mobile">
+        <select id="n-times-per-lane" name="n-times-per-lane" data-wrapper-class="mselect-inline">
 <?php
   $n_times = intval(read_raceinfo('n-times-per-lane', 1));
   for ($n = 1; $n <= 6; ++$n) {

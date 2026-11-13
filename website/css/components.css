@@ -159,7 +159,10 @@ input.small-button,
 a.small-button,
 input.small-button,
 .block_buttons input.small-button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  vertical-align: middle;
   color: var(--color-text-on-brand);
   background: var(--color-brand);
   border: 1px solid var(--color-brand-strong);
@@ -516,8 +519,7 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
   cursor: grab;
   user-select: none;
 }
-.card-row input[type=text],
-.card-row select {
+.card-row input[type=text] {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
@@ -531,8 +533,7 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
 }
 /* Locked: still a box, but quiet, with grey text so it doesn't look
    editable */
-.card-row input[type=text][readonly],
-.card-row select:disabled {
+.card-row input[type=text][readonly] {
   border-color: var(--gray-200);
   background: var(--color-surface-sunken);
   color: var(--color-text-muted);
@@ -544,12 +545,18 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
 .card-row .row-cell {
   min-width: 0;
 }
-.card-row .row-cell select,
+.card-row .row-cell .mselect,
 .card-row.editing .row-cell .locked-text {
   display: none;
 }
-.card-row.editing .row-cell select {
+.card-row.editing .row-cell .mselect {
   display: block;
+}
+/* Dropdowns (mobile.js) in a row: the row's text size, no extra margin */
+.card-row .mselect {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--text-sm);
 }
 .card-row input.award-name[readonly] {
   font-weight: var(--weight-semibold);

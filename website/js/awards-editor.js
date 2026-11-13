@@ -39,15 +39,17 @@ function make_award_row() {
   row.append($('<span class="row-cell"/>')
              .append($('<input type="text" class="locked-text not-mobile" readonly="readonly"'
                        + ' tabindex="-1"/>').attr('aria-label', 'Award type'))
-             .append($('<select class="award-type not-mobile" disabled="disabled"/>')
+             .append($('<select class="award-type" disabled="disabled"/>')
                      .attr('aria-label', 'Award type')
                      .html($("#quick_award_type").html())));
   row.append($('<span class="row-cell"/>')
              .append($('<input type="text" class="locked-text not-mobile" readonly="readonly"'
                        + ' tabindex="-1"/>').attr('aria-label', 'Award for'))
-             .append($('<select class="award-group not-mobile" disabled="disabled"/>')
+             .append($('<select class="award-group" disabled="disabled"/>')
                      .attr('aria-label', 'Award for')
                      .html($("#quick_award_group").html())));
+  // The site's dropdowns (mobile.js), shown while the row is being edited
+  mobile_select(row.find('select'));
   var buttons = $('<span class="row-buttons"/>').appendTo(row);
   if (!awards_locked()) {
     buttons.append($('<input type="button" class="btn btn-secondary btn-sm edit-button" value="Edit"/>')
@@ -74,6 +76,7 @@ function fill_award_row(row, award, data) {
   row.find('.award-name').val(award.awardname);
   row.find('.award-type').val(award.awardtypeid);
   row.find('.award-group').val(class_and_rank_value(award));
+  mobile_select_refresh(row.find('select'));
   show_locked_text(row);
 }
 
@@ -118,6 +121,7 @@ function stop_editing(row, restore) {
     row.find('.award-name').val(award.awardname);
     row.find('.award-type').val(award.awardtypeid);
     row.find('.award-group').val(class_and_rank_value(award));
+    mobile_select_refresh(row.find('select'));
   }
   row.removeClass('editing');
   row.find('.award-name').prop('readonly', true);
