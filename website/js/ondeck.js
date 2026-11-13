@@ -32,8 +32,11 @@ function repopulate_schedule(json) {
     th_width_vw = 4;
   }
   var td_width_vw = (100 - (th0_width_vw + th_width_vw) - 5 /* border */) / (nlanes || 1);
-  // CSS specifies td padding 0.5vw, so max width for each car photo is td_width_vw - 1 (vw).
-  g_img_max_width_px = window.innerWidth * ((td_width_vw - 1) / 100);
+  // Widths are percentages of the table, which fills a kiosk's screen but is
+  // narrower on a regular monitor (css/ondeck.css).  Allow a point for the
+  // cell's padding when sizing car photos.
+  var table_width_px = $("table#schedule").width() || window.innerWidth;
+  g_img_max_width_px = table_width_px * ((td_width_vw - 1) / 100);
   // Don't let any super-tall, thin image screw things up completely; limit to
   // 25% of viewport height.
   g_img_max_height_px = window.innerHeight * 25 / 100;
@@ -45,7 +48,7 @@ function repopulate_schedule(json) {
 
   function add_byes(row, nbyes) {
     while (nbyes > 0) {
-      $("<td class='bye'/>").text("Bye").appendTo(row).css({'width': td_width_vw + 'vw'});
+      $("<td class='bye'/>").text("Bye").appendTo(row).css({'width': td_width_vw + '%'});
       --nbyes;
     }
   }
@@ -62,11 +65,11 @@ function repopulate_schedule(json) {
     // need an invisible sizing row before the divider
     var sizer = $("<tr style='height: 0; border: none;'/>").appendTo('table#schedule');
     if (interleaved) {
-      sizer.append($('<th/>').css({'width': th0_width_vw + 'vw', 'height': 0}));
+      sizer.append($('<th/>').css({'width': th0_width_vw + '%', 'height': 0}));
     }
-    sizer.append($('<th/>').css({'width': th_width_vw + 'vw', 'height': 0}));
+    sizer.append($('<th/>').css({'width': th_width_vw + '%', 'height': 0}));
     for (var lane = 0; lane < nlanes; ++lane) {
-      sizer.append($('<td/>').css({'width': td_width_vw + 'vw',
+      sizer.append($('<td/>').css({'width': td_width_vw + '%',
                                    'height': 0,
                                    'padding': 0,
                                    'border': 'none'}));
@@ -111,7 +114,7 @@ function repopulate_schedule(json) {
       if (interleaved) {
         row_label = rounds_map[cell['roundid']]['name'] + ', ' + row_label;
         $("<th class='masterheat'/>").text(cell['masterheat'])
-          .css({'width': th0_width_vw + 'vw'})
+          .css({'width': th0_width_vw + '%'})
           .appendTo(row);
       }
       // "Heat " is its own span so narrow screens can show just the number
@@ -119,14 +122,14 @@ function repopulate_schedule(json) {
         .append($("<span class='heat_word'/>")
                 .text(row_label.substring(0, row_label.length - String(cell['heat']).length)))
         .append(document.createTextNode(cell['heat']))
-        .css({'width': th_width_vw + 'vw'})
+        .css({'width': th_width_vw + '%'})
         .appendTo(row);
       roundid = cell['roundid'];
       heat = cell['heat'];
     } 
     add_byes(row, cell['lane'] - 1 - lane);
 
-    var td = $("<td class='chart'/>").appendTo(row).css({'width': td_width_vw + 'vw'});
+    var td = $("<td class='chart'/>").appendTo(row).css({'width': td_width_vw + '%'});
     td.addClass('lane_' + cell['lane'])
       .addClass('resultid_' + cell['resultid'])
       .addClass(g_lane_colors[cell['lane'] - 1] + '_column_color');

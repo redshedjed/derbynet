@@ -197,3 +197,31 @@ p.race_start {
   background: #E8EFF8;
   border-bottom: 1px solid var(--gray-200);
 }
+
+/* On a regular monitor (not a kiosk): a centered table of reasonable width
+   in ordinary text sizes, rather than the TV-sized type that grows with the
+   window.  ondeck.php sets body.ondeck-desk; kiosks get body.ondeck-kiosk
+   and keep the sizes above. */
+body.ondeck-desk table#schedule {
+  max-width: 1100px;
+  margin: var(--space-4) auto var(--space-6) auto;  /* room at the end */
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+body.ondeck-desk th.divider {
+  font-size: 1.25rem;
+}
+body.ondeck-desk .curgroup .d0 th,
+body.ondeck-desk .curgroup .d1 th {
+  font-size: 0.95rem;
+}
+body.ondeck-desk th.masterheat {
+  font-size: 1.5rem;
+}
+body.ondeck-desk td {
+  font-size: 1.05rem;
+  padding: var(--space-2);
+}
+body.ondeck-desk p.race_start {
+  font-size: 1.1rem;
+}
