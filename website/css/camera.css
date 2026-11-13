@@ -11,7 +11,7 @@
   line-height: 1.0;
 }
 #log p {
-  font-size: 26px;
+  font-size: var(--text-sm);
   margin-top: 0px;
   margin-bottom: 0px;
 }

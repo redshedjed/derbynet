@@ -133,7 +133,7 @@ div.index_background {
 /* Who's logged in, under Log out */
 p.logged_in_as {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
@@ -221,7 +221,7 @@ nav.race_day_guide .step_title {
 }
 nav.race_day_guide .step_status {
   display: block;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 nav.race_day_guide li.done .step_mark {

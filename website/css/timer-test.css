@@ -56,7 +56,6 @@ img#timer_summary_icon {
 }
 div#timer_summary h3 {
   margin: 0 0 var(--space-1) 0;
-  font-size: var(--text-lg);
 }
 div#timer_summary p {
   margin: 2px 0;

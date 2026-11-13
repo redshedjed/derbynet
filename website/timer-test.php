@@ -61,7 +61,7 @@ $(function() {
 <div id="timer_summary">
   <img id="timer_summary_icon" src="img/status/unknown.png"/>
   <div id="timer_summary_text">
-    <h3>Timer Status</h3>
+    <h3 class="card-title">Timer Status</h3>
     <p><b id="timer_status_text">Timer status not yet updated</b></p>
     <div id="timer-details"></div>
   </div>

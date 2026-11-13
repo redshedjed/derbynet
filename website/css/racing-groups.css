@@ -39,7 +39,6 @@ div#race-structure {
 }
 #race-rules h3 {
   margin: var(--space-4) 0 var(--space-2) 0;
-  font-size: var(--text-lg);
 }
 #race-rules label,
 #race-rules div.labels {
@@ -232,7 +231,7 @@ div.block_buttons input.modest-button:hover {
 /* ************* Modal for Add Class/Add Aggregate ****************/
 #constituent_extension p,
 #constituent_extension p span {
-  font-size: medium;
+  font-size: var(--text-base);
 }
 #constituent_extension p span {
   font-weight: bold;
@@ -254,7 +253,7 @@ div.block_buttons input.modest-button:hover {
 #add_class_modal label {
   display: inline-block;
   text-align: right;
-  font-size: 18px;
+  font-size: var(--text-base);
 }
 #constituent-div label,
 #aggregate-by-div label {
@@ -272,7 +271,7 @@ div.block_buttons input.modest-button:hover {
 .ntrophies label {
   display: inline-block;
   text-align: right;
-  font-size: 18px;
+  font-size: var(--text-base);
   font-weight: bold;
   width: 150px;
 }
@@ -280,7 +279,7 @@ div.block_buttons input.modest-button:hover {
   display: inline-block;
   position: absolute;
   right: 0px;
-  font-size: 12px;
+  font-size: var(--text-base);
 }
 #add_class_modal .ntrophies label {
   margin-top: 10px;
@@ -290,7 +289,7 @@ div.block_buttons input.modest-button:hover {
   right: 60px;
 }
 .ntrophies .mselect span {
-  font-size: 20px;
+  font-size: var(--text-base);
   margin-right: 5px;
 }
 #constituent-clip {
@@ -312,12 +311,12 @@ div.block_buttons input.modest-button:hover {
 #add_class_modal .constituent-label {
   width: 300px;
   margin-right: 1em;
-  font-size: 16px;
+  font-size: var(--text-base);
   font-weight: bold;
 }
 
 #aggregate-constituents .flipswitch span {
-  font-size: 16px;
+  font-size: var(--text-base);
 }
 
 #aggregate-constituents label {

@@ -75,7 +75,7 @@ window.onload = function() {
   width: 100%;
   min-height: 52px;
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
 }
 .export_row p {
   flex: 1;

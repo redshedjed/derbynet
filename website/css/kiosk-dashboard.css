@@ -181,7 +181,7 @@ p.parameters {
   gap: var(--space-1);
 }
 .btn-with-note small {
-  font-size: 0.8125rem;
+  font-size: var(--text-xs);
 }
 #set_up_displays .toolbar {
   align-items: flex-start;

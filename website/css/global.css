@@ -249,7 +249,7 @@ tbody {
 .block_buttons label,
 .block_buttons span,
 .block_buttons p {
-  font-size: 24px;
+  font-size: var(--text-base);
 }
 
 .block_buttons input[type='button'],
@@ -471,7 +471,7 @@ tbody {
   padding: 1em;
   width: 25em;
   max-width: calc(100vw - 2em);
-  font-size: x-large;
+  font-size: var(--text-xl);
   text-align: center;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
@@ -487,6 +487,14 @@ tbody {
   width: 100%;
   background: var(--color-backdrop);
   display: none;
+}
+
+/* A dialog's heading ("Add New Den", "Name for new database") */
+.modal_dialog h2,
+.modal_dialog h3 {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
 }
 
 #second_modal_background {

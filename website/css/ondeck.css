@@ -209,19 +209,19 @@ body.ondeck-desk table#schedule {
   box-shadow: var(--shadow-card);
 }
 body.ondeck-desk th.divider {
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
 }
 body.ondeck-desk .curgroup .d0 th,
 body.ondeck-desk .curgroup .d1 th {
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
 }
 body.ondeck-desk th.masterheat {
-  font-size: 1.5rem;
+  font-size: var(--text-xl);
 }
 body.ondeck-desk td {
-  font-size: 1.05rem;
+  font-size: var(--text-base);
   padding: var(--space-2);
 }
 body.ondeck-desk p.race_start {
-  font-size: 1.1rem;
+  font-size: var(--text-base);
 }

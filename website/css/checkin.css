@@ -147,7 +147,7 @@ tr.exclude td.checkin-status {
 }
 
 #edit_racer_modal .flipswitch {
-  font-size: 24px;
+  font-size: var(--text-xl);
   margin-left: 37px;
   margin-bottom: 30px;
 }
@@ -156,10 +156,6 @@ tr.exclude td.checkin-status {
 #edit_racer_modal .block_buttons optgroup,
 #edit_racer_modal .block_buttons option,
 #edit_racer_modal .block_buttons label,
-#edit_racer_modal .block_buttons span,
-#edit_racer_modal .block_buttons p {
-  font-size: 18px;
-}
 #edit_racer_modal input[type="button"],
 #edit_racer_modal .block_buttons input[type="submit"],
 #edit_racer_modal .block_buttons a.button_link {
@@ -224,7 +220,7 @@ tr.exclude td.checkin-status {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 30px;
-  font-size: x-large;
+  font-size: var(--text-xl);
 }
 
 .centered_flipswitch * {
@@ -235,19 +231,19 @@ tr.exclude td.checkin-status {
 #autocrop-label {
   width: 100%;
   text-align: center;
-  font-size: large;
+  font-size: var(--text-base);
   font-weight: bold;
 }
 
 /* ---------------- Bulk modal ---------------- */
 
 #bulk_details_modal .eligible-flip {
-  font-size: 24px;
+  font-size: var(--text-xl);
   margin-left: 40px;
 }
 
 #bulk_details_modal .renumber-flip {
-  font-size: 24px;
+  font-size: var(--text-xl);
   margin-left: 75px;
 }
 
@@ -268,7 +264,7 @@ tr.exclude td.checkin-status {
   width: 27em;
   height: 40px;
   right: 1em;
-  font-size: large;
+  font-size: var(--text-lg);
   color: white;
   background-color: var(--color-brand);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -291,7 +287,7 @@ tr.exclude td.checkin-status {
 
 #find-racer-text {
   background-color: #ffffff;
-  font-size: 18px;
+  font-size: var(--text-lg);
   font-family: var(--font-sans);
 }
 
@@ -316,16 +312,16 @@ p.warning a.ui-link {
   text-align: center;
   color: var(--color-danger);
   font-weight: bold;
-  font-size: 16px;
+  font-size: var(--text-base);
 }
 
 /* ---------------- Partitions modal ---------------- */
 
 .mlistview > li > p {
-  font-size: 17px;
+  font-size: var(--text-base);
 }
 .mlistview > li > p span.count {
-  font-size: 16px;
+  font-size: var(--text-sm);
   font-weight: bold;
   float: right;
 }

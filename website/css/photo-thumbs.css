@@ -192,7 +192,7 @@ img.ui-draggable-dragging {
   width: 27em;
   height: 40px;
   right: 1em;
-  font-size: large;
+  font-size: var(--text-lg);
   color: white;
   background-color: var(--color-brand);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -217,7 +217,7 @@ img.ui-draggable-dragging {
 
 #find-racer-text {
   background-color: #ffffff;
-  font-size: 18px;
+  font-size: var(--text-lg);
   font-family: var(--font-sans);
 }
 

@@ -98,7 +98,7 @@
 }
 #prefs-drop-msg {
   margin: 0;
-  font-size: 1.375rem;
+  font-size: var(--text-xl);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
 }
@@ -138,11 +138,11 @@
 span.trouble {
     color: var(--color-danger);
     font-weight: bold;
-    font-size: 16px;
+    font-size: var(--text-base);
 }
 
 .database_file {
-    font-size: 20px;
+    font-size: var(--text-lg);
     font-weight: bold;
 }
 
@@ -155,7 +155,7 @@ span.trouble {
     background: var(--color-surface);
     text-align: center;
     font-weight: bold;
-    font-size: 30px;
+    font-size: var(--text-2xl);
 
     border: 1px solid var(--gray-200);
     border-top: 6px solid var(--color-brand);
@@ -176,7 +176,7 @@ span.trouble {
     border-radius: var(--radius-md);
     background: var(--color-surface);
     color: var(--color-brand);
-    font-size: 20px;
+    font-size: var(--text-lg);
     cursor: pointer;
     width: 50%;
 }
@@ -226,7 +226,7 @@ span.trouble {
     color: var(--color-danger);
     font-weight: bold;
     float: right;
-    font-size: 16px;
+    font-size: var(--text-base);
 }
 
 #browse_for_sqlite {
@@ -266,7 +266,7 @@ span.trouble {
 .purge_div p,
 .purge_div span {
   padding-top: 15px;
-  font-size: 16px;
+  font-size: var(--text-base);
 }
 .purge_button {
     width: 260px;

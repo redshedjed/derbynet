@@ -35,7 +35,6 @@
 }
 .control_group h3 {
   margin: 0 0 var(--space-1) 0;
-  font-size: var(--text-lg);
 }
 .control_group p {
   margin: var(--space-1) 0;
@@ -220,7 +219,7 @@ div.adjustment-needed input.late-arrival-button[disabled] {
 .centered_flipswitch {
   width: 242px;
   margin: 0 auto var(--space-3) auto;
-  font-size: x-large;
+  font-size: var(--text-xl);
 }
 .heat_buttons {
   display: flex;
@@ -318,6 +317,10 @@ p.last_contact {
 .control_column .scheduling_control {
   position: relative;
   cursor: pointer;
+}
+/* Each round card's name: the card-title size */
+.scheduling_control h3.roundclass {
+  font-size: var(--text-lg);
 }
 .scheduling_control h3.roundclass img {
   width: 12px;
@@ -450,7 +453,7 @@ input.lane-time::-webkit-outer-spin-button {
   width: 100px;
 }
 #new-round-top-racers {
-  font-size: 24px;
+  font-size: var(--text-base);
 }
 #bucketed-div {
   margin-bottom: 20px;
@@ -478,7 +481,7 @@ input.lane-time::-webkit-outer-spin-button {
   width: 300px;
   margin-right: 1em;
   text-align: right;
-  font-size: 16px;
+  font-size: var(--text-base);
   font-weight: bold;
 }
 #new-round-modal input[type=submit] {
@@ -504,7 +507,6 @@ input.lane-time::-webkit-outer-spin-button {
 }
 #purge_modal h3 {
   text-align: center;
-  font-size: 24px;
 }
 #purge_modal_inner {
   position: relative;

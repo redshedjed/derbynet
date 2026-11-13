@@ -73,7 +73,7 @@ function h($s) {
 #add-location input[type=text] {
   box-sizing: border-box;
   padding: 6px 10px;
-  font-size: 1rem;
+  font-size: var(--text-base);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
 }

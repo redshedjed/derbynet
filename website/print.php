@@ -208,7 +208,7 @@ foreach ($doc_classes as $c => $details) {
       $partition_assignments = $emblems_default['partitions'];
 
       echo "<label for='{$ctrl_name}'>Emblems:</label>";
-      echo "<select id='{$ctrl_name}' name='{$ctrl_name}' style='font-size:24px;' onchange='on_emblems_select_change(this)'>";
+      echo "<select id='{$ctrl_name}' name='{$ctrl_name}' onchange='on_emblems_select_change(this)'>";
       echo "<option value='by-carno' selected='selected'>By car number</option>";
       // TODO
       echo "<option value='by-part' >By ".partition_label_lc()."</option>";
@@ -236,7 +236,7 @@ foreach ($doc_classes as $c => $details) {
       for ($century = 0; $century < $max_century; ++$century) {
         $ref = isset($century_assignments[$century]) ? $century_assignments[$century] : null;
         echo "<li data-emblem='".$emblem_index($ref)."' style='height: 60px; background-color: #f6f6f6;'>";
-        echo "<p style='height: 60px; font-weight: bold; font-size: 16px;'>{$century}00-{$century}99";
+        echo "<p class='emblem-range'>{$century}00-{$century}99";
         echo $emblem_img($ref);
         echo "</p>";
         echo "<a onclick='on_cartags_image_click(this)'></a>";
@@ -250,7 +250,7 @@ foreach ($doc_classes as $c => $details) {
         ++$century;
         $ref = isset($partition_assignments[$century]) ? $partition_assignments[$century] : null;
         echo "<li data-emblem='".$emblem_index($ref)."' style='height: 60px; background-color: #f6f6f6;'>";
-        echo "<p style='height: 60px; font-weight: bold; font-size: 16px;'>";
+        echo "<p class='emblem-range'>";
         echo htmlspecialchars($partition, ENT_QUOTES, 'UTF-8');
         echo $emblem_img($ref);
         echo "</p>";

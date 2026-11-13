@@ -447,7 +447,7 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
   border-radius: 50%;
   background: var(--color-surface);
   color: var(--color-text-muted);
-  font-size: 15px;
+  font-size: var(--text-sm);
   line-height: 26px;
   text-align: center;
   cursor: pointer;
@@ -510,7 +510,7 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
 }
 .card-row .drag-handle {
   color: var(--color-text-muted);
-  font-size: 18px;
+  font-size: var(--text-lg);
   letter-spacing: -4px;
   text-align: center;
   cursor: grab;

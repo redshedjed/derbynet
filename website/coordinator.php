@@ -113,7 +113,7 @@ $warn_no_timer = warn_no_timer();
     <div class="status_icon">
       <img id="timer_status_icon" src="img/status/unknown.png"/>
     </div>
-    <h3>Timer</h3>
+    <h3 class="card-title">Timer</h3>
     <p><b id="timer_status_text">Timer status not yet updated</b></p>
     <p class="status_detail">The track has <span id="lane_count">an unknown number of</span> lane(s).</p>
     <div id='timer-test' class="status_buttons">
@@ -127,7 +127,7 @@ $warn_no_timer = warn_no_timer();
     <div class="status_icon">
       <img id="replay_status_icon" src="img/status/unknown.png"/>
     </div>
-    <h3>Replay</h3>
+    <h3 class="card-title">Replay</h3>
     <p><b id="replay_status">Remote replay status not yet updated</b></p>
     <div class="status_buttons">
       <span id="test_replay">
@@ -142,7 +142,7 @@ $warn_no_timer = warn_no_timer();
 <div class="control_column">
 
   <div id="playlist-group" class="control_group">
-    <h3>Playlist</h3>
+    <h3 class="card-title">Playlist</h3>
     <p class="section_note">The plan: the order the rounds race in.  When a round
       finishes, the playlist schedules and starts the next one (marked NEXT below).</p>
     <div class="playlist_buttons">
@@ -156,7 +156,7 @@ $warn_no_timer = warn_no_timer();
   </div>
 
   <div class="rounds_heading">
-    <h3>Rounds</h3>
+    <h3 class="card-title">Rounds</h3>
     <p class="section_note">Every round, whether or not it's in the playlist.
       Schedule and race any of them by hand.</p>
   </div>

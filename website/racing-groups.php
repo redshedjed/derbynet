@@ -88,7 +88,7 @@ $(function() {
                value="<?php echo partition_label(); ?>"/>.
 </div>
 
-<h3>Awards</h3>
+<h3 class="card-title">Awards</h3>
 
 <div class="n_default_trophies">
    <input id="n-pack" name="n-pack-trophies" type="number" min="0" max="20" class="not-mobile"
@@ -123,7 +123,7 @@ $(function() {
         <label for="n-rank">speed trophies per subgroup</label>
 </div>
 
-<h3><span class="partition-label"><?php echo partition_label(); ?></span> Images</h3>
+<h3 class="card-title"><span class="partition-label"><?php echo partition_label(); ?></span> Images</h3>
 <p class="rg-hint">Each <span class="partition-label-lc"><?php echo partition_label_lc(); ?></span>'s
   image, for car tags.  Click one to change it.</p>
 <ul id="den-images"></ul>
