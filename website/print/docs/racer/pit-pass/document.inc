@@ -88,7 +88,7 @@ class PitPassDocument extends PrintableRacerDocument {
  function DrawOneAt($x, $y, &$racer) {
     // Race car image goes underneath
     $this->pdf->SetAlpha(0.25);
-    $this->pdf->Image(dirname(__FILE__).'/yellow_racing_car.png',
+    $this->pdf->Image(print_image_path('yellow_racing_car.png'),
                       $x + (3.825 - 2.25) / 2,
                       $y + $this->y_coords['yellow-car'],
                       2.25);
@@ -176,9 +176,9 @@ class PitPassDocument extends PrintableRacerDocument {
 
   protected function DrawBorder($x, $y) {
     if ($this->get_option('layout') == '4x6') {
-      $this->pdf->Image(dirname(__FILE__).'/pit-pass-frame-4x6.png', $x, $y, 3.825, 6.000);
+      $this->pdf->Image(print_image_path('pit-pass-frame-4x6.png'), $x, $y, 3.825, 6.000);
     } else {
-      $this->pdf->Image(dirname(__FILE__).'/pit-pass-frame.png', $x, $y, 3.825, 5.000);
+      $this->pdf->Image(print_image_path('pit-pass-frame.png'), $x, $y, 3.825, 5.000);
     }
   }
 

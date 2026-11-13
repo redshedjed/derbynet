@@ -1,5 +1,12 @@
 <?php
 
+// Images used by the print documents live together in print/img, rather than
+// in the documents' own directories.
+function print_image_path($filename) {
+  return dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'img'
+      . DIRECTORY_SEPARATOR . $filename;
+}
+
 function load_document_files_from($dir) {
   if (is_dir($dir)) {
     if ($dh = opendir($dir)) {

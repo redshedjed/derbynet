@@ -42,14 +42,14 @@ class AwanaDriversLicenseDocument extends PrintableRacerDocument {
 
     // Washout the background for better visibility
     $this->pdf->SetAlpha(0.15);
-    $this->pdf->Image(dirname(__FILE__).'/awana-clubs-logo-color.jpg', $x + 0.90, $y + 0.60, 2);
+    $this->pdf->Image(print_image_path('awana-clubs-logo-color.jpg'), $x + 0.90, $y + 0.60, 2);
     $this->pdf->SetAlpha(1);
 
     if (!$this->get_option('use_photo')) {
     } else if ($racer['imagefile']) {
       $this->pdf->Image($racer['imagefile'], $x + 0.1, $y + 0.6, 0.75);
     } else {
-      $this->pdf->Image(dirname(__FILE__).'/yellow_racing_car.png', $x + 0.1, $y + 0.75, 0.75);
+      $this->pdf->Image(print_image_path('yellow_racing_car.png'), $x + 0.1, $y + 0.75, 0.75);
     }
 
     $this->pdf->DrawSequence($x + 2.80, $y + 0.60,
@@ -108,7 +108,7 @@ class AwanaDriversLicenseDocument extends PrintableRacerDocument {
 
   // The "banner" is comprised of a checked background, two images, and a line.
   protected function DrawBanner($x, $y) {
-    //$this->pdf->Image(dirname(__FILE__).'/banner.png', $x, $y, 3);
+    //$this->pdf->Image(print_image_path('banner.png'), $x, $y, 3);
     $this->DrawBannerBackground($x, $y);
     $this->pdf->SetFillColor(0x00, 0x00, 0x00);
     $this->pdf->Rect($x, $y + 0.50, 3.0, 0.01, 'F');
@@ -124,8 +124,8 @@ class AwanaDriversLicenseDocument extends PrintableRacerDocument {
     $this->pdf->CenteredSequence($x + 1.5, $y + 0.350,
                                array(new SetFontTag('Courier', 'I', 8), "Driver's License"));
 
-    $this->pdf->Image(dirname(__FILE__).'/grand-prix-logo-color.png', $x + 0.05, $y + 0.025, 0.75);
-    $this->pdf->Image(dirname(__FILE__).'/grand-prix-logo-color.png', $x + 2.20, $y + 0.025, 0.75);
+    $this->pdf->Image(print_image_path('grand-prix-logo-color.png'), $x + 0.05, $y + 0.025, 0.75);
+    $this->pdf->Image(print_image_path('grand-prix-logo-color.png'), $x + 2.20, $y + 0.025, 0.75);
   }
 
 // assemble the checkered background of the top banner

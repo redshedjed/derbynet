@@ -76,7 +76,7 @@ class GoldCupAwardDocument extends PrintableAwardDocument {
 
     $this->pdf->AddFont('BlackChancery', '', 'black-chancery.php');
 
-    $this->pdf->Image(dirname(__FILE__).'/gold-cup-certificate.png',
+    $this->pdf->Image(print_image_path('gold-cup-certificate.png'),
                       $left, $top, $params['width']);
 
     $this->pdf->SetFont('BlackChancery', '', 30);

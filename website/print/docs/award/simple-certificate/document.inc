@@ -60,7 +60,7 @@ class SimpleAwardDocument extends PrintableAwardDocument {
     $this->pdf->SetDrawColor(247, 209, 23);  // gold
     $this->pdf->RoundedRect($left + 0.0625, $top + 0.0625, 9.875, 7.375, 0.1875);
 
-    $this->pdf->Image(dirname(__FILE__).'/rachel-davis-logo.png',
+    $this->pdf->Image(print_image_path('rachel-davis-logo.png'),
                       $cx - 3.0/2, $top + 0.200, 3.0);
 
     $this->pdf->SetFont('BlackChancery', '', 30);

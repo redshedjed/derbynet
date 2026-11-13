@@ -131,7 +131,7 @@ class DriversLicenseDocument extends PrintableRacerDocument {
 
     // Watermark over everything, including the photo
     $this->pdf->SetAlpha(0.05);
-    $this->pdf->Image(dirname(__FILE__).'/yellow_racing_car.png',
+    $this->pdf->Image(print_image_path('yellow_racing_car.png'),
                       $x + 0.125, $y + 0.125, 3.25);
     $this->pdf->SetAlpha(1);
     $this->DrawBannerText($x, $y);
