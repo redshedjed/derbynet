@@ -63,7 +63,9 @@ if (isset($as_kiosk)) {
 <link rel="stylesheet" type="text/css" href="css/kiosks.css"/>
 <link rel="stylesheet" type="text/css" href="css/racer-results.css"/>
 </head>
-<body>
+<?php // On a kiosk (a TV across the room) the results fill the screen in large
+      // type; on a regular monitor they're an ordinary table (css/racer-results.css) ?>
+<body class="<?php echo isset($as_kiosk) ? 'as-kiosk' : 'as-desk'; ?>">
 <?php
 make_banner('Results By Racer', isset($as_kiosk) ? '' : 'index.php');
 

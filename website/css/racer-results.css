@@ -196,6 +196,56 @@ td.heat_winner {
   display: none;
 }
 
+/* ---------------- On a regular monitor ----------------
+   (body.as-desk; the kiosk keeps the TV sizes above.)  The table sits in
+   the standard page column in ordinary text sizes, with room at the end. */
+body.as-desk h2.now_running,
+body.as-desk .scroll-bounding-rect {
+  max-width: var(--content-max);
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 var(--space-4);
+}
+body.as-desk .scroll-bounding-rect {
+  margin-bottom: var(--space-6);
+}
+body.as-desk .scroll-bounding-rect table.main_table {
+  box-shadow: var(--shadow-card);
+}
+body.as-desk .group_title {
+  font-size: var(--text-lg);
+}
+body.as-desk td {
+  padding: var(--space-1) var(--space-3);
+}
+body.as-desk td span.time {
+  font-size: var(--text-base);
+}
+/* The racer: photos (if shown) and name in a line, left-aligned, rather than
+   the TV's tall rows */
+body.as-desk th.nrows1, body.as-desk th.nrows2,
+body.as-desk th.nrows3, body.as-desk th.nrows4 {
+  vertical-align: middle;
+  text-align: left;
+  font-weight: var(--weight-semibold);
+}
+body.as-desk img.racer-photo {
+  float: none;
+  display: inline-block;
+  height: 40px;
+  margin: 0 var(--space-1) 0 0 !important;
+  vertical-align: middle;
+}
+body.as-desk .racer_label,
+body.as-desk th.nrows1 .racer_label, body.as-desk th.nrows2 .racer_label,
+body.as-desk th.nrows3 .racer_label, body.as-desk th.nrows4 .racer_label {
+  float: none;
+  display: inline-block;
+  margin-top: 0 !important;
+  vertical-align: middle;
+}
+
 /* ---------------- Phones ----------------
    The page clips sideways (the TV kiosk scrolls it), so on a phone the
    table has to fit: small photos side by side over the name, normal-size

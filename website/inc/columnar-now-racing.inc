@@ -56,7 +56,7 @@ $(function() {
 });
 </script>
 </head>
-<body>
+<body class="as-kiosk">
 <?php make_banner('Racing', false); ?>
 
 <div id="all-lanes">

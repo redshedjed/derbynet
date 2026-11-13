@@ -36,7 +36,7 @@ var g_standings_catalog = <?php echo json_encode($oracle->standings_catalog()); 
 
 </script>
 </head>
-<body>
+<body class="as-kiosk">
 <?php make_banner('Standings', /* back_button */ false); ?>
 <table class="main_table">
 <?php    $oracle->write_standings_table();  ?>

@@ -53,7 +53,7 @@ require_once('inc/schema_version.inc');
 </head>
 <?php // On a kiosk (a TV across the room) the schedule fills the screen in
       // large type; on a regular monitor it's a smaller table (css/ondeck.css) ?>
-<body class="<?php echo isset($as_kiosk) ? 'ondeck-kiosk' : 'ondeck-desk'; ?>">
+<body class="<?php echo isset($as_kiosk) ? 'as-kiosk' : 'as-desk'; ?>">
 <?php make_banner('Race Schedule', isset($as_kiosk) ? '' : 'index.php'); ?>
 
 <?php

@@ -46,7 +46,7 @@ $(function () {
 var g_linger_ms = <?php echo $linger_ms; ?>;
 </script>
 </head>
-<body>
+<body class="as-kiosk">
 <?php make_banner('Racing', /* back_button */ false); ?>
 <?php if ($nlanes > 0) { ?>
 <table id="main-table">
