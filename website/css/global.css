@@ -13,8 +13,11 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
+/* Controls take the text size around them, rather than the browser's
+   smaller default, so an input matches its label */
 input, select, textarea, button {
   font-family: inherit;
+  font-size: inherit;
 }
 
 /* Native form controls share one look.  The controls mobile.js builds
