@@ -5,7 +5,8 @@
    "Make this device a display" card. */
 
 .kiosk_page {
-  max-width: 1100px;
+  max-width: var(--content-max);
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 0 var(--space-4) var(--space-5) var(--space-4);
 }
@@ -14,7 +15,8 @@
 
 /* Lines up with the kiosk cards below it */
 #kiosk-toolbar {
-  max-width: 1100px;
+  max-width: var(--content-max);
+  box-sizing: border-box;
   margin: 0 auto;
 }
 

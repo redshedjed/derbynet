@@ -2,11 +2,6 @@
    with its own accent color.  Inside a section, each step is a row: status
    icon, a tile button (see "Tile buttons" in global.css), and details. */
 
-.setup_sections {
-  max-width: 1100px;
-  margin: var(--space-5) auto;
-  padding: 0 var(--space-4);
-}
 
 .setup_section {
   padding: var(--space-4) var(--space-5);

@@ -12,7 +12,8 @@
   grid-template-rows: auto auto 1fr;
   gap: var(--space-3) var(--space-4);
   align-items: start;
-  max-width: 1200px;
+  max-width: var(--content-max);
+  box-sizing: border-box;
   margin: var(--space-4) auto;
   padding: 0 var(--space-4);
 }

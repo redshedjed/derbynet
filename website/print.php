@@ -83,16 +83,38 @@ uasort($doc_classes, 'order_by_name');
     var g_emblems = <?php echo json_encode(emblem_choices()); ?>;
 </script>
 </head>
-<body>
+<body class="fill-page">
 <?php make_banner('Printables'); ?>
 
-
-<div class="block_buttons">
-    <input type="button" id="print-selected"
-           value="Print Selected" onclick="print_selected();"/>
+<?php // The toolbar: how to sort the list, select all or none, and print.
+      // Below it, one panel with three columns that each scroll: the kind of
+      // document, its options, and the racers (or awards) to print it for. ?>
+<div id="print-toolbar" class="toolbar page-toolbar">
+  <div id="sortorder-racers-div" class="toolbar">
+    <label for="sortorder-racers" class="toolbar-label">Sort</label>
+    <select id="sortorder-racers" onchange="handle_sortorder_racers_change()">
+      <option value="checkin">Check-In Order</option>
+      <option value="name">Last Name</option>
+      <option value="class"><?php echo htmlspecialchars(group_label(), ENT_QUOTES, 'UTF-8'); ?></option>
+      <?php
+      if (use_subgroups()) {
+        echo "<option value='rank'>".htmlspecialchars(subgroup_label(), ENT_QUOTES, 'UTF-8')."</option>";
+      } ?>
+      <option value="car" selected="selected">Car Number</option>
+    </select>
+  </div>
+  <div id="sortorder-awards-div"></div>
+  <div id="sortorder-summary-div"></div>
+  <div id="select-controls" class="toolbar">
+    <input type="button" value="Select All" onclick="select_all(true)" class="btn btn-secondary btn-sm"/>
+    <input type="button" value="Deselect All" onclick="select_all(false)" class="btn btn-secondary btn-sm"/>
+  </div>
+  <span class="toolbar-spacer"></span>
+  <input type="button" id="print-selected" class="btn"
+         value="Print Selected" onclick="print_selected();"/>
 </div>
 
-
+<div id="print-panel" class="page-panel panel-columns">
 <div id="document-controls">
     <?php
     // One group of radio buttons for each type of document (racer, award,
@@ -128,36 +150,6 @@ uasort($doc_classes, 'order_by_name');
 </div>
 
 <div id="page-controls">
-  <div class="block_buttons">
-
-   <div id="sortorder-racers-div">
-     <p id="sortorder-paragraph">
-       <label for="sortorder-racers">Choose sort order:</label>
-
-       <select id="sortorder-racers"
-                 data-wrapper-class="mini-mselect"
-                 onchange="handle_sortorder_racers_change()">
-         <option value="checkin">Check-In Order</option>
-          <option value="name">Last Name</option>
-          <option value="class"><?php echo htmlspecialchars(group_label(), ENT_QUOTES, 'UTF-8'); ?></option>
-      <?php
-      if (use_subgroups()) {
-        echo "<option value='rank'>".htmlspecialchars(subgroup_label(), ENT_QUOTES, 'UTF-8')."</option>";
-      } ?>
-          <option value="car" selected="selected">Car Number</option>
-        </select>
-      </p>
-    </div>
-
-    <div id="sortorder-awards-div">
-    </div>
-
-    <div id="sortorder-summary-div">
-    </div>
-
-    <input type="button" value="Select All" onclick="select_all(true)" class="mini-mini"/>
-    <input type="button" value="Deselect All" onclick="select_all(false)" class="mini-mini"/>
-</div>
 
 <div id="walkins-div" class="hidden">
   Add
@@ -277,24 +269,22 @@ foreach ($doc_classes as $c => $details) {
 
 
 <div id="subjects-context">
-  <div id="subjects-scroll">
-    <div id="subject-racers" class="block_buttons">
+    <div id="subject-racers">
     <?php
         if (read_raceinfo_boolean('fake-racers')) {
-          echo "<h3 style='text-align: center; color: red;'>Photos for fake racers<br/>do not render in printables</h3>\n";
+          echo "<p class='notice notice-warning'>Photos for fake racers don't render in printables.</p>\n";
         }
       ?>
-      <table></table>
+      <table class="table"></table>
     </div>
-    <div id="subject-awards" class="block_buttons hidden">
-      <table></table>
+    <div id="subject-awards" class="hidden">
+      <table class="table"></table>
     </div>
-    <div id="subject-summary" class="block_buttons hidden">
-      <table></table>
+    <div id="subject-summary" class="hidden">
+      <table class="table"></table>
     </div>
-  </div>
-  &nbsp;
 </div>
+</div><!-- print-panel -->
 
 <div id="image-picker-modal" class="modal_dialog wide_modal hidden block_buttons">
  <p>CarTags image picker</p>

@@ -1,11 +1,6 @@
 /* Import Database Snapshot (import-snapshot.php).  The drop area is the
    shared .file_target (components.css). */
 
-.import_snapshot {
-  max-width: 800px;
-  margin: var(--space-5) auto;
-  padding: 0 var(--space-4);
-}
 
 /* The name of the chosen file, shown in the drop area */
 #filepath {

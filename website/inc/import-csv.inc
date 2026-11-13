@@ -111,7 +111,7 @@ class ImportCsvGenerator {
     // The #file_target div's <input> is invisible (opacity 0) and z-index'ed on
     // top of the entire #file_target.
 ?>
-<div class="import_csv">
+<div class="page-content import_csv">
   <div id="top_matter">
     <?php $this->make_state_of_play_div(); ?>
 

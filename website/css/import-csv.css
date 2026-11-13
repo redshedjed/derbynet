@@ -6,12 +6,6 @@
    read: the field labels to drag (.fields) and the file's rows
    (#csv_content). */
 
-div.import_csv {
-  max-width: 1200px;
-  margin: var(--space-5) auto;
-  padding: 0 var(--space-4);
-}
-
 /* "There are already 32 racers and 6 dens in the database." */
 div#state-of-play {
   padding: var(--space-3) var(--space-4);

@@ -103,7 +103,7 @@
   /* ---- Layout ---- */
   --banner-height: 64px;  /* setup.css positions a box just under the banner */
   --tap-target: 44px;     /* minimum height for things people tap */
-  --content-max: 1200px;
+  --content-max: 1100px;  /* .page-content: the standard page column */
 
   /* Dark-mode values come later (Phase 3 for kiosks, Phase 5 for the site), once
      page stylesheets use these tokens instead of fixed colors. */

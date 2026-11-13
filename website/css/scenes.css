@@ -5,7 +5,8 @@
 
 #scenes-toolbar,
 #previews {
-  max-width: 1100px;
+  max-width: var(--content-max);
+  box-sizing: border-box;
   margin-left: auto;
   margin-right: auto;
 }

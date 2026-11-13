@@ -30,11 +30,6 @@ window.onload = function() {
 };
 </script>
 <style type="text/css">
-.info_page {
-  max-width: 1100px;
-  margin: var(--space-5) auto;
-  padding: 0 var(--space-4);
-}
 .info_page .card-title {
   font-size: var(--text-xl);
 }
@@ -126,7 +121,7 @@ window.onload = function() {
 </head>
 <body>
 <?php make_banner('System Info', 'setup.php'); ?>
-<div class="info_page">
+<div class="page-content info_page">
 
 <section class="card card-accent accent-brand">
 <h2 class="card-title">Connecting other devices</h2>

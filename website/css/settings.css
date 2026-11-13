@@ -2,9 +2,6 @@
    components.css, with an accent bar and a title), in the .page-content
    column.  Every control saves as soon as it changes (js/settings.js). */
 
-.settings_page {
-  max-width: 900px;
-}
 
 .settings_group {
   padding: var(--space-4) var(--space-5);

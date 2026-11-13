@@ -288,7 +288,7 @@ function reveal_doc_specific_options() {
   } else if (doc_class_details['type'] == 'summary') {
     $("#subject-summary, #sortorder-summary-div").removeClass("hidden");
   }
-  $("#page-controls").toggleClass('hidden', doc_class_details['type'] == 'summary');
+  $("#page-controls, #select-controls").toggleClass('hidden', doc_class_details['type'] == 'summary');
   update_print_button();
 }
 

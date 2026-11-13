@@ -1,7 +1,18 @@
-/*
-    Print page structure is three main columns:
-    div#page-controls div#document-controls  div#subjects-context
-*/
+/* Printables (print.php): body.fill-page, a .page-toolbar (sort order,
+   select all or none, Print Selected), and one .page-panel split into three
+   .panel-columns (components.css) that each scroll:
+     #document-controls  the kind of document
+     #page-controls      extras to add, and the chosen document's options
+     #subjects-context   the racers or awards to print it for */
+
+#print-panel {
+  grid-template-columns: 300px 340px minmax(0, 1fr);
+}
+/* The summary documents have no options or subjects to choose */
+#print-panel:has(#page-controls.hidden) {
+  grid-template-columns: 300px minmax(0, 1fr);
+}
+
 td.photo-column {
   padding: 0px;
 }
@@ -18,68 +29,18 @@ div.sub-options .param {
   margin-top: 10px;
 }
 
-div#page-controls {
-  float: left;
-  width: 300px;
-  height: 100%;
-  margin-left: 30px;
-  margin-right: 30px;
-}
-
-div#document-scroll {
-  position: absolute;
-  top: 410px;
-  bottom: 0px;
-  width: 300px; /* Has to match div#page-controls */
-  overflow-y: auto;
-  /* Room below the last option when scrolled to the end */
-  padding-bottom: var(--space-6);
-  box-sizing: border-box;
-}
-
-#sortorder-paragraph {
-  margin-left: 10px;
-  margin-right: 10px; 
-}
-
 #walkins-div {
-  margin-top: 10px;
+  margin-bottom: var(--space-3);
 }
 #walkins-count {
   width: 3em;
 }
 
-div#subjects-context {
-  float: left;
-  /* width: 420px; */
-  height: 100%;
-}
-div#subjects-scroll {
-  position: absolute;
-  top: 130px;
-  bottom: 0;
-  overflow-y: auto;
-  /* Room below the last racer or award when scrolled to the end */
-  padding-bottom: var(--space-6);
-  box-sizing: border-box;
-}
-
-div#subjects-context table {
-  width: 100%;
-}
-
-div#document-controls {
-  float: left;
-  width: 300px;
-  margin-left: 15px;
-}
-
 div#document-controls div.mradiogroup + div.mradiogroup {
-  margin-top: 10px;
+  margin-top: var(--space-3);
 }
 
 div#subject-awards td p {
-  font-size: 16px;
   padding-bottom: 0px;
   margin: 0px;
 }

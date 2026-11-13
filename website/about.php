@@ -26,11 +26,6 @@ $pack_html = trim(about_pack_html(isset($db) ? $db : null));
 <title>About DerbyNet</title>
 <?php require('inc/stylesheet.inc'); ?>
 <style type="text/css">
-.about_page {
-  max-width: 760px;
-  margin: var(--space-5) auto;
-  padding: 0 var(--space-4);
-}
 .about_page .card-title {
   font-size: var(--text-xl);
 }
@@ -48,7 +43,7 @@ $pack_html = trim(about_pack_html(isset($db) ? $db : null));
 </head>
 <body>
 <?php make_banner('About'); ?>
-<div class="about_page">
+<div class="page-content narrow about_page">
 
 <?php if ($pack_html !== '') { ?>
 <!-- "Our Pack": set on the Settings page (see inc/about-pack.inc) -->

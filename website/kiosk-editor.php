@@ -35,11 +35,6 @@ function h($s) {
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery-migrate.js"></script>
 <style type="text/css">
-.kiosk-editor {
-  max-width: 900px;
-  margin: var(--space-4) auto;
-  padding: 0 var(--space-3);
-}
 .kiosk-editor .intro {
   margin: 0 0 var(--space-3) 0;
   color: var(--color-text-muted);
@@ -179,7 +174,7 @@ $(function() {
 <body>
 <?php make_banner('Kiosk Editor', isset($_GET['back']) ? $_GET['back'] : 'kiosk-dashboard.php'); ?>
 
-<div class="kiosk-editor">
+<div class="page-content kiosk-editor">
 <section class="card card-accent accent-other">
   <h2 class="card-title">Kiosk Locations</h2>
   <p class="intro">The places a display can be: the TV by the track, the one in the

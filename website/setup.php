@@ -76,7 +76,7 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
      ...), so the ids, status icons and step_details divs must stay.  It
      also moves schema_step up to step 1 when the database needs
      initializing or updating. -->
-<div class="setup_sections tile-buttons">
+<div class="page-content setup_sections tile-buttons">
 
 <!-- ======================= Getting ready ======================= -->
 <section class="setup_section card card-accent accent-before setup_steps" aria-labelledby="ready-heading">
