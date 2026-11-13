@@ -50,7 +50,7 @@ div input {
 <?php make_banner('Build Fake Roster', 'setup.php'); ?>
 
 <div class="page-content narrow">
-<section class="card card-accent accent-before tile-buttons">
+<section class="card card-accent accent-before">
 <h2 class="card-title">Make a fake roster</h2>
 <p>A roster of made-up racers lets you try out DerbyNet without gathering
    your real racers first.  It's random, arranged by
@@ -71,9 +71,9 @@ div input {
   <label for="check_in_all">The fake racers have passed inspection</label>
 </div>
 
-<div class="block_buttons tile-grid">
-  <input id="do_it" type="button" value="Make Fake Racers"/>
-</div>
+<p>
+  <input id="do_it" type="button" class="btn" value="Make Fake Racers"/>
+</p>
 
 <p class="text-muted">To remove the fake racers later, use Purge on the
    <a href="setup.php">Set-Up page</a>.  Picture credits are on the

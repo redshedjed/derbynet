@@ -227,7 +227,7 @@ tbody {
 }
 .block_buttons .double a.button_link {
   width: 95px;
-  font-size: 15px;
+  font-size: var(--text-sm);
   display: inline-block;
   margin-left: 5px;
   margin-right: 5px;
@@ -255,15 +255,18 @@ tbody {
 .block_buttons input[type='button'],
 .block_buttons input[type='submit'],
 .block_buttons a.button_link {
+  /* The large button size (components.css), stacked one per line */
   display: block;
+  box-sizing: border-box;
   width: 240px;
   max-width: 100%;
+  min-height: var(--tap-target);
   margin-left: auto;
   margin-right: auto;
   margin-top: 3px;
   margin-bottom: 20px;
-  padding: 10px 15px;
-  font-size: x-large;
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--text-base);
   font-family: var(--font-sans);
   line-height: var(--line-height);
 }
@@ -311,12 +314,9 @@ tbody {
 }
 
 .block_buttons a.button_link {
-  width: 208px;
-  /* Was a fixed 33px; grows if a label wraps.  Padding is added on top. */
   height: auto;
-  min-height: 33px;
-  padding-top: 9px;
-  padding-bottom: 9px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   text-align: center;
   text-decoration: none;
   text-shadow: none;
@@ -383,11 +383,19 @@ tbody {
    with a colored bar down the left edge, like the home menu.  The bar color
    is --tile-accent, inherited from an .accent-* class on the container or set
    by a race-stage class on the button.  btn-danger tiles get a red bar and red
-   text.  Used by the home menu (index.php) and the Set-Up page. */
+   text.  Used for navigation and choices: the home menu, Set-Up, Login,
+   Export, System Info and the Kiosks set-up bar.  One size everywhere:
+   20px text, 52px tall. */
 
 .tile-buttons .block_buttons a.button_link,
 .tile-buttons .block_buttons input[type='button'],
 .tile-buttons .block_buttons input[type='submit'] {
+  box-sizing: border-box;
+  min-height: 52px;
+  height: auto;
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  font-size: var(--text-lg);
   color: var(--color-text);
   background: var(--color-surface);
   background-image: none;
@@ -439,26 +447,6 @@ tbody {
 .tile_silver { --tile-accent: var(--tile-silver); }
 .tile_black  { --tile-accent: var(--tile-black); }
 
-.block_buttons input.mini {
-  padding: 5px;
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  width: 160px;
-  font-size: 18px;
-  margin-bottom: 3px;
-}
-
-/* Small paired buttons, e.g. Select All / Deselect All on Printables:
-   side by side, with a little room */
-.block_buttons input.mini-mini {
-  height: 28px;
-  width: 128px;
-  padding: 4px;
-  line-height: 1;
-  font-size: 15px;
-  font-weight: bold;
-  margin: 0 3px var(--space-2) 3px;
-}
 
 /* ---------------- Status messages ---------------- */
 

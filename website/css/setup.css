@@ -45,9 +45,7 @@
 .setup_section .step_button.block_buttons input[type='button'] {
   box-sizing: border-box;
   width: 100%;
-  min-height: 52px;
   margin: 0;
-  font-size: 1.375rem;
 }
 
 .step_details {
@@ -129,7 +127,8 @@
   }
 }
 
-/* .step_details a: styled with .small-button in components.css */
+/* Links in a step's description (the Check-In page, the Kiosk Editor) are
+   ordinary text links */
 
 #purge_operation {
   text-align: center;

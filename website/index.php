@@ -137,11 +137,11 @@ p.logged_in_as {
   color: var(--color-text-muted);
 }
 
-/* Home menu tiles: the tile look and the colors (tile_blue, ...)
-   are shared, in global.css under "Tile buttons". */
+/* Home menu tiles: the tile look, size and colors (tile_blue, ...)
+   are shared, in global.css under "Tile buttons".  The same width as the
+   role tiles on the login page. */
 .block_buttons a.button_link {
-  width: 238px;
-  height: 30px;
+  width: 270px;
 }
 
 /* Vote!: a gold tile twice as tall as the others, with large centered

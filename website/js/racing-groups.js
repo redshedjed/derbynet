@@ -202,7 +202,7 @@ function populate_racing_groups(data) {
                               : "group"))
                 .append($("<span/>").addClass('count')
                         .text("(" + data.classes[i].count + ")"))
-                .prepend($("<input type='button' value='Edit' class='edit-button'/>")
+                .prepend($("<input type='button' value='Edit' class='btn btn-secondary btn-sm edit-button'/>")
                          .on('click', on_edit_class)));
 
     if (rule != 'by-partition') {
@@ -221,7 +221,7 @@ function populate_racing_groups(data) {
                     .text(partition_label_lc + " (subgroup)"))
             .append($("<span/>").addClass('count')
                     .text("(" + data.classes[i].subgroups[j].count + ")"));
-        subg_p.prepend($("<input type='button' value='Edit' class='edit-button'/>")
+        subg_p.prepend($("<input type='button' value='Edit' class='btn btn-secondary btn-sm edit-button'/>")
                        .on('click', on_edit_rank));
         $("<li/>")
             .appendTo(subgroups)
@@ -356,7 +356,7 @@ function populate_aggregates(classes, pack_aggregate_id) {
                 .addClass('class-name')
                 .text(classes[i].name)
                 .append($("<span/>").text("agg group").addClass('label'))
-                .prepend($("<input type='button' value='Edit' class='edit-button'/>")
+                .prepend($("<input type='button' value='Edit' class='btn btn-secondary btn-sm edit-button'/>")
                          .on('click', on_edit_class)));
 
     var constituents = $("<ul/>")

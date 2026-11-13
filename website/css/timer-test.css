@@ -138,8 +138,6 @@ table#lanes td.time {
 #timer_settings_button_div input[type='button'],
 #fake_timer_div a.button_link {
   width: 220px;
-  min-height: 44px;
-  font-size: var(--text-base);
   color: var(--color-brand);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -147,8 +145,6 @@ table#lanes td.time {
 }
 #start_race_button_div input[type='button'] {
   width: 220px;
-  min-height: 44px;
-  font-size: var(--text-base);
   background: var(--color-success);
   border-color: var(--color-success);
 }

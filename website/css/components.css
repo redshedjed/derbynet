@@ -48,9 +48,17 @@
 }
 
 /* ---------------- Buttons ----------------
-   .btn is the primary (brand blue) button; .btn-secondary, .btn-danger and
-   .btn-ghost change its color, .btn-sm and .btn-lg its size.  The buttons
-   inside .block_buttons (global.css) share this look. */
+   Two sizes, everywhere:
+     large  .btn (and every button inside .block_buttons, global.css):
+            16px semibold, 44px tall -- a page's main actions, toolbars,
+            dialog buttons
+     small  .btn-sm: 14px, 30px tall -- actions inside a card, list or row
+   Menu tiles (global.css, "Tile buttons") are the third look, for
+   navigation and choices, at one size of their own.
+   Color says what a button does: blue .btn is the main action,
+   .btn-secondary (white) the others, .btn-danger deletes or can't be
+   undone, .btn-success is a "go" (Start Race, Start Playlist), .btn-ghost a
+   quiet link-like action. */
 
 .btn {
   /* Links and inputs size the same way */
@@ -62,7 +70,7 @@
   min-height: var(--tap-target);
   padding: var(--space-2) var(--space-5);
   font-family: var(--font-sans);
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   font-weight: var(--weight-semibold);
   line-height: 1.2;
   text-decoration: none;
@@ -138,19 +146,17 @@
 
 .btn-sm,
 a.small-button,                /* settings.php */
-.step_details a,               /* setup.php: links beside each step */
 input.small-button,
 .block_buttons input.small-button {
-  min-height: 0;
+  min-height: 30px;
   height: auto;
-  padding: 4px 10px;
+  padding: 4px 12px;
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   line-height: 1.2;
   border-radius: var(--radius-md);
 }
 a.small-button,
-.step_details a,
 input.small-button,
 .block_buttons input.small-button {
   display: inline-block;
@@ -160,12 +166,6 @@ input.small-button,
   text-decoration: none;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
-}
-
-.btn-lg {
-  min-height: 56px;
-  padding: var(--space-3) var(--space-6);
-  font-size: var(--text-xl);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -327,15 +327,7 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
 .page-toolbar {
   padding: var(--space-3) var(--space-4);
 }
-.page-toolbar .btn {
-  min-height: 44px;
-  font-size: var(--text-base);
-}
 /* ...unless marked small (e.g. Delete Scene), as elsewhere */
-.page-toolbar .btn.btn-sm {
-  min-height: 0;
-  font-size: var(--text-sm);
-}
 
 /* ---------------- Page column ----------------
    Every page is one of three widths:
@@ -384,9 +376,7 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
 .tile-buttons .tile-grid.block_buttons a.button_link {
   box-sizing: border-box;
   width: 100%;
-  min-height: 52px;
   margin: 0;
-  font-size: 1.25rem;
 }
 
 .text-muted {

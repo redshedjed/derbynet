@@ -229,10 +229,6 @@ div.adjustment-needed input.late-arrival-button[disabled] {
   gap: var(--space-2);
   margin-top: var(--space-2);
 }
-.heat_buttons .btn {
-  min-height: 48px;
-  font-size: var(--text-base);
-}
 .heat_buttons #manual_results_button,
 .heat_buttons #rerun-button {
   flex: 0 1 220px;
@@ -261,10 +257,6 @@ div.adjustment-needed input.late-arrival-button[disabled] {
    for a round (Race, Schedule, Next Up), which stays solid blue. */
 #supplemental-control-group.block_buttons input[type='button'],
 .scheduling_control .block_buttons input[type='button'] {
-  min-height: 40px;
-  height: auto;
-  padding: var(--space-1) var(--space-4);
-  font-size: var(--text-base);
   color: var(--color-brand);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -341,10 +333,7 @@ p.last_contact {
 }
 .scheduling_control .block_buttons input[type='button'] {
   width: auto;
-  min-height: 40px;
   margin: var(--space-2) 0 0 0;
-  padding: var(--space-1) var(--space-4);
-  font-size: var(--text-base);
 }
 div.block_buttons[data-name=buttons] {
   margin-top: var(--space-1);
@@ -635,8 +624,6 @@ input.lane-time::-webkit-outer-spin-button {
   flex: 0 1 180px;
   width: 180px;
   min-width: 0;
-  height: 48px;
-  min-height: 48px;
   margin: 0;
   box-sizing: border-box;
   white-space: nowrap;

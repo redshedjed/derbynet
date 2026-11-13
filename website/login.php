@@ -57,10 +57,7 @@ div.index_background {
 
 .tile-buttons .block_buttons input[type='button'],
 .tile-buttons .block_buttons a.button_link {
-  box-sizing: border-box;
   width: 270px;
-  min-height: 52px;
-  height: auto;
   margin-bottom: var(--space-4);
 }
 

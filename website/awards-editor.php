@@ -112,7 +112,7 @@ function award_group_options() {
 <?php award_group_options(); ?>
   </select>
   <span class="row-buttons">
-    <input type="submit" class="btn btn-success btn-sm" value="Add"/>
+    <input type="submit" class="btn btn-sm" value="Add"/>
   </span>
 </form>
 <?php } else { ?>

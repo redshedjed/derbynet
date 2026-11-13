@@ -78,7 +78,7 @@ var g_standings_choices = <?php echo json_encode($oracle->standings_choices_for_
   </div>
   <input type="button" id="delete_scene_button" class="btn btn-danger btn-sm" value="Delete Scene"
          onclick='on_delete_scene()'/>
-  <input type="button" id="new_scene_button" class="btn btn-success btn-sm" value="New Scene"
+  <input type="button" id="new_scene_button" class="btn btn-sm" value="New Scene"
          onclick='on_new_scene()'/>
 </div>
 
