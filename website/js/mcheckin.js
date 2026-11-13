@@ -183,7 +183,6 @@ function on_recognized_barcode(result) {
   before_show_slide_in();
 
   $("#flash-overlay").css({display: 'block'}).fadeOut(800);
-  $("#beep")[0].play();
 
   $.ajax('action.php',
          {type: 'GET',
@@ -446,7 +445,6 @@ function on_racer_chosen_from_list(racerid) {
   before_show_slide_in();
 
   $("#flash-overlay").css({display: 'block'}).fadeOut(800);
-  $("#beep")[0].play();
 
   $.ajax('action.php',
          {type: 'GET',

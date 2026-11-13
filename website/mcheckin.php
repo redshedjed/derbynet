@@ -118,7 +118,6 @@ $(function() {
   <div id="switch-to-camera-button" onclick="on_switch_to_camera_cllicked();">Scan a Barcode</div>
 </div>
 
-<audio id="beep" src="img/barcode.mp3"></audio>
 <div id="flash-overlay"></div>
 
 <!-- The chosen racer: their photos and check-in, over the camera -->
