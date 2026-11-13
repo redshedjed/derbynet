@@ -128,7 +128,7 @@ $bias = lane_bias_analysis();
 </div>
 </section>
 
-<section class="card card-accent accent-ink">
+<section class="card card-accent accent-after">
 <h2 class="card-title">Events timeline</h2>
 
 <table class="event-history">

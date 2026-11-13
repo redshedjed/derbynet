@@ -382,8 +382,17 @@ tr.d0 td {                     /* check-in and others mark alternate rows d0 */
   margin: 0;
 }
 
+/* Text colors with a meaning: quiet, needs attention, gone wrong */
 .text-muted {
   color: var(--color-text-muted);
+}
+.text-warning {
+  color: var(--color-warning);
+  font-weight: var(--weight-semibold);
+}
+.text-danger {
+  color: var(--color-danger);
+  font-weight: var(--weight-semibold);
 }
 
 /* ---------------- Card grid ----------------

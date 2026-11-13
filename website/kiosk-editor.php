@@ -175,7 +175,7 @@ $(function() {
 <?php make_banner('Kiosk Editor', isset($_GET['back']) ? $_GET['back'] : 'kiosk-dashboard.php'); ?>
 
 <div class="page-content kiosk-editor">
-<section class="card card-accent accent-other">
+<section class="card card-accent accent-during">
   <h2 class="card-title">Kiosk Locations</h2>
   <p class="intro">The places a display can be: the TV by the track, the one in the
     lobby, the screen at the awards stage.  The

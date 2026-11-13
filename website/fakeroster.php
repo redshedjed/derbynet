@@ -50,7 +50,7 @@ div input {
 <?php make_banner('Build Fake Roster', 'setup.php'); ?>
 
 <div class="page-content narrow">
-<section class="card card-accent accent-before">
+<section class="card card-accent accent-after">
 <h2 class="card-title">Make a fake roster</h2>
 <p>A roster of made-up racers lets you try out DerbyNet without gathering
    your real racers first.  It's random, arranged by

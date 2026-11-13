@@ -40,7 +40,7 @@ $(function() {
 <?php make_banner('Timer Testing', 'coordinator.php'); ?>
 <div class="timer_test_page">
 
-<div id="log_outer">
+<div id="log_outer" class="card card-accent accent-during">
   <div class="test-control">
     <label for="timer-send-logs">Remote logging:</label>
     <input id="timer-send-logs" type="checkbox" class="flipswitch" <?php
@@ -58,7 +58,7 @@ $(function() {
   </div>
 </div>
 
-<div id="timer_summary">
+<div id="timer_summary" class="card card-accent accent-during">
   <img id="timer_summary_icon" src="img/status/unknown.png"/>
   <div id="timer_summary_text">
     <h3 class="card-title">Timer Status</h3>
@@ -67,7 +67,7 @@ $(function() {
   </div>
 </div>
 
-<div class="test-control">
+<div class="test-control card card-accent accent-during">
   <label for="test-mode">Simulate racing:</label>
   <input id="test-mode" type="checkbox" class="flipswitch" <?php
     if ($current['roundid'] == TIMER_TEST_ROUNDID && $current['now_racing']) {
@@ -75,7 +75,7 @@ $(function() {
     } ?>/>
 </div>
 
-<div id="now-racing">
+<div id="now-racing" class="card card-accent accent-during">
   <label id="n-lanes-label" for="n-lanes">Number of lanes on the track:</label>
   <input id="n-lanes" name="n-lanes" type="number" class="not-mobile" min="0" max="20"
          value="<?php echo get_lane_count(); ?>"/>

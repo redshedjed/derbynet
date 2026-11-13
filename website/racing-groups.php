@@ -47,7 +47,7 @@ $(function() {
 
 <div id="below-banner">
 
-<div id="race-rules">
+<div id="race-rules" class="card card-accent accent-after">
 
 
 <input id="by-partition-radio" type="radio" name="form-groups-by" value="by-partition"/>
@@ -130,7 +130,7 @@ $(function() {
 
 </div><!-- race-rules -->
 
-<div id="race-structure">
+<div id="race-structure" class="card card-accent accent-after">
 
 <!-- What the words mean, where they're used -->
 <div class="rg-explain">

@@ -23,7 +23,7 @@ if (!is_readable($pdf) || filesize($pdf) == 0) {
 <body>
 <?php make_banner('Quick Reference', 'index.php'); ?>
 <div class="page-content narrow">
-  <div class="card card-accent accent-other">
+  <div class="card card-accent accent-ink">
     <p>The Quick Reference isn't part of this installation.  It's made from
       the documents in DerbyNet's docs folder when DerbyNet is built.</p>
   </div>

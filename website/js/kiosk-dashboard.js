@@ -130,7 +130,7 @@ function update_kiosk_names(kiosks) {
   $("#scenes-status-message")
     .text(name_count + " named kiosk" + (name_count == 1 ? "" : "s")
           + (name_count < kiosks.length ? " out of " + kiosks.length : ""))
-    .toggleClass('red-text', name_count < kiosks.length);
+    .toggleClass('text-warning', name_count < kiosks.length || kiosks.length == 0);
 }
 
 // Generates a block of controls for a single kiosk.

@@ -42,14 +42,10 @@ div#select-wrap {
 div.mselect-inner select {
   font-size: 100%;
 }
+/* How many kiosks have names: warning text (.text-warning) until they all
+   do, or while there are none */
 #scenes-status-message {
   font-size: var(--text-sm);
-  color: var(--color-text-muted);
-}
-/* Some kiosks still need names */
-#scenes-status-message.red-text {
-  color: var(--color-warning);
-  font-weight: var(--weight-semibold);
 }
 
 /* ---------------- One card per kiosk ----------------

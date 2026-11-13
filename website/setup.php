@@ -79,7 +79,7 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
 <div class="page-content setup_sections tile-buttons">
 
 <!-- ======================= Getting ready ======================= -->
-<section class="setup_section card card-accent accent-before setup_steps" aria-labelledby="ready-heading">
+<section class="setup_section card card-accent accent-after setup_steps" aria-labelledby="ready-heading">
   <h2 id="ready-heading" class="card-title">Getting Ready for Race Day</h2>
   <p class="setup_intro">Work down the list.  Then on race day, check racers in
     on <a href="checkin.php">Race Check-In</a> and run the race from the
@@ -178,7 +178,7 @@ $(function() { populate_details(<?php echo $initial_details; ?>); });
 </section>
 
 <!-- ======================= Database tools ======================= -->
-<section class="setup_section card card-accent accent-ink" aria-labelledby="tools-heading">
+<section class="setup_section card card-accent accent-after" aria-labelledby="tools-heading">
   <h2 id="tools-heading" class="card-title">Database Tools</h2>
   <div id="tools_steps">
 

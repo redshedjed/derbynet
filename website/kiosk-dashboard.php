@@ -59,7 +59,7 @@ var g_standings_choices = <?php
 <div id="kiosk-toolbar" class="toolbar page-toolbar">
   <!-- The scene is chosen in the banner (inc/banner.inc) -->
   <div id="scenes-control">
-    <div id="scenes-status-message"></div>
+    <div id="scenes-status-message" class="text-muted"></div>
   </div>
 </div>
 
@@ -69,7 +69,7 @@ var g_standings_choices = <?php
 
 <!-- Setting up kiosks: (for the Administrator) the kiosk locations and the
      scenes; another kiosk window on this computer; or make this device a kiosk -->
-<section id="set_up_displays" class="card card-accent accent-other">
+<section id="set_up_displays" class="card card-accent accent-during">
   <h2 class="card-title">Set Up Kiosks</h2>
   <div class="toolbar">
     <?php if (have_permission(SET_UP_PERMISSION)) { /* locations and scenes are set-up */ ?>

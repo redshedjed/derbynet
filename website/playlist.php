@@ -98,7 +98,7 @@ $(function() {
 
 <div id="main">
 
-  <div id="queue" class="card card-accent accent-during">
+  <div id="queue" class="card card-accent accent-after">
     <h2 class="card-title">Playlist</h2>
     <p class="rounds-hint">The order the rounds are raced in.  On race day,
       <b>Start Playlist</b> on the Race Dashboard schedules and races each round in
@@ -121,7 +121,7 @@ $(function() {
     </ul>
   </div>
 
-  <div id="rounds-div" class="card card-accent accent-before">
+  <div id="rounds-div" class="card card-accent accent-after">
     <h2 class="card-title">Available Rounds</h2>
     <p class="rounds-hint">Click a round to add it to the playlist.</p>
     <ul class="rounds-key">

@@ -123,7 +123,7 @@ window.onload = function() {
 <?php make_banner('System Info', 'setup.php'); ?>
 <div class="page-content info_page">
 
-<section class="card card-accent accent-brand">
+<section class="card card-accent accent-after">
 <h2 class="card-title">Connecting other devices</h2>
 <?php
 $configured_urls = preferred_urls_from_file();
@@ -155,7 +155,7 @@ if (count($urls) > 0 && !empty($urls[0])) {
 ?>
 </section>
 
-<section class="card card-accent accent-ink">
+<section class="card card-accent accent-after">
 <h2 class="card-title">DerbyNet</h2>
 <?php
     $version = @file_get_contents('inc/generated-version.inc');
@@ -173,7 +173,7 @@ if (count($urls) > 0 && !empty($urls[0])) {
    <a href="mailto:bugs@derbynet.org">bugs@derbynet.org</a>.</p>
 </section>
 
-<section class="card card-accent accent-gold">
+<section class="card card-accent accent-after">
 <h2 class="card-title">Database</h2>
 <?php
     $configdir = isset($_SERVER['DERBYNET_CONFIG_DIR']) ? $_SERVER['DERBYNET_CONFIG_DIR'] : 'local';
@@ -257,7 +257,7 @@ if (isset($db)) {
 
     $timer = read_raceinfo('timer-type');
     if ($timer) {
-      echo "<section class='card card-accent accent-during'>\n";
+      echo "<section class='card card-accent accent-after'>\n";
       echo "<h2 class='card-title'>Timer</h2>\n";
       echo "<p>";
       echo htmlspecialchars($timer, ENT_QUOTES, 'UTF-8');
@@ -276,7 +276,7 @@ if (isset($db)) {
   }
 ?>
 
-<section class="card card-accent accent-other">
+<section class="card card-accent accent-after">
 <h2 class="card-title">Server</h2>
 <?php
 // Just what DerbyNet depends on.  (This replaced the full phpinfo() dump,

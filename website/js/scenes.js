@@ -14,7 +14,7 @@ function rebuild_kiosk_divs(all_scene_kiosk_names, all_kiosk_pages) {
     sel.on('change', on_change_assigned_page);
 
     var name = all_scene_kiosk_names[i];
-    $("#previews").append($("<div class='kiosk'/>")
+    $("#previews").append($("<div class='card card-accent accent-during kiosk'/>")
                           .attr('data-kiosk', name)
                           .append($("<h3 class='card-title'/>").text(name))
                           .append($("<div class='page-div'/>")

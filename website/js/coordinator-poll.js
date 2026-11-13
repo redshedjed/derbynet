@@ -763,7 +763,7 @@ function process_coordinator_poll_json(json) {
     $("#now-racing-group")
       .empty()
       .append($("<h3 id='timer-testing-herald'>Simulated racing in progress</h3>")
-              .append("<input class='stop-test' type='button'"
+              .append("<input class='btn btn-secondary btn-sm stop-test' type='button'"
                       + " onclick='handle_stop_testing();' value='Stop'/>"));
   } else if (json['refused-results'] > 0) {
     $("#now-racing-group")

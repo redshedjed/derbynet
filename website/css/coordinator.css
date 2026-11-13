@@ -84,9 +84,9 @@
   background-color: var(--color-danger);
   border-radius: var(--radius-md);
 }
+/* Stop: a small white button (.btn-secondary .btn-sm) at the right */
 #now-racing-group input.stop-test {
   float: right;
-  font-size: var(--text-sm);
 }
 
 /* ---------------- The heat now racing ---------------- */

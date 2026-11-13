@@ -47,7 +47,7 @@ $pack_html = trim(about_pack_html(isset($db) ? $db : null));
 
 <?php if ($pack_html !== '') { ?>
 <!-- "Our Pack": set on the Settings page (see inc/about-pack.inc) -->
-<section class="card card-accent accent-brand about_pack">
+<section class="card card-accent accent-ink about_pack">
 <?php echo $pack_html; ?>
 
 </section>
@@ -66,7 +66,7 @@ and <a href="https://github.com/redshedjed/derbynet" target="_blank"><b>Claude</
 <?php } ?>
 </section>
 
-<section class="card card-accent accent-other" id="image-credits">
+<section class="card card-accent accent-ink" id="image-credits">
 <h2 class="card-title">Image Credits</h2>
 <p>Some of the fake racer and car images came from one or more of these sources:</p>
 <ul>

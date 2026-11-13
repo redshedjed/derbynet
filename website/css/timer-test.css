@@ -22,25 +22,14 @@ div#timer_summary              { grid-area: status; }
 .timer_test_page > .test-control { grid-area: sim; }
 div#now-racing                 { grid-area: lanes; }
 
-/* Cards */
+/* Cards (.card in components.css), set closer together */
 #log_outer,
 div#timer_summary,
 div#now-racing,
 .timer_test_page > .test-control {
   box-sizing: border-box;
+  margin: 0;
   padding: var(--space-3) var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-}
-div#timer_summary,
-.timer_test_page > .test-control,
-div#now-racing {
-  border-left: 6px solid var(--stage-during);
-}
-#log_outer {
-  border-left: 6px solid var(--stage-other);
 }
 
 /* ---------------- Timer status ---------------- */
