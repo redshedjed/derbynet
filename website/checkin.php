@@ -158,7 +158,7 @@ make_banner('Racer Check-In');
     <th>Photo</th>
     <th><?php echo column_header('Last Name', 'name'); ?></th>
     <th><?php echo column_header('First Name', 'first'); ?></th>
-    <th><?php echo column_header('Car Name &amp; From', 'carname'); ?></th>
+    <th><?php echo column_header('Car Name', 'carname'); ?></th>
     <th><?php echo column_header('Passed?', 'passed'); ?></th>
     <?php if ($xbs) {
         echo '<th>'.$xbs_award_name.'</th>';
@@ -282,9 +282,6 @@ mobile_select_refresh($("#bulk_who"));
       </label>
       <!-- Populated by javascript -->
       <select id="edit_partition" data-wrapper-class="partition_mselect"></select>
-
-      <label for="edit_note_from">From (if desired):</label>
-      <input id="edit_note_from" type="text" name="edit_note_from" value=""/>
 
       <label for="eligible">Trophy eligibility:</label>
       <input type="checkbox" class="flipswitch" name="eligible" id="eligible"

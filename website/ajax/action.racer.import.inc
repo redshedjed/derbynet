@@ -81,7 +81,7 @@ if ($ok) {
                    'lastname' => $_POST['lastname'],
                    'carnumber' => $carnumber,
                    'carname' => $carname,
-                   'note_from' => $_POST['note_from'],
+                   'note_from' => isset($_POST['note_from']) ? $_POST['note_from'] : '',
                    'exclude' => $exclude);
   if (isset($_POST['partition'])) {
     $options['partition'] = trim(@$_POST['partition']);

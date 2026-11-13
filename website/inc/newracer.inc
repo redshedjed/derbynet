@@ -64,7 +64,7 @@ function insert_new_racer($values) {
                        .'        :note, :partitionid, :rankid, :classid, :exclude)');
   $stmt->execute(array(':carnumber' => trim($values['carnumber']),
                        ':carname' => trim($values['carname']),
-                       ':note' => trim($values['note_from']),
+                       ':note' => isset($values['note_from']) ? trim($values['note_from']) : '',
                        ':firstname' => trim($values['firstname']),
                        ':lastname' => trim($values['lastname']),
                        ':partitionid' => $values['partitionid'],
