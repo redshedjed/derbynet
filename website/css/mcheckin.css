@@ -40,7 +40,7 @@
   margin-right: auto;
 }
 #greetings p {
-  font-size: 20px;
+  font-size: var(--text-lg);
 }
 #step1 {
   font-weight: bold;
@@ -60,7 +60,7 @@
   right: var(--space-3);
   top: calc(var(--banner-height) + var(--space-3));
   padding: var(--space-4);
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   z-index: 400;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
@@ -80,7 +80,7 @@
   transform: translateX(-50%);
   max-width: 90vw;
   padding: var(--space-3) var(--space-5);
-  font-size: 1.15rem;
+  font-size: var(--text-lg);
   font-weight: var(--weight-semibold);
   text-align: center;
   z-index: 400;
@@ -107,7 +107,7 @@
   padding: var(--space-2);
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 #list-button {
   flex: none;
@@ -149,7 +149,7 @@ video#preview {
   background-repeat: no-repeat;
   background-position: bottom 6px center;
   color: white;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
@@ -237,7 +237,7 @@ div#flash-overlay {
   min-width: 0;
 }
 #racer-div .racer-name {
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
   font-weight: var(--weight-bold, 700);
   line-height: 1.2;
   white-space: nowrap;
@@ -246,7 +246,7 @@ div#flash-overlay {
 }
 #racer-div .racer-details {
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -308,7 +308,7 @@ div#flash-overlay {
 .escutcheon-label {
   flex: none;
   margin-top: var(--space-1);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
 }
@@ -322,7 +322,7 @@ div#flash-overlay {
   border: 1px solid var(--color-border-strong, #bbb);
   background: var(--color-surface);
   color: var(--color-text-muted);
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
   z-index: 2;
 }
@@ -344,18 +344,18 @@ div#flash-overlay {
   color: var(--color-text-muted);
 }
 #checkin-button .checked-in-mark {
-  font-size: 2rem;
+  font-size: var(--text-2xl);
   line-height: 1;
   color: var(--color-text-muted);
 }
 #checkin-button .checked-in-status {
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: var(--weight-bold, 700);
   color: var(--color-text);
   line-height: 1.15;
 }
 #checkin-button .checked-in-hint {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
 }
 #checkin-button.passed {
   border-color: var(--color-success);
@@ -390,7 +390,7 @@ div#racer-list {
   width: 100%;
   box-sizing: border-box;
   padding: 10px var(--space-3);
-  font-size: 1rem;   /* 16px or more, so phones don't zoom in */
+  font-size: var(--text-base);   /* 16px or more, so phones don't zoom in */
   border: 1px solid var(--color-border-strong, #bbb);
   border-radius: var(--radius-md);
   background: var(--color-surface);
@@ -427,20 +427,20 @@ div#racer-list {
 }
 #racer-list li .racer-name {
   grid-area: name;
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
 }
 #racer-list li .racer-details {
   grid-area: details;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 #racer-list li .racer-status {
   grid-area: status;
   padding: 2px 10px;
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
   background: var(--gray-100, #eee);
   color: var(--color-text-muted);
@@ -461,7 +461,7 @@ div#racer-list {
   left: 0px;
   right: 0px;
   height: 64px;
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
   font-weight: var(--weight-semibold);
   line-height: 64px;
   background: var(--color-brand);
@@ -558,5 +558,5 @@ div#racer-list {
 #full-table-link {
   margin: 0 0 calc(64px + var(--space-4)) 0;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }

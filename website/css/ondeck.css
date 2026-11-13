@@ -222,6 +222,9 @@ body.as-desk td {
   font-size: var(--text-base);
   padding: var(--space-2);
 }
+body.as-desk td .car {
+  font-size: var(--text-sm);
+}
 body.as-desk p.race_start {
   font-size: var(--text-base);
 }

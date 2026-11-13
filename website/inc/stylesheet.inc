@@ -5,6 +5,7 @@
 // pages would run off the side of a phone screen.  Add a page once it fits a
 // 390px-wide screen (see the UI modernization plan, Phases 3 and 4).
 $mobile_ready_pages = array(
+  'about.php',
   'awards-editor.php',
   'awards-presentation.php',
   'camera.php',
@@ -21,6 +22,7 @@ $mobile_ready_pages = array(
   'ondeck.php',
   'photo-thumbs.php',
   'print.php',  // had its own viewport tag before
+  'quickref.php',
   'racer-results.php',
   'scenes.php',
   'slideshow.php',

@@ -654,6 +654,24 @@ body.fill-page > .page-toolbar {
 .panel-columns > * + * {
   border-left: 1px solid var(--gray-200);
 }
+/* On a phone the columns stack, one under another, and the panel scrolls */
+@media (max-width: 720px) {
+  .panel-columns {
+    display: block;
+    overflow-y: auto;
+  }
+  .panel-columns > * {
+    overflow: visible;
+    padding-bottom: var(--space-4);
+  }
+  .panel-columns > * + * {
+    border-left: 0;
+    border-top: 1px solid var(--gray-200);
+  }
+  .panel-columns > :last-child {
+    padding-bottom: var(--space-6);
+  }
+}
 
 @media (max-width: 720px) {
   .page-panel {
