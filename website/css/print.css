@@ -32,6 +32,9 @@ div#document-scroll {
   bottom: 0px;
   width: 300px; /* Has to match div#page-controls */
   overflow-y: auto;
+  /* Room below the last option when scrolled to the end */
+  padding-bottom: var(--space-6);
+  box-sizing: border-box;
 }
 
 #sortorder-paragraph {
@@ -56,6 +59,9 @@ div#subjects-scroll {
   top: 130px;
   bottom: 0;
   overflow-y: auto;
+  /* Room below the last racer or award when scrolled to the end */
+  padding-bottom: var(--space-6);
+  box-sizing: border-box;
 }
 
 div#subjects-context table {
@@ -68,8 +74,8 @@ div#document-controls {
   margin-left: 15px;
 }
 
-div#document-controls div.radio-spacer {
-  height: 10px;
+div#document-controls div.mradiogroup + div.mradiogroup {
+  margin-top: 10px;
 }
 
 div#subject-awards td p {

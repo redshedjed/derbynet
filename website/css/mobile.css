@@ -104,7 +104,10 @@
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
 }
+/* Each label leaves off its bottom edge, since the next one's top edge draws
+   the line between them; the last one draws the group's bottom edge. */
 .mradiogroup .mradio:last-child label {
+  border-bottom-width: 1px;
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
 }

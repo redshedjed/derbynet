@@ -94,15 +94,20 @@ uasort($doc_classes, 'order_by_name');
 
 
 <div id="document-controls">
-  <div class='mradiogroup'>
     <?php
+    // One group of radio buttons for each type of document (racer, award,
+    // summary), so each group has its own top and bottom edges.  They all
+    // share the one name, so choosing in one group clears the others.
     $radio_count = 0;
     $last_type = '';
     foreach ($doc_classes as $c => $details) {
       ++$radio_count;
 
-      if ($radio_count > 0 && $details['type'] != $last_type) {
-        echo "<div class='radio-spacer'>&nbsp;</div>\n";
+      if ($details['type'] != $last_type) {
+        if ($last_type != '') {
+          echo "</div>\n";  // mradiogroup
+        }
+        echo "<div class='mradiogroup'>\n";
       }
       $last_type = $details['type'];
 
@@ -116,8 +121,10 @@ uasort($doc_classes, 'order_by_name');
       }
       echo " value='".$c."'/>";
     }
+    if ($last_type != '') {
+      echo "</div>\n";  // mradiogroup
+    }
     ?>
-  </div> <!-- mradiogroup -->
 </div>
 
 <div id="page-controls">
