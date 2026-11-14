@@ -16,7 +16,8 @@
 // Commands from the server (see inc/replay.inc):
 //   START <heat>                          a heat is staged
 //   RACE_STARTS <length> <showings> <%>   the gate opened: replay after
-//                                         <length> ms unless REPLAY comes first
+//                                         <length> ms (at least 4 s) unless
+//                                         REPLAY comes first
 //   REPLAY <length> <showings> <%>        the heat finished: replay now
 //   CANCEL                                forget the pending replay
 //   TEST <length> <showings> <%>          replay now, to try the settings
@@ -115,6 +116,10 @@ function parse_replay_options(words) {
   apply_lengths();
 }
 
+// The least time after the gate opens before replaying without the timer's
+// result (see RACE_STARTS below)
+const k_race_fallback_ms = 4000;
+
 function handle_replay_message(cmdline) {
   console.log('* Replay message:', cmdline);
   let words = cmdline.trim().split(/\s+/);
@@ -133,11 +138,15 @@ function handle_replay_message(cmdline) {
     if (g_replay.state != 'playing') {
       set_replay_state('running', 'RACE_STARTS');
       clear_replay_timer();
+      // In case the timer never reports the finish: replay anyway, once the
+      // race is surely over.  That's the replay's length, but never sooner
+      // than k_race_fallback_ms, so a short replay (half a second of the
+      // finish line) doesn't fire before the cars get there.
       g_replay.timer = setTimeout(function() {
         g_replay.timer = 0;
         g_replay.replayed_by_timer = true;
         trigger_replay('timer after RACE_STARTS');
-      }, g_replay.options.length);
+      }, Math.max(g_replay.options.length, k_race_fallback_ms));
     }
     break;
   case 'REPLAY':

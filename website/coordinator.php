@@ -195,7 +195,10 @@ $warn_no_timer = warn_no_timer();
     <label for="replay-skipback">Duration of replay, in seconds:</label>
     <!-- Value in milliseconds, must match as a string -->
     <select id="replay-skipback" name="replay-skipback">
-        <!-- <option value="2000">2.0</option> -->
+        <option value="500">0.5</option>
+        <option value="1000">1.0</option>
+        <option value="1500">1.5</option>
+        <option value="2000">2.0</option>
         <option value="2500">2.5</option>
         <option value="3000">3.0</option>
         <option value="3500">3.5</option>

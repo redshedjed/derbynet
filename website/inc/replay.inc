@@ -5,7 +5,8 @@
 // Commands for the replay displays are appended to the ReplayCommands log:
 //   START <heat>                          a heat is staged
 //   RACE_STARTS <length> <showings> <%>   the gate opened: replay after
-//                                         <length> ms unless REPLAY comes first
+//                                         <length> ms (at least 4 s) unless
+//                                         REPLAY comes first
 //   REPLAY <length> <showings> <%>        the heat finished: replay now
 //   CANCEL                                forget the pending replay
 //   TEST <length> <showings> <%>          replay now, to try the settings
@@ -363,7 +364,8 @@ function send_replay_CANCEL() {
   send_replay_message("CANCEL");
 }
 
-// "RACE_STARTS skipback showings rate -- replay after skipback ms, unless a
+// "RACE_STARTS skipback showings rate -- replay after skipback ms (at least
+// 4 s: js/replay-display.js), unless a
 // REPLAY comes first"
 function send_replay_RACE_STARTS() {
   send_replay_message("RACE_STARTS ".replay_tuning_args());

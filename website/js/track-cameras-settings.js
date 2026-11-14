@@ -8,7 +8,7 @@
 // The Race Dashboard's replay settings, which "Default" stands for
 var g_replay_defaults = {skipback: 4000, showings: 2, rate: 50};
 
-const k_length_choices = [2500, 3000, 3500, 4000, 4500, 5000, 6000];  // ms
+const k_length_choices = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 6000];  // ms
 const k_showings_choices = [1, 2, 3];
 const k_rate_choices = [10, 25, 50, 75, 100];  // percent
 
