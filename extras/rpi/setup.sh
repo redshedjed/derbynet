@@ -130,7 +130,12 @@ date '+%B %-d %Y' > "$REPO/website/inc/generated-build-date.inc"
 sudo mkdir -p "$WWW/local" /var/lib/derbynet/imagery /var/lib/derbynet/slides
 sudo rsync -a --delete --exclude=/local/ "$REPO/website/" "$WWW/"
 sudo cp "$REPO/installer/nginx-configs/index.html" /var/www/html/index.html
-sudo chown -R www-data:www-data "$WWW/local" /var/lib/derbynet
+# On a live server, SQLite creates and deletes -journal files in the data
+# directory while this runs, so a file can vanish mid-walk; don't let that abort
+# setup.  Only touch what isn't already www-data's.
+sudo find "$WWW/local" /var/lib/derbynet -ignore_readdir_race ! -user www-data \
+     -exec chown www-data:www-data {} + 2>/dev/null \
+    || echo "WARNING: couldn't fix ownership of every file under /var/lib/derbynet (files changing while DerbyNet runs?)."
 sudo chmod 775 "$WWW/local" /var/lib/derbynet
 
 ######## PHP
