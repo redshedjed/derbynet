@@ -62,7 +62,7 @@
       <zip destfile="../DerbyNet-${release-series}-${git-rev-count}${git-dirty}-${DSTAMP}.zip">
           <fileset dir=".">
               <include name="MIT-LICENSE.txt"/>
-              <include name="README.txt"/>
+              <include name="README.md"/>
           </fileset>
 
           <fileset dir=".">
