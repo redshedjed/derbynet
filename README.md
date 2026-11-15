@@ -43,6 +43,9 @@ into **alpha testing with real hardware**. Expect rough edges.
 
 ## Running it
 
+Two ways are supported: Raspberry Pis, and Docker. Upstream's Mac, Windows
+and Debian installers have been removed.
+
 **On Raspberry Pis** (the intended set-up for events): follow
 [extras/rpi/00README](extras/rpi/00README).
 
@@ -115,7 +118,7 @@ testing/test-timer-hardware.sh localhost:8080
 | `website/`   | The PHP web application: every page, kiosk and action      |
 | `timer/`     | Timer interfaces (Java jar and in-browser JavaScript)     |
 | `extras/`    | Raspberry Pi set-up, kiosk scripts, and other tools       |
-| `installer/` | Docker, Debian, Mac and Windows packaging                 |
+| `installer/` | The Docker image and the nginx configs the Pi also uses   |
 | `docs/`      | User documentation (LibreOffice sources)                  |
 | `testing/`   | Test scripts and test data                                |
 
