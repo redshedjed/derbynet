@@ -188,26 +188,9 @@
       </copy>
 </target>
 
-  <target name="timer-profiles" depends="timer-jar, prepare-timer-in-browser">
-      <!-- java task supposedly supports outputproperty, but it doesn't seem to
-           work. -->
-      <exec executable="java" outputproperty="timer-profiles">
-          <arg value="-cp"/>
-          <!-- ${timer-jar-dir} doesn't work in arg value, apparently. -->
-          <arg value="timer/dist/lib/derby-timer.jar"/>
-          <arg value="org.jeffpiazza.derby.profiles.AllProfiles"/>
-      </exec>
-      <copy file="templates/timer-profiles.js"
-            tofile="website/js/timer/profiles.js" overwrite="true">
-          <filterchain>
-              <replacetokens>
-                  <token key="PROFILES" value="${timer-profiles}"/>
-              </replacetokens>
-          </filterchain>
-      </copy>
-  </target>
-
-  <target name="timer-in-browser" depends="timer.php, timer-profiles"
+  <!-- The timer list, profiles.js, is one of these files: kept in git, not
+       generated. -->
+  <target name="timer-in-browser" depends="timer.php, prepare-timer-in-browser"
           description="Rebuild timer.php and friends">
       <copy todir="website/js/timer" overwrite="true">
         <fileset dir="timer/derbynet-timer/src/js">
@@ -229,12 +212,6 @@
           description="Builds the jar file for derby-timer">
       <ant dir="${timer-dir}" target="clean"/>
       <ant dir="${timer-dir}" target="timer-jar"/>
-  </target>
-
-  <target name="timer-electron" depends="banner, generated-version.inc,
-                                    generated-build-date.inc, release-series"
-          description="Builds the stand-alone timer application">
-      <ant dir="${timer-dir}" target="electron-app"/>
   </target>
 
   <target name="docs-clean" if="soffice_available">

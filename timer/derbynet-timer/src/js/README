@@ -32,7 +32,8 @@ timer_proxy.js -- Combines a port_wrapper and a profile, and acts as the
 interface to the timer device.  It periodically polls the timer device by
 queuing POLL_TIMER events for itself.
 
-profiles.js -- Generated from Java code, and hence not found in src/js directory.
+profiles.js -- The timers DerbyNet can talk to, one entry per model (data, not code).
+Each entry has these fields:
 [  { name: "...",
      key: "...",
      params: { baud:, data:, stop:, parity: },

@@ -82,12 +82,15 @@ Camera and photo features need a [secure context](https://developer.mozilla.org/
    This also builds PDFs from the documents in [docs/](docs/); that step is
    silently skipped if LibreOffice's `soffice` isn't installed.
 
-3. To talk to a hardware timer, build one or both timer interfaces:
+3. To talk to a hardware timer, build the timer page:
 
    ```bash
-   ant timer-in-browser   # the in-browser timer page
-   ant timer-jar          # derby-timer.jar
+   ant timer-in-browser
    ```
+
+   The timers it knows are listed in
+   [timer/derbynet-timer/src/js/profiles.js](timer/derbynet-timer/src/js/profiles.js).
+   (The Java timer, `derby-timer.jar`, is being phased out.)
 
 4. Run the server image with your local sources mounted in place of the ones
    baked into it. `PATH_TO_YOUR_DATA` is where databases, photos and other data

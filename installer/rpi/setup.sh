@@ -34,7 +34,8 @@ command -v apt-get >/dev/null || { echo "This script is for Raspberry Pi OS (Deb
 
 REPO=$(cd "$(dirname "$0")/../.." && pwd)
 for f in website/index.php extras/scripts/kiosk.sh installer/rpi/derbynet-pi installer/rpi/derbynet-pi.conf \
-         installer/nginx-configs/conf.d/derbynet_log_format.conf ; do
+         installer/nginx-configs/conf.d/derbynet_log_format.conf templates/timer.html \
+         timer/derbynet-timer/src/js/profiles.js ; do
     [ -f "$REPO/$f" ] || { echo "Missing $REPO/$f; run this from a DerbyNet source checkout." >&2 ; exit 1 ; }
 done
 
@@ -123,8 +124,18 @@ else
     echo "unknown" > "$REPO/website/inc/generated-commit-hash.inc"
 fi
 date '+%B %-d %Y' > "$REPO/website/inc/generated-build-date.inc"
-# Not built here (they need Java and LibreOffice): the browser-based timer
-# (timer.php) and the quick-reference PDF.
+# The browser-based timer page, as build.xml's "timer-in-browser" target makes it.
+mkdir -p "$REPO/website/js/timer"
+cp "$REPO"/timer/derbynet-timer/src/js/*.js "$REPO/website/js/timer/"
+cp "$REPO"/timer/derbynet-timer/src/css/*.css "$REPO/website/css/"
+BRANCH=$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null | sed 's/master/dev/')
+sed -e 's/@PHP_START@/<?php/' -e 's/@PHP_END@/?>/' \
+    -e 's/@ELECTRON_ONLY_START@/<!--/' -e 's/@ELECTRON_ONLY_END@/-->/' \
+    -e "s/@BRANCH@/${BRANCH:-unknown}/" \
+    -e "s/@REV_COUNT@/$(cat "$REPO/website/inc/generated-version.inc")/" \
+    -e "s/@BUILD_DATE@/$(date '+%B %-d %Y')/" \
+    "$REPO/templates/timer.html" > "$REPO/website/timer.php"
+# Not built here (it needs LibreOffice): the quick-reference PDF.
 
 
 sudo mkdir -p "$WWW/local" /var/lib/derbynet/imagery /var/lib/derbynet/slides

@@ -9,10 +9,6 @@
   <property name="build" location="build"/>
   <property name="dist"  location="dist"/>
   <property name="lib" location="../lib"/>
-  <property name="templates" location="../templates"/>
-
-  <property name="derbynet-timer" location="derbynet-timer"/>
-  <property name="electron-dir" location="electron"/>
 
   <!-- Should be inherited from invoking task;
        these definitions are only backups -->
@@ -40,116 +36,6 @@
             <pathelement location="${lib}/json-20210307.jar"/>
         </classpath>
     </javac>
-  </target>
-
-  <target name="make-electron-dirs">
-      <mkdir dir="${electron-dir}"/>
-      <mkdir dir="${electron-dir}/src"/>
-      <mkdir dir="${electron-dir}/src/css"/>
-      <mkdir dir="${electron-dir}/src/img"/>
-      <mkdir dir="${electron-dir}/src/js"/>
-      <mkdir dir="${electron-dir}/src/js/timer"/>
-  </target>
-
-  <target name="timer.html" depends="make-electron-dirs">
-      <copy file="${templates}/timer.html"
-            tofile="${electron-dir}/src/timer.html">
-            <filterchain>
-                <replacetokens>
-                    <token key="PHP_START" value="&lt;!--"/>
-                </replacetokens>
-                <replacetokens>
-                    <token key="PHP_END" value="--&gt;"/>
-                </replacetokens>
-                <replacetokens>
-                    <token key="ELECTRON_ONLY_START" value=''/>
-                </replacetokens>
-                <replacetokens>
-                    <token key="ELECTRON_ONLY_END" value=""/>
-                </replacetokens>
-                <replacetokens>
-                    <token key="BRANCH" value="${release-series}"/>
-                </replacetokens>
-                <replacetokens>
-                    <token key="REV_COUNT" value="${git-rev-count}"/>
-                </replacetokens>
-                <replacetokens>
-                    <token key="BUILD_DATE" value="${TODAY}"/>
-                </replacetokens>
-          </filterchain>
-      </copy>
-  </target>
-
-  <target name="timer-profiles" depends="timer-jar, make-electron-dirs"
-          description="Generate timer profiles">
-      <!-- java task supposedly supports outputproperty, but it doesn't seem to
-           work. -->
-      <exec executable="java" outputproperty="timer-profiles">
-          <arg value="-cp"/>
-          <!-- ${timer-jar-dir} doesn't work in arg value, apparently. -->
-          <arg value="${dist}/lib/derby-timer.jar"/>
-          <arg value="org.jeffpiazza.derby.profiles.AllProfiles"/>
-      </exec>
-      <copy file="${templates}/timer-profiles.js"
-            tofile="${electron-dir}/src/js/timer/profiles.js" overwrite="true">
-          <filterchain>
-              <replacetokens>
-                  <token key="PROFILES" value="${timer-profiles}"/>
-              </replacetokens>
-          </filterchain>
-      </copy>
-  </target>
-
-  <target name="prepare-electron" depends="make-electron-dirs,
-                                                 timer.html, timer-profiles">
-      <copy file="${derbynet-timer}/package.json" todir="${electron-dir}"/>
-      <copy file="${derbynet-timer}/timer.js" todir="${electron-dir}/src"/>
-      <copy todir="${electron-dir}/src/css">
-          <fileset dir="../website/css">
-              <include name="global.css"/>
-              <include name="mobile.css"/>
-          </fileset>
-          <fileset dir="${derbynet-timer}/src/css">
-              <include name="timer.css"/>
-          </fileset>
-      </copy>
-      <copy todir="${electron-dir}/src/js">
-          <fileset dir="../website/js">
-              <include name="jquery.js"/>
-              <include name="jquery-migrate.js"/>
-              <include name="jquery-ui.min.js"/>
-              <include name="mobile.js"/>
-              <include name="ajax-setup.js"/>
-              <include name="modal.js"/>
-          </fileset>
-      </copy>
-      <copy todir="${electron-dir}/src/js/timer">
-        <fileset dir="${derbynet-timer}/src/js">
-            <include name="**"/>
-        </fileset>
-      </copy>
-      <copy todir="${electron-dir}/src/img">
-          <fileset dir="../website/img">
-              <include name="derbynet.png"/>
-              <include name="status/*.png"/>
-              <include name="timer/*.png"/>
-          </fileset>
-      </copy>
-  </target>
-
-  <target name="electron-app" depends="prepare-electron"
-          description="Builds the stand-alone derbynet-timer app">
-    <!-- exec under windows won't recognize "yarn", but needs
-         "yarn.cmd" instead.  Other OSes just want plain "yarn". -->
-    <condition property="yarn.cmd" value="yarn.cmd" else="yarn">
-      <os family="windows"/>
-    </condition>
-    <exec executable="${yarn.cmd}" dir="${electron-dir}">
-      <arg value="install"/>
-    </exec>
-    <exec executable="${yarn.cmd}" dir="${electron-dir}">
-      <arg value="dist"/>
-    </exec>
   </target>
 
   <target name="timer-jar" depends="compile"
