@@ -9,8 +9,8 @@
 # Run from a DerbyNet source checkout, as the user who'll be logged in to the
 # desktop (not with sudo; the script calls sudo itself):
 #
-#   bash extras/rpi/setup.sh                    # keeps existing ROLES, or asks
-#   bash extras/rpi/setup.sh --roles "server kiosk"
+#   bash installer/rpi/setup.sh                 # keeps existing ROLES, or asks
+#   bash installer/rpi/setup.sh --roles "server kiosk"
 #
 # Safe to re-run: re-running also deploys the checkout's current website code.
 # Needs internet access the first time (to install packages).
@@ -33,7 +33,7 @@ fi
 command -v apt-get >/dev/null || { echo "This script is for Raspberry Pi OS (Debian)." >&2 ; exit 1 ; }
 
 REPO=$(cd "$(dirname "$0")/../.." && pwd)
-for f in website/index.php extras/scripts/kiosk.sh extras/rpi/derbynet-pi extras/rpi/derbynet-pi.conf \
+for f in website/index.php extras/scripts/kiosk.sh installer/rpi/derbynet-pi installer/rpi/derbynet-pi.conf \
          installer/nginx-configs/conf.d/derbynet_log_format.conf ; do
     [ -f "$REPO/$f" ] || { echo "Missing $REPO/$f; run this from a DerbyNet source checkout." >&2 ; exit 1 ; }
 done
@@ -159,7 +159,7 @@ step "Configuring nginx"
 [ -f /etc/ssl/certs/ssl-cert-snakeoil.pem ] || sudo make-ssl-cert generate-default-snakeoil
 sudo cp "$REPO/installer/nginx-configs/conf.d/derbynet_log_format.conf" /etc/nginx/conf.d/
 sudo tee /etc/nginx/sites-available/derbynet > /dev/null <<EOF
-# Written by DerbyNet's extras/rpi/setup.sh
+# Written by DerbyNet's installer/rpi/setup.sh
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -205,7 +205,7 @@ done
 sudo rm -rf /usr/share/derbynet/scripts/lib /usr/share/derbynet/conf
 sudo rm -f /usr/share/derbynet/scripts/photostand.sh /usr/share/derbynet/scripts/shoot-then-scan.sh \
            /usr/share/derbynet/scripts/*.png
-install_text 755 "$REPO/extras/rpi/derbynet-pi" /usr/local/bin/derbynet-pi
+install_text 755 "$REPO/installer/rpi/derbynet-pi" /usr/local/bin/derbynet-pi
 # Left over from an earlier, kiosk-only version of this script
 sudo rm -f /usr/local/bin/derbynet-kiosk
 rm -f "$HOME/.config/autostart/derbynet-kiosk.desktop"
@@ -217,11 +217,11 @@ if [ ! -f /etc/derbynet.conf ] ; then
     install_text 644 "$REPO/extras/derbynet.conf" /etc/derbynet.conf
 fi
 if [ ! -f "$BOOT_CONF" ] ; then
-    install_text 644 "$REPO/extras/rpi/derbynet-pi.conf" "$BOOT_CONF"
+    install_text 644 "$REPO/installer/rpi/derbynet-pi.conf" "$BOOT_CONF"
 elif ! grep -q '^ROLES=' "$BOOT_CONF" ; then
     # An older derbynet.conf (e.g. from the derbynet-extras package): keep its
     # settings and add the Pi ones after them.
-    sed -e 's/\r$//' "$REPO/extras/rpi/derbynet-pi.conf" | sudo tee -a "$BOOT_CONF" > /dev/null
+    sed -e 's/\r$//' "$REPO/installer/rpi/derbynet-pi.conf" | sudo tee -a "$BOOT_CONF" > /dev/null
 fi
 if [ -n "$ROLES_ARG" ] ; then
     sudo sed -i -e 's/\r$//' -e "s/^ROLES=.*/ROLES=\"$ROLES_ARG\"/" "$BOOT_CONF"

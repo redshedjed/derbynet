@@ -2,7 +2,7 @@
 #
 # derbynet-pi: manages the DerbyNet roles of a Raspberry Pi, as configured by
 # ROLES= in derbynet.conf on the boot partition.  Installed by
-# extras/rpi/setup.sh.
+# installer/rpi/setup.sh.
 #
 #   derbynet-pi status     What this Pi is doing, and whether it's healthy
 #   derbynet-pi doctor     status, plus hardware checks (cameras, scanners)

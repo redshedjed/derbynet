@@ -14,7 +14,7 @@ into **alpha testing with real hardware**. Expect rough edges.
 - **Raspberry Pi deployment.** One script turns a fresh Raspberry Pi OS
   install into a server, a warm standby, a kiosk, or any mix of them, with
   automatic server discovery and failover. See
-  [extras/rpi/00README](extras/rpi/00README).
+  [installer/rpi/00README](installer/rpi/00README).
 - **Cameras.** Named track cameras (Start, Finish, ...) are set up in
   Settings and assigned to kiosks; replays from any number of cameras play in
   order on any number of displays. The Photo Stand page (camera plus barcode
@@ -47,7 +47,7 @@ Two ways are supported: Raspberry Pis, and Docker. Upstream's Mac, Windows
 and Debian installers have been removed.
 
 **On Raspberry Pis** (the intended set-up for events): follow
-[extras/rpi/00README](extras/rpi/00README).
+[installer/rpi/00README](installer/rpi/00README).
 
 **Anywhere else**, build the Docker image from your checkout. The website
 needs some generated files that git doesn't carry, so build those first (see
@@ -117,8 +117,8 @@ testing/test-timer-hardware.sh localhost:8080
 |--------------|-----------------------------------------------------------|
 | `website/`   | The PHP web application: every page, kiosk and action      |
 | `timer/`     | Timer interfaces (Java jar and in-browser JavaScript)     |
-| `extras/`    | Raspberry Pi set-up, kiosk scripts, and other tools       |
-| `installer/` | The Docker image and the nginx configs the Pi also uses   |
+| `extras/`    | Kiosk scripts and other tools                             |
+| `installer/` | The two ways to deploy: Docker and Raspberry Pi (`rpi/`) |
 | `docs/`      | User documentation (LibreOffice sources)                  |
 | `testing/`   | Test scripts and test data                                |
 
