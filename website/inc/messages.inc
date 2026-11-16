@@ -17,10 +17,6 @@ require_once('inc/sql-script.inc');
 //
 // In practice, each webrtc message has a 'type' field ('solicitation', 'offer',
 // 'ice-candidate', and 'answer') and a 'from' field.
-//
-// If websocket support is available, the javascript MessagePoller will prefer
-// to pass messages via a websocket server and skip using this database- and
-// polling-based mechanism.
 
 
 function create_message_queue_table() {

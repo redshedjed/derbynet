@@ -42,7 +42,6 @@ $kiosk_url = '//'.substr($url, 0, $last + 1).'kiosk.php?'.http_build_query($kios
 <script type="text/javascript" src="js/camera-source.js"></script>
 <script type="text/javascript" src="js/replay-recorder.js"></script>
 <script type="text/javascript">
-var g_websocket_url = <?php echo json_encode(read_raceinfo('_websocket_url', '')); ?>;
 </script>
 <script type="text/javascript" src="js/replay-display.js"></script>
 </head>

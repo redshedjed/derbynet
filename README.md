@@ -124,7 +124,6 @@ testing/test-timer-hardware.sh localhost:8080
 |--------------|-----------------------------------------------------------|
 | `website/`   | The PHP web application: every page, kiosk and action      |
 | `timer/`     | The timer interface: the timer page's JavaScript, and `headless/` to run it on a Pi |
-| `extras/`    | Kiosk scripts and other tools                             |
 | `installer/` | The two ways to deploy: Docker and Raspberry Pi (`rpi/`) |
 | `docs/`      | User documentation (LibreOffice sources)                  |
 | `testing/`   | Test scripts and test data                                |

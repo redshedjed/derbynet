@@ -13,8 +13,7 @@
 // (<length> in ms, <%> the playback speed as a percent of normal.)  Each
 // display (js/replay-display.js) polls replay.poll with the seq of the last
 // command it has seen, so every display gets every command, however many
-// there are.  If a websocket server is configured, commands also go out over
-// it at once, with their seq.
+// there are.
 //
 // Displays and track cameras check in with every poll; ReplayClients keeps
 // when each was last heard from, for the status on Settings and the Race
@@ -27,7 +26,6 @@
 
 require_once('inc/data.inc');
 require_once('inc/sql-script.inc');
-require_once('inc/ws-trigger.inc');
 
 // A client not heard from for this many seconds counts as gone.
 define('REPLAY_TIMEOUT_LIMIT', 10);
@@ -86,13 +84,6 @@ function send_replay_message($cmd) {
   replay_sql('replay-commands-table',
              'DELETE FROM ReplayCommands WHERE posted < :old',
              array(':old' => $now - REPLAY_COMMAND_LIFETIME));
-  $seq = latest_replay_seq();
-  // The seq lets a display that also polls skip what it's already had.
-  maybe_send_ws_trigger(array('url' => read_raceinfo('_websocket_url'),
-                              'topic' => 'replay-commands',
-                              'type' => 'replay-cmd',
-                              'cmd' => $cmd,
-                              'seq' => $seq));
   return true;
 }
 

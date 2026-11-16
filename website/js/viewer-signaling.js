@@ -104,8 +104,6 @@ function RemoteCamera(viewer_id, ideal, stream_cb, camera_name) {
     }
   }, 2500);
 
-  // If the MessagePoller is using a WebSocket that hasn't opened yet, this
-  // waits in its queue.
   ask();
 
   this.camera_name = camera_name;

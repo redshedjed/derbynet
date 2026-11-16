@@ -84,16 +84,10 @@ define('RACE_INFO_KEYS_FOR_SCHEMA_SCRIPT',
        ['photo-directory',
         'car-photo-directory',
         'logs-directory',
-        'lane_count',
-
-        '_websocket_url',
-        '_ws_trigger_port']);
+        'lane_count']);
 
 define('RACE_INFO_KEYS_FOR_SNAPSHOT',
        ['photo-directory',
         'car-photo-directory',
-        'logs-directory',
-
-        '_websocket_url',
-        '_ws_trigger_port']);
+        'logs-directory']);
 ?>

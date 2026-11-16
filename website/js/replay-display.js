@@ -11,7 +11,7 @@
 //     after another in that order, each with any tuning of its own.
 //
 // Assumes message-poller.js, viewer-signaling.js, camera-source.js,
-// replay-recorder.js and screenfull; g_websocket_url is set by the page.
+// replay-recorder.js and screenfull.
 //
 // Commands from the server (see inc/replay.inc):
 //   START <heat>                          a heat is staged
@@ -239,7 +239,7 @@ var g_display_name = window.g_replay_kiosk ? g_replay_kiosk.name
 var g_client_id = window.g_replay_kiosk ? 'kiosk-' + g_replay_kiosk.address
                                         : tab_id_string('display-');
 
-// A command, from polling or the websocket: each is handled once, in order.
+// A command from polling: each is handled once, in order.
 function take_command(seq, cmd) {
   if (seq !== undefined) {
     if (seq <= g_replay.seq) {
@@ -308,21 +308,8 @@ function poll_once_for_replay() {
          });
 }
 
-// If using websockets to listen for replay messages, this holds the
-// MessagePoller.
-var g_trigger_websocket;
-
 function listen_for_replay_messages() {
-  if (g_websocket_url != "") {
-    g_trigger_websocket = new MessagePoller(make_id_string('replay-'),
-                                            function(msg) { take_command(msg.seq, msg.cmd); },
-                                            ['replay-commands']);
-    // Commands come over the websocket; polling just checks in, catches
-    // anything missed, and picks up changes to the track cameras.
-    setInterval(poll_once_for_replay, 2000);
-  } else {
-    setInterval(poll_once_for_replay, 250);
-  }
+  setInterval(poll_once_for_replay, 250);
   poll_once_for_replay();
 }
 

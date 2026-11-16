@@ -45,7 +45,6 @@ html, body {
 <script type="text/javascript" src="js/track-camera.js"></script>
 <script type="text/javascript" src="js/replay-recorder.js"></script>
 <script type="text/javascript">
-var g_websocket_url = <?php echo json_encode(read_raceinfo('_websocket_url', '')); ?>;
 // Tells js/replay-display.js to run as a kiosk: no setup screen, and this
 // kiosk's page beneath.
 var g_replay_kiosk = {

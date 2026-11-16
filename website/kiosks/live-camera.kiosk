@@ -68,7 +68,6 @@ html, body {
 <script type="text/javascript" src="js/message-poller.js"></script>
 <script type="text/javascript" src="js/viewer-signaling.js"></script>
 <script type="text/javascript">
-var g_websocket_url = <?php echo json_encode(read_raceinfo('_websocket_url', '')); ?>;
 var g_camera_name = <?php echo json_encode($camera); ?>;
 var g_chosen_camera = <?php echo json_encode(isset($params['camera']) ? $params['camera'] : ''); ?>;
 
