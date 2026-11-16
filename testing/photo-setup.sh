@@ -20,7 +20,7 @@ function upload_car_photo() {
 }
 
 
-user_login_photo
+user_login_crew
 
 # There are no headshot fixtures; one car photo stands in as the only racer photo.
 echo Racer photo upload

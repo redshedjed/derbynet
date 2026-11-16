@@ -12,7 +12,7 @@ source `dirname $0`/common.sh
 PHOTO=$2
 RACERID=$3
 
-user_login_photo
+user_login_crew
 
 curl --location -s -b $COOKIES_CURL -c $COOKIES_CURL $BASE_URL/action.php \
     -X POST -F photo="@$PHOTO" -F action=photo.upload -F carnumber="$RACERID" -F autocrop=1 # | check_jsuccess

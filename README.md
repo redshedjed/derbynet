@@ -9,7 +9,7 @@ This is a fork of [jeffpiazza/derbynet](https://github.com/jeffpiazza/derbynet)
 documentation). It has changed a lot since it was forked, and is now heading
 into **alpha testing with real hardware**. Expect rough edges.
 
-## What's different from upstream
+## Updates
 
 - **Raspberry Pi deployment.** One script turns a fresh Raspberry Pi OS
   install into a server, a warm standby, a kiosk, a timer host, or any mix of
@@ -33,8 +33,9 @@ into **alpha testing with real hardware**. Expect rough edges.
   - **RaceCrew** (`murphy`): front of house: check-in, photos, judging,
     printables.
 
-  Plus two for devices: **Photo** (`flashbulb`) for photo stands, and
-  **Timer** (no password). Logins are there to prevent accidental changes on a
+  Plus **Timer** (no password) for the timer. Photo stands and other kiosks
+  need no login: what a kiosk may do comes with the page the Kiosk Dashboard
+  gives it. Logins are there to prevent accidental changes on a
   private event network, not to stand up to a determined attacker. Change the
   passwords in `config-roles.inc` in the server's configuration folder.
 - **A new look.** A shared design system (tokens, cards, buttons, tables)

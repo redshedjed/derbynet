@@ -161,10 +161,6 @@ function user_login_timer() {
     user_login Timer
 }
 
-function user_login_photo() {
-    user_login Photo
-}
-
 function user_logout() {
 	curl_postj action.php "action=role.login" | check_jsuccess logout
 }

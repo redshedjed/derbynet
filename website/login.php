@@ -118,7 +118,6 @@ $role_descriptions = array(
   'RaceCoordinator' => 'Runs the race: dashboards, awards',
   'Administrator' => 'Set-up, settings, awards, export',
   'Timer' => 'The track timer program',
-  'Photo' => 'The photo station',
 );
 foreach ($roles as $name => $details) {
   if (empty($name)) {

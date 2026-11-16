@@ -13,9 +13,9 @@ require_once('inc/data.inc');
 require_once('inc/authorize.inc');
 require_once('inc/banner.inc');
 
-// The Photo role (the photo station) only shows on the login page with ?all
+// Race crew and up can upload photos
 if (!have_permission(PHOTO_UPLOAD_PERMISSION)) {
-  header('Location: login.php?all&next=photo-stand.php');
+  header('Location: login.php?next=photo-stand.php');
   exit(0);
 }
 session_write_close();

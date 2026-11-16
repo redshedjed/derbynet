@@ -53,9 +53,6 @@ function write_config_roles_file($filename) {
                 'Timer' => array('password' => '',
                                  'permissions' => TIMER_MESSAGE_PERMISSION,
                                  'interactive' => false),
-                'Photo' => array('password' => 'flashbulb',
-                                 'permissions' => PHOTO_UPLOAD_PERMISSION,
-                                 'interactive' => false),
                 // Front of house: check-in, photos, judging, printables
                 'RaceCrew' => array('password' => 'murphy',
                                     'permissions' =>
