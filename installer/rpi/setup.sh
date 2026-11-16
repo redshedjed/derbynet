@@ -33,7 +33,7 @@ fi
 command -v apt-get >/dev/null || { echo "This script is for Raspberry Pi OS (Debian)." >&2 ; exit 1 ; }
 
 REPO=$(cd "$(dirname "$0")/../.." && pwd)
-for f in website/index.php extras/scripts/kiosk.sh installer/rpi/derbynet-pi installer/rpi/derbynet-pi.conf \
+for f in website/index.php installer/rpi/kiosk.sh installer/rpi/derbynet-pi installer/rpi/derbynet-pi.conf \
          installer/nginx-configs/conf.d/derbynet_log_format.conf templates/timer.html \
          timer/derbynet-timer/src/js/profiles.js timer/headless/derbynet-timer.js \
          timer/headless/package-lock.json ; do
@@ -206,13 +206,11 @@ sudo rm -f /etc/nginx/sites-enabled/default
 sudo ln -sf /etc/nginx/sites-available/derbynet /etc/nginx/sites-enabled/derbynet
 sudo nginx -t
 
-######## Client scripts (same layout as the derbynet-extras package)
+######## Scripts
 
 step "Installing DerbyNet scripts"
 sudo mkdir -p /usr/share/derbynet/scripts
-for f in "$REPO"/extras/scripts/*.sh ; do
-    install_text 755 "$f" "/usr/share/derbynet/scripts/$(basename "$f")"
-done
+install_text 755 "$REPO/installer/rpi/kiosk.sh" /usr/share/derbynet/scripts/kiosk.sh
 # Left over from the photo scripts (now the website's Photo Stand page)
 sudo rm -rf /usr/share/derbynet/scripts/lib /usr/share/derbynet/conf
 sudo rm -f /usr/share/derbynet/scripts/photostand.sh /usr/share/derbynet/scripts/shoot-then-scan.sh \
@@ -244,9 +242,6 @@ echo "{\"branch\": \"${BRANCH:-unknown}\"," \
 ######## Configuration files
 
 step "Writing configuration"
-if [ ! -f /etc/derbynet.conf ] ; then
-    install_text 644 "$REPO/extras/derbynet.conf" /etc/derbynet.conf
-fi
 if [ ! -f "$BOOT_CONF" ] ; then
     install_text 644 "$REPO/installer/rpi/derbynet-pi.conf" "$BOOT_CONF"
 elif ! grep -q '^ROLES=' "$BOOT_CONF" ; then

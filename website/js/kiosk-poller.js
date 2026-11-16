@@ -26,7 +26,7 @@ var KioskPoller = (function(KioskPoller) {
   // The names of this device's cameras: 'Camera 1', 'Camera 2'... until the
   // browser shows their real names, which it does once a camera has been
   // allowed.  If they're hidden, asks for a camera once, so they show (a
-  // Raspberry Pi kiosk allows it without asking: see extras/scripts/kiosk.sh).
+  // Raspberry Pi kiosk allows it without asking: see installer/rpi/kiosk.sh).
   var g_device_names = null;  // JSON string, once known
   var g_asked_for_names = false;
   function update_device_names() {

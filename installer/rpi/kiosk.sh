@@ -6,9 +6,10 @@
 # desktop.  On a Pi set up by installer/rpi/setup.sh, "derbynet-pi desktop"
 # starts it at desktop login, pointed at the server it finds.
 #
-# Settings come from derbynet.conf -- /etc/derbynet.conf, or on a Pi the copy
-# in the boot partition (/boot/firmware/derbynet.conf, or /boot/derbynet.conf
-# on older systems), which can be edited from another computer:
+# Settings come from derbynet.conf in the boot partition
+# (/boot/firmware/derbynet.conf, or /boot/derbynet.conf on older systems),
+# which can be edited from another computer; see derbynet-pi.conf.  (Also
+# /etc/derbynet.conf, if an older setup left one.)
 #
 #   DERBYNET_SERVER  The server, with no trailing slash,
 #                    e.g. DERBYNET_SERVER="http://192.168.1.100/derbynet".
@@ -17,14 +18,15 @@
 #                    the Pi's serial number, so it keeps its name (and the page
 #                    assigned to it) across restarts.  No two kiosks may share
 #                    one.
-#   KIOSK_PAGE       What to show, if not a kiosk: e.g.
-#                    KIOSK_PAGE=photo-stand.php for a photo stand.  (A track
-#                    camera is a kiosk: its cameras are assigned on the Kiosk
+#   KIOSK_PAGE       A page to show instead of being a kiosk, e.g. for testing
+#                    a page.  (Displays, track cameras and photo stands are
+#                    all kiosks: what each one is, is chosen on the Kiosk
 #                    Dashboard.)
 #   BROWSER          The browser command, if not chromium or chromium-browser.
 #
-# The screen shouldn't go blank: on the Wayland desktop, turn off Screen
-# Blanking in raspi-config (Display Options); on X11 this script does it.
+# The screen shouldn't go blank: setup.sh turns off Screen Blanking (in
+# raspi-config, Display Options) for the Wayland desktop; on X11 this script
+# does it.
 
 log() {
     test -x /usr/bin/logger && logger -t kiosk "$*"

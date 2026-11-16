@@ -38,7 +38,7 @@ function address_for_current_kiosk() {
 
 // Each display's number, for one that hasn't been given a name yet: "Kiosk 3".
 // A display is known by its address -- a Raspberry Pi's serial number (from
-// extras/scripts/kiosk.sh), or a browser's address and port, kept for its
+// installer/rpi/kiosk.sh), or a browser's address and port, kept for its
 // session.  The first time an address is seen it gets the next number, kept
 // in RaceInfo (kiosk-numbers, JSON {address: number}), so the number is the
 // display's own: never shared, and the same each time the device reconnects.
