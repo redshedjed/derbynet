@@ -81,6 +81,11 @@ async function main() {
       closeRejections: fastTrack.closeRejections,
       probing: timerGlobal('g_prober').probe_cycle_underway,
       timerProxy: !!proxy,
+      timerState: proxy && proxy.sm && proxy.sm.state,
+      hostPoller: (({message_in_flight, identified, competing}) =>
+                   ({message_in_flight, identified, competing}))(timerGlobal('g_host_poller') || {}),
+      lastServerAnswer: new Date(timer.ajax.lastSuccess).toISOString(),
+      lastRequestError: timer.ajax.lastError,
       recentCommands: fastTrack.commands.slice(-12),
     }));
     throw error;

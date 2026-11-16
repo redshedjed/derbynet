@@ -141,7 +141,9 @@ class HostPoller {
               // decodeResponse also clears message_in_flight and sets
               // next_message_time
               success: this.decodeResponse.bind(this),
-              error: function() {
+              // An arrow function, so "this" is the poller: otherwise
+              // message_in_flight stays set and heartbeats stop for good.
+              error: () => {
                 console.error('sendMessage fails');
                 this.message_in_flight = false;
                 this.next_message_time = now + HEARTBEAT_PACE;

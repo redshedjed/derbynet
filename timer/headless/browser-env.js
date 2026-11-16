@@ -100,6 +100,8 @@ class Ajax {
         return data;
       },
       err => {
+        this.lastError = new Date().toISOString() + ' ' + url + ': ' + (err.cause?.code || err.message);
+        console.error('Request failed: ' + this.lastError);
         if (settings.error) {
           try {
             settings.error.call(settings, null, 'error', err);

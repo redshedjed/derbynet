@@ -144,7 +144,7 @@ async function start(options) {
     }
   }, SUPERVISE_MS);
 
-  return { stop() { clearInterval(supervisor); } };
+  return { ajax, stop() { clearInterval(supervisor); } };
 }
 
 function parseArgs(argv) {
