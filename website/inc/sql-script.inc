@@ -5,6 +5,15 @@ function sql_file_path($stem) {
   return 'sql'.DIRECTORY_SEPARATOR.$dbtype.DIRECTORY_SEPARATOR.$stem.'.inc';
 }
 
+// Reports an outcome through action.php's json_* functions, when there are
+// any: pages also run scripts (e.g. to create a table on first use), and
+// there's no JSON response to report to there.
+function sql_script_report($fn, ...$args) {
+  if (function_exists($fn)) {
+    $fn(...$args);
+  }
+}
+
 // Returns two values, a bool (true for successful execution) and a list of results
 function run_sql_script($scriptname) {
   global $db;
@@ -20,7 +29,7 @@ function run_sql_script($scriptname) {
           if ($sql_result !== false) {
             $executed[] = array('sql' => $sql_stmt, 'result' => $sql_result);
           } else {
-            json_sql_failure($sql_stmt);
+            sql_script_report('json_sql_failure', $sql_stmt);
             $ok = false;
             break;
           }
@@ -32,23 +41,23 @@ function run_sql_script($scriptname) {
           // failure if the table didn't already exist.
           if ($dbtype == 'access' && substr($sql_stmt, 0, 4) == 'DROP') {
           } else {
-            json_sql_failure($sql_stmt);
+            sql_script_report('json_sql_failure', $sql_stmt);
             $ok = false;
             break;
           }
         }
       }
     } else {
-      json_failure('sqlnoscript', "SQL script ".@$_POST['script']." not found.");
+      sql_script_report('json_failure', 'sqlnoscript', "SQL script ".@$_POST['script']." not found.");
       $ok = false;
     }
   } catch (PDOException $p) {
-    json_failure('sqlfailure', $p->getMessage());
+    sql_script_report('json_failure', 'sqlfailure', $p->getMessage());
     $ok = false;
   }
 
   if ($ok) {
-    json_success();
+    sql_script_report('json_success');
   }
 
   return array($ok, $executed);
