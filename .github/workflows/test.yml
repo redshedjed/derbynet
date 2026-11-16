@@ -113,7 +113,12 @@ jobs:
 
     - name: Show server log
       if: failure()
-      run: docker logs derbynet 2>&1 | tail -n 200
+      run: |
+        # PHP errors from the whole run (the request lines below scroll them away)
+        echo "---- PHP errors ----"
+        docker logs derbynet 2>&1 | grep -E 'PHP (Fatal|Parse|Warning|Notice)|Uncaught|Stack trace|^#[0-9]+ |thrown in' | tail -n 80
+        echo "---- Last 200 lines ----"
+        docker logs derbynet 2>&1 | tail -n 200
 
     - name: Upload test transcript
       if: failure()
