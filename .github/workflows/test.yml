@@ -107,6 +107,7 @@ jobs:
         { grep -E '^#+ +testing/[^ ]+ +#+$' suite.log | tail -n 1
           grep -E 'TEST FAILURE|FAILURE:|expecting' suite.log | tail -n 3
           grep -A1 'TEST FAILURE' suite.log | grep -vE 'TEST FAILURE|^--$' | tail -n 2
+          grep -E '^DIAGNOSTICS' suite.log | tail -n 4
           tail -n 4 suite.log
         } | while read -r line; do echo "::error::$line"; done
 

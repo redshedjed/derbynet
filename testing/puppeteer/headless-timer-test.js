@@ -66,6 +66,14 @@ async function main() {
   });
   // As for the timer page: no one is reading the results, so don't wait to reset.
   timerGlobal('Flag').delay_reset_after_race.value = 1;
+  // The last few timer events, for the diagnostics if something fails
+  const events = [];
+  timerGlobal('TimerEvent').register({onEvent(event, args) {
+    if (event != 'GATE_OPEN' && event != 'GATE_CLOSED') {
+      events.push(new Date().toISOString().slice(11, 23) + ' ' + event + ' ' + JSON.stringify(args || []));
+      events.splice(0, events.length - 12);
+    }
+  }});
 
   try {
     await runScenarios(inProcess);
@@ -75,6 +83,13 @@ async function main() {
     console.log('   All headless timer scenarios passed');
   } catch (error) {
     const proxy = timerGlobal('g_timer_proxy');
+    const poll = await inProcess.serverPoll().catch(e => ({error: String(e)}));
+    console.log('DIAGNOSTICS server: ' + JSON.stringify({
+      now: new Date().toISOString(),
+      timerState: poll['timer-state'],
+      currentHeat: poll['current-heat'],
+    }));
+    console.log('DIAGNOSTICS events: ' + JSON.stringify(events));
     console.log('DIAGNOSTICS: ' + JSON.stringify({
       exited,
       portOpen: fastTrackPort.isOpen,
