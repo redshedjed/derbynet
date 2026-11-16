@@ -10,7 +10,6 @@ IDEWorkspaceChecks.plist
 *.log
 *.pkg
 
-docs/dist/
 
 replay/build/
 
@@ -28,7 +27,6 @@ website/css/timer.css
 
 website/inc/banner.inc
 website/inc/generated-*.inc
-website/quickref.pdf
 website/js/adapter.js
 website/local/
 

@@ -65,7 +65,14 @@ docker run --detach -p 80:80 -p 443:443 derbynet_server
 and browse to `http://localhost/`.
 
 Camera and photo features need a [secure context](https://developer.mozilla.org/docs/Web/Security/Secure_Contexts):
-`localhost`, or HTTPS. See `docs/Secure Contexts and DerbyNet.fodt`.
+`localhost`, or HTTPS. See [docs/docker.md](docs/docker.md).
+
+## Documentation
+
+Guides for setting up and running an event are in [docs/](docs/README.md),
+as plain Markdown: [Raspberry Pi](docs/raspberry-pi.md),
+[running a race](docs/running-a-race.md), [the timer](docs/timer.md), and
+more. The Quick Reference is a page in DerbyNet itself.
 
 ## Developing
 
@@ -82,9 +89,6 @@ Camera and photo features need a [secure context](https://developer.mozilla.org/
    ```bash
    ant generated
    ```
-
-   This also builds PDFs from the documents in [docs/](docs/); that step is
-   silently skipped if LibreOffice's `soffice` isn't installed.
 
 3. To talk to a hardware timer, build the timer page:
 
@@ -125,7 +129,7 @@ testing/test-timer-hardware.sh localhost:8080
 | `website/`   | The PHP web application: every page, kiosk and action      |
 | `timer/`     | The timer interface: the timer page's JavaScript, and `headless/` to run it on a Pi |
 | `installer/` | The two ways to deploy: Docker and Raspberry Pi (`rpi/`) |
-| `docs/`      | User documentation (LibreOffice sources)                  |
+| `docs/`      | Documentation, in Markdown                                |
 | `testing/`   | Test scripts and test data                                |
 
 Event artwork (logos, emblems) goes in `website/user_images/`, which git

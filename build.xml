@@ -5,16 +5,10 @@
 
   <property name="timer-dir" location="timer"/>
   <property name="timer-jar-dir" location="${timer-dir}/dist/lib"/>
-  <property name="docs-dir" location="docs"/>
   <property name="docker.image" value="derbynet_server"/>
   <property name="docker.platform" value="linux/amd64,linux/arm64"/>
 
-  <!-- Duplicated in docs/build.xml -->
-  <property name="soffice"
-	        location="/Applications/LibreOffice.app/Contents/MacOS/soffice"/>
-  <available property="soffice_available" file="${soffice}"/>
-
-  <target name="clean" depends="docs-clean"
+  <target name="clean"
           description="Remove generated artifacts for a clean build environment">
     <delete quiet="true">
         <fileset dir="website">
@@ -34,10 +28,9 @@
         </fileset>
     </delete>
     <ant dir="${timer-dir}" target="clean"/>
-    <!-- docs-dir gets cleaned up by docs-clean target -->
   </target>
   
-  <target name="dist.zip" depends="timer-jar, timer-in-browser, docs-dist, generated"
+  <target name="dist.zip" depends="timer-jar, timer-in-browser, generated"
           description="Build OS-neutral zip-file distribution">
       <zip destfile="../DerbyNet-${release-series}-${git-rev-count}${git-dirty}-${DSTAMP}.zip">
           <fileset dir=".">
@@ -50,12 +43,9 @@
               <exclude name="website/local/**"/>
           </fileset>
 
-          <mappedresources>
-              <fileset dir="docs/dist">
-                  <include name="**"/>
-              </fileset>
-              <globmapper from="*" to="docs/*"/>
-          </mappedresources>
+          <fileset dir=".">
+              <include name="docs/**/*.md"/>
+          </fileset>
 
           <fileset dir="${timer-jar-dir}">
               <include name="*.jar"/>
@@ -63,14 +53,13 @@
 
           <fileset dir=".">
               <include name="lib/jSSC*src.jar"/>
-              <include name="extras/**/*"/>
           </fileset>
       </zip>
   </target>
 
   <target name="generated" depends="banner, generated-version.inc,
                     generated-build-date.inc,
-                    release-series, generated-commit-hash.inc, quickref"
+                    release-series, generated-commit-hash.inc"
           description="Build generated files">
   </target>
 
@@ -204,21 +193,10 @@
     </copy>
   </target>
 
-  <target name="quickref" depends="docs-dist">
-      <copy file="docs/dist/Quick Reference.pdf" tofile="website/quickref.pdf" overwrite="true"/>
-  </target>
-
   <target name="timer-jar" depends="generated"
           description="Builds the jar file for derby-timer">
       <ant dir="${timer-dir}" target="clean"/>
       <ant dir="${timer-dir}" target="timer-jar"/>
-  </target>
-
-  <target name="docs-clean" if="soffice_available">
-    <ant dir="${docs-dir}"  target="clean"/>
-  </target>
-  <target name="docs-dist" description="Generate documentation PDFs" if="soffice_available">
-      <ant dir="${docs-dir}"/>
   </target>
 
 <target name="docker-deps" depends="generated, timer-in-browser"

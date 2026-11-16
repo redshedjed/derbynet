@@ -5,10 +5,9 @@
     index index.php;
   }  
 
-  # Not for direct download: the configuration (role passwords, in
-  # derbynet/local), and the Quick Reference, which quickref.php gives only to
-  # people who are logged in.
-  location ~ derbynet/(local/|quickref\.pdf$) {
+  # Not for direct download: the configuration (role passwords), in
+  # derbynet/local.
+  location ~ derbynet/local/ {
     deny all;
   }
 

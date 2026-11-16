@@ -136,7 +136,6 @@ sed -e 's/@PHP_START@/<?php/' -e 's/@PHP_END@/?>/' \
     -e "s/@REV_COUNT@/$(cat "$REPO/website/inc/generated-version.inc")/" \
     -e "s/@BUILD_DATE@/$(date '+%B %-d %Y')/" \
     "$REPO/templates/timer.html" > "$REPO/website/timer.php"
-# Not built here (it needs LibreOffice): the quick-reference PDF.
 
 
 sudo mkdir -p "$WWW/local" /var/lib/derbynet/imagery /var/lib/derbynet/slides
