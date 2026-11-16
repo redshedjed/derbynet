@@ -51,6 +51,14 @@ async function main() {
   if (login.outcome.summary != 'success') {
     throw new Error('Administrator login failed: ' + JSON.stringify(login.outcome));
   }
+  // The server tells the timer, with every reply, whether to keep a log
+  const sendLogs = await admin.fetch('action.php', {
+    type: 'POST',
+    data: {action: 'settings.write', 'timer-send-logs': 1},
+  });
+  if (sendLogs.outcome.summary != 'success') {
+    throw new Error('Turning on timer logs failed: ' + JSON.stringify(sendLogs.outcome));
+  }
 
   // The emulator installs itself as navigator.serial, as in a browser.
   globalThis.window = globalThis;
@@ -71,7 +79,7 @@ async function main() {
   const logLines = [];
   const logger = timerGlobal('g_logger');
   logger.flush = function() { logLines.push(...this.buffer); this.buffer = []; };
-  logger.do_logging = true;
+  // (Turned on by the server, from the setting above)
 
   // The last few timer events, for the diagnostics if something fails
   const events = [];
