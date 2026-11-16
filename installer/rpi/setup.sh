@@ -35,7 +35,8 @@ command -v apt-get >/dev/null || { echo "This script is for Raspberry Pi OS (Deb
 REPO=$(cd "$(dirname "$0")/../.." && pwd)
 for f in website/index.php extras/scripts/kiosk.sh installer/rpi/derbynet-pi installer/rpi/derbynet-pi.conf \
          installer/nginx-configs/conf.d/derbynet_log_format.conf templates/timer.html \
-         timer/derbynet-timer/src/js/profiles.js ; do
+         timer/derbynet-timer/src/js/profiles.js timer/headless/derbynet-timer.js \
+         timer/headless/package-lock.json ; do
     [ -f "$REPO/$f" ] || { echo "Missing $REPO/$f; run this from a DerbyNet source checkout." >&2 ; exit 1 ; }
 done
 
@@ -63,7 +64,7 @@ install_text() {  # install_text MODE SRC DEST
 ######## Initial roles
 
 if [ -z "$ROLES_ARG" ] && ! { [ -f "$BOOT_CONF" ] && grep -q '^ROLES=' "$BOOT_CONF" ; } ; then
-    echo "Which roles should this Pi start with?  Any of: server standby kiosk"
+    echo "Which roles should this Pi start with?  Any of: server standby kiosk timer"
     echo "(You can change this later by editing $BOOT_CONF.)"
     read -r -p "Roles [kiosk]: " ROLES_ARG
     ROLES_ARG=${ROLES_ARG:-kiosk}
@@ -74,7 +75,7 @@ fi
 step "Installing packages"
 REQUIRED="curl rsync sqlite3 iputils-ping avahi-daemon avahi-utils libnss-mdns
           nginx php-fpm php-curl php-gd php-sqlite3 ssl-cert
-          python3 v4l-utils"
+          python3 v4l-utils nodejs npm"
 OPTIONAL=""
 if [ $HAVE_DESKTOP -eq 1 ] ; then
     REQUIRED="$REQUIRED x11-utils xbitmaps"
@@ -221,6 +222,23 @@ install_text 755 "$REPO/installer/rpi/derbynet-pi" /usr/local/bin/derbynet-pi
 sudo rm -f /usr/local/bin/derbynet-kiosk
 rm -f "$HOME/.config/autostart/derbynet-kiosk.desktop"
 
+######## Headless timer
+
+# The timer page's code, run by Node instead of a browser (timer/headless)
+step "Installing the headless timer"
+TIMER_DIR=/usr/share/derbynet/timer
+sudo mkdir -p "$TIMER_DIR/derbynet-timer/src"
+sudo rsync -a --delete "$REPO/timer/derbynet-timer/src/js" "$TIMER_DIR/derbynet-timer/src/"
+sudo rsync -a --delete --exclude=/node_modules/ --exclude=/version.json \
+     "$REPO/timer/headless/" "$TIMER_DIR/headless/"
+echo "{\"branch\": \"${BRANCH:-unknown}\"," \
+     "\"revision\": $(cat "$REPO/website/inc/generated-version.inc")," \
+     "\"date\": \"$(date '+%B %-d %Y')\"}" \
+    | sudo tee "$TIMER_DIR/headless/version.json" > /dev/null
+# Its two packages (serial ports, and reading the server's replies), as
+# locked in package-lock.json
+(cd "$TIMER_DIR/headless" && sudo npm ci --omit=dev --no-audit --no-fund --loglevel=error)
+
 ######## Configuration files
 
 step "Writing configuration"
@@ -300,6 +318,23 @@ AccuracySec=1s
 WantedBy=timers.target
 EOF
 done
+sudo tee /etc/systemd/system/derbynet-timer.service > /dev/null <<'EOF'
+[Unit]
+Description=DerbyNet headless timer (the race timer on this Pi's USB serial port)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/derbynet-pi timer
+Restart=always
+RestartSec=10
+# Its own unprivileged user, allowed to use serial ports
+DynamicUser=yes
+SupplementaryGroups=dialout
+
+[Install]
+WantedBy=multi-user.target
+EOF
 sudo systemctl daemon-reload
 sudo systemctl enable derbynet-roles.service
 
@@ -325,7 +360,7 @@ EOF
     fi
 else
     step "No desktop installed"
-    echo "This is Raspberry Pi OS Lite, so only the server and standby roles will work."
+    echo "This is Raspberry Pi OS Lite, so only the server, standby and timer roles will work."
 fi
 
 ######## Apply

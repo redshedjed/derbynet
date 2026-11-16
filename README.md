@@ -12,9 +12,12 @@ into **alpha testing with real hardware**. Expect rough edges.
 ## What's different from upstream
 
 - **Raspberry Pi deployment.** One script turns a fresh Raspberry Pi OS
-  install into a server, a warm standby, a kiosk, or any mix of them, with
-  automatic server discovery and failover. See
+  install into a server, a warm standby, a kiosk, a timer host, or any mix of
+  them, with automatic server discovery and failover. See
   [installer/rpi/00README](installer/rpi/00README).
+- **A headless timer.** Plug the track's timer into a Pi (ideally the server)
+  and it's found and connected with no screen or browser: the timer page's own
+  code, run by Node.js ([timer/headless/](timer/headless/)).
 - **Cameras.** Named track cameras (Start, Finish, ...) are set up in
   Settings and assigned to kiosks; replays from any number of cameras play in
   order on any number of displays. The Photo Stand page (camera plus barcode
@@ -119,7 +122,7 @@ testing/test-timer-hardware.sh localhost:8080
 | Path         | What's there                                              |
 |--------------|-----------------------------------------------------------|
 | `website/`   | The PHP web application: every page, kiosk and action      |
-| `timer/`     | Timer interfaces (Java jar and in-browser JavaScript)     |
+| `timer/`     | The timer interface: the timer page's JavaScript, and `headless/` to run it on a Pi |
 | `extras/`    | Kiosk scripts and other tools                             |
 | `installer/` | The two ways to deploy: Docker and Raspberry Pi (`rpi/`) |
 | `docs/`      | User documentation (LibreOffice sources)                  |

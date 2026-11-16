@@ -1,0 +1,15 @@
+{
+  "name": "derbynet-headless-timer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The DerbyNet timer interface without a browser, for a Raspberry Pi",
+  "main": "derbynet-timer.js",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.12",
+    "serialport": "^12.0.0"
+  }
+}

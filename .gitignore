@@ -43,3 +43,4 @@ adapter-webrtc/
 
 # Images uploaded from outside (e.g. den images); not part of the project
 website/user_images/
+timer/headless/node_modules/

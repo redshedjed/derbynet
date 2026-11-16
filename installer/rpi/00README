@@ -30,14 +30,15 @@ any combination of:
   kiosk     a full-screen kiosk: a display, a track camera (USB webcam or Pi
             camera) or a photo stand (camera plus barcode scanner), whichever
             the Kiosk Dashboard makes it
+  timer     connects the track's timer, plugged into a USB port, to the server
 
 A kiosk needs Raspberry Pi OS with desktop.  Lite is enough
-for a Pi that will only ever be a server or standby, but can't later take on
-the other roles.  On the Pi, as the normal user:
+for a Pi that will only ever be a server, standby or timer, but can't later
+be a kiosk.  On the Pi, as the normal user:
 
     sudo apt install -y git        # if git isn't already installed
     git clone https://github.com/redshedjed/derbynet.git
-    bash derbynet/installer/rpi/setup.sh --roles "server kiosk"
+    bash derbynet/installer/rpi/setup.sh --roles "server timer"
     sudo reboot
 
 setup.sh installs everything for every role, so changing roles later doesn't
@@ -84,9 +85,33 @@ Before powering the old server back on, change its ROLES (e.g. to standby) so
 the two don't both act as the server.
 
 
+The Timer
+---------
+
+Plug the track timer's USB serial cable into a Pi with the timer role --
+ideally the server, so the race times never cross Wi-Fi -- and turn the timer
+on.  The Pi tries each known timer model on each USB serial port until one
+answers, then reports it to the server; the Race Dashboard shows the timer
+as connected.  If the cable comes out, the server shows a timer problem, and
+the Pi finds the timer again when it's plugged back in.  There's no screen and
+nothing to click.
+
+Timer settings (unused lanes, FastTrack automatic gate release, ...) are set
+on the server's Timer page, as for any timer.  To use one serial port only,
+set TIMER_PORT in derbynet.conf.
+
+This is the same timer code as the timer page (timer.php), run by Node.js
+instead of a browser.  Use one or the other: while this Pi's timer is
+connected, the server refuses a second timer interface, such as the timer page
+opened on a laptop.
+
+Its log:   journalctl -u derbynet-timer -f
+
+
 Checking on a Pi
 ----------------
 
     derbynet-pi status     what this Pi is doing, and whether it's healthy
-    derbynet-pi doctor     status, plus hardware checks (cameras, scanners)
+    derbynet-pi doctor     status, plus hardware checks (cameras, scanners,
+                           the timer's serial port)
     derbynet-pi servers    DerbyNet servers announced on the network

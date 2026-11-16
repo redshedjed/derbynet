@@ -74,6 +74,10 @@ jobs:
         # Ubuntu 24.04 otherwise blocks the browser's sandbox
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
+    - name: Install headless timer dependencies
+      working-directory: timer/headless
+      run: npm ci --no-audit --no-fund
+
     - name: Run test suite
       shell: bash  # Unlike the default, this includes pipefail
       run: |
@@ -85,6 +89,10 @@ jobs:
     - name: Run timer hardware test
       shell: bash
       run: testing/test-timer-hardware.sh localhost:8080 2>&1 | tee -a suite.log
+
+    - name: Run headless timer test
+      shell: bash
+      run: testing/test-timer-headless.sh localhost:8080 2>&1 | tee -a suite.log
 
     - name: Summarize test failure
       if: failure()

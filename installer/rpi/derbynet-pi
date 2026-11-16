@@ -12,6 +12,7 @@
 #   sudo derbynet-pi sync      Standby: copy from the server now
 #   sudo derbynet-pi export    Server: refresh the copy the standby pulls
 #   derbynet-pi desktop    Start the kiosk browser (run at desktop login)
+#   derbynet-pi timer      Run the headless timer (run by derbynet-timer.service)
 #
 # How Pis find the server: a server announces itself on the local network
 # (DNS-SD service _derbynet._tcp, via avahi), and also publishes an alias name,
@@ -37,7 +38,7 @@ RSYNC_SECRETS=/etc/derbynet-rsyncd.secrets
 AVAHI_SERVICE=/etc/avahi/services/derbynet.service
 SERVICE_TYPE=_derbynet._tcp
 SYNC_USER=derbynet
-KNOWN_ROLES="server standby kiosk"
+KNOWN_ROLES="server standby kiosk timer"
 # SQLite files are copied with sqlite3's .backup, never directly, since a
 # direct copy of a database being written can be corrupt.
 SQLITE_EXCLUDES=('--exclude=*.sqlite' '--exclude=*.sqlite3' '--exclude=*-journal' '--exclude=*-wal' '--exclude=*-shm')
@@ -56,6 +57,9 @@ load_conf() {
     SERVER_ALIAS="derbynet"
     SYNC_PASSWORD=""
     DERBYNET_SERVER=""
+    TIMER_PORT=""
+    TIMER_ROLE="Timer"
+    TIMER_PASSWORD=""
     for f in "$ETC_CONF" "$BOOT_CONF" ; do
         [ -f "$f" ] && . <(sed -e 's/\r$//' "$f")
     done
@@ -331,6 +335,14 @@ cmd_apply() {
         write_chromium_policy
     fi
 
+    # Headless timer; restarted so it picks up any change to its settings
+    if has_role timer ; then
+        enable_units on derbynet-timer.service
+        systemctl restart --no-block derbynet-timer.service >/dev/null 2>&1
+    else
+        enable_units off derbynet-timer.service
+    fi
+
     echo "$ROLES" > "$STATE/applied-roles"
 }
 
@@ -570,7 +582,7 @@ cmd_status() {
         [ -z "$SYNC_PASSWORD" ] && echo "  NOTE: SYNC_PASSWORD not set, so no standby can copy from this server"
     fi
 
-    if has_role kiosk || has_role standby ; then
+    if has_role kiosk || has_role standby || has_role timer ; then
         local url list n
         if [ -n "$DERBYNET_SERVER" ] ; then
             url="${DERBYNET_SERVER%/}"
@@ -593,6 +605,11 @@ cmd_status() {
         else
             echo "Reachable:   NO"
         fi
+    fi
+
+    if has_role timer ; then
+        echo "Timer:       derbynet-timer $(svc_state derbynet-timer.service)${TIMER_PORT:+, port $TIMER_PORT}"
+        journalctl -u derbynet-timer.service -n 3 --no-pager -o cat 2>/dev/null | sed -e 's/^/    /'
     fi
 
     if has_role standby ; then
@@ -638,6 +655,27 @@ cmd_doctor() {
         ls /dev/input/by-id 2>/dev/null | grep -- '-event-kbd$' | sed -e 's/^/    /'
         ls /dev/input/by-id 2>/dev/null | grep -q . || echo "    none"
     fi
+    if has_role timer ; then
+        echo "Serial ports (the timer's USB serial adapter):"
+        ls /dev/serial/by-id 2>/dev/null | sed -e 's/^/    /'
+        ls /dev/serial/by-id 2>/dev/null | grep -q . || echo "    none"
+        echo "Node.js:     $(node --version 2>/dev/null || echo MISSING)"
+    fi
+}
+
+######## Headless timer
+
+# Run by derbynet-timer.service: waits for the server, then runs the timer
+# interface against it.  The timer exits if the server stops answering, and
+# the service starts this again, so a promoted standby is found the same way.
+cmd_timer() {
+    load_conf
+    has_role timer || die "this Pi doesn't have the timer role (ROLES=\"$ROLES\")"
+    local url
+    url=$(wait_for_a_server)
+    log "timer: using server $url"
+    export TIMER_PORT TIMER_ROLE TIMER_PASSWORD
+    exec node /usr/share/derbynet/timer/headless/derbynet-timer.js "$url"
 }
 
 ######## Desktop session
@@ -733,5 +771,6 @@ case "$1" in
     status|"") cmd_status ;;
     doctor) cmd_doctor ;;
     desktop) cmd_desktop ;;
-    *) sed -n -e '3,20p' "$0" | sed -e 's/^# \{0,1\}//' ; exit 1 ;;
+    timer) cmd_timer ;;
+    *) sed -n -e '3,21p' "$0" | sed -e 's/^# \{0,1\}//' ; exit 1 ;;
 esac
