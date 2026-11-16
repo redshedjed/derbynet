@@ -66,6 +66,13 @@ async function main() {
   });
   // As for the timer page: no one is reading the results, so don't wait to reset.
   timerGlobal('Flag').delay_reset_after_race.value = 1;
+  // The timer log, kept here rather than posted to the server, to check that
+  // repeated polling is summarized rather than logged line by line
+  const logLines = [];
+  const logger = timerGlobal('g_logger');
+  logger.flush = function() { logLines.push(...this.buffer); this.buffer = []; };
+  logger.do_logging = true;
+
   // The last few timer events, for the diagnostics if something fails
   const events = [];
   timerGlobal('TimerEvent').register({onEvent(event, args) {
@@ -77,6 +84,16 @@ async function main() {
 
   try {
     await runScenarios(inProcess);
+
+    console.log('   The timer log');
+    logger.poll();
+    const summaries = logLines.filter(line => /S \.\.\. \d+ more like th/.test(line));
+    if (summaries.length == 0) {
+      throw new Error('The timer log has no summaries of repeated polling');
+    }
+    console.log('      ok: ' + summaries.length + ' summaries of repeated polling, e.g. '
+                + summaries[summaries.length - 1].replace(/^\+[0-9.]+/, ''));
+    console.log('      ok: ' + logLines.length + ' log lines in all');
     if (exited !== null) {
       throw new Error('The headless timer tried to exit, with code ' + exited);
     }
