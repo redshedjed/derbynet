@@ -127,11 +127,11 @@ fi
 date '+%B %-d %Y' > "$REPO/website/inc/generated-build-date.inc"
 # The browser-based timer page, as build.xml's "timer-in-browser" target makes it.
 mkdir -p "$REPO/website/js/timer"
+rm -f "$REPO"/website/js/timer/*.js   # including any no longer in the timer
 cp "$REPO"/timer/derbynet-timer/src/js/*.js "$REPO/website/js/timer/"
 cp "$REPO"/timer/derbynet-timer/src/css/*.css "$REPO/website/css/"
 BRANCH=$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null | sed 's/master/dev/')
 sed -e 's/@PHP_START@/<?php/' -e 's/@PHP_END@/?>/' \
-    -e 's/@ELECTRON_ONLY_START@/<!--/' -e 's/@ELECTRON_ONLY_END@/-->/' \
     -e "s/@BRANCH@/${BRANCH:-unknown}/" \
     -e "s/@REV_COUNT@/$(cat "$REPO/website/inc/generated-version.inc")/" \
     -e "s/@BUILD_DATE@/$(date '+%B %-d %Y')/" \

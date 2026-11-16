@@ -12,7 +12,7 @@ if [[ $# -gt 0 ]] ; then
 else
     pushd "$(dirname "$(dirname "$(realpath "$0")")")"
     find . \
-         -path ./timer/electron -prune -or \
+         -path ./timer/headless/node_modules -prune -or \
          -path ./templates -prune -or \
          -name \*.js -print0 | \
        xargs --null -t -n 1 -I % \

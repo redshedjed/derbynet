@@ -3,8 +3,6 @@
     Web-based software for managing pinewood derby races
   </description>
 
-  <property name="timer-dir" location="timer"/>
-  <property name="timer-jar-dir" location="${timer-dir}/dist/lib"/>
   <property name="docker.image" value="derbynet_server"/>
   <property name="docker.platform" value="linux/amd64,linux/arm64"/>
 
@@ -27,10 +25,9 @@
             <filename name="**"/>
         </fileset>
     </delete>
-    <ant dir="${timer-dir}" target="clean"/>
   </target>
   
-  <target name="dist.zip" depends="timer-jar, timer-in-browser, generated"
+  <target name="dist.zip" depends="timer-in-browser, generated"
           description="Build OS-neutral zip-file distribution">
       <zip destfile="../DerbyNet-${release-series}-${git-rev-count}${git-dirty}-${DSTAMP}.zip">
           <fileset dir=".">
@@ -47,12 +44,10 @@
               <include name="docs/**/*.md"/>
           </fileset>
 
-          <fileset dir="${timer-jar-dir}">
-              <include name="*.jar"/>
-          </fileset>
-
           <fileset dir=".">
-              <include name="lib/jSSC*src.jar"/>
+              <include name="timer/**/*"/>
+              <exclude name="timer/headless/node_modules/**"/>
+              <include name="installer/**/*"/>
           </fileset>
       </zip>
   </target>
@@ -159,12 +154,6 @@
                     <token key="PHP_END" value="?&gt;"/>
                 </replacetokens>
                 <replacetokens>
-                    <token key="ELECTRON_ONLY_START" value="&lt;!--"/>
-                </replacetokens>
-                <replacetokens>
-                    <token key="ELECTRON_ONLY_END" value="--&gt;"/>
-                </replacetokens>
-                <replacetokens>
                     <token key="BRANCH" value="${release-series}"/>
                 </replacetokens>
                 <replacetokens>
@@ -191,12 +180,6 @@
             <include name="*.css"/>
         </fileset>
     </copy>
-  </target>
-
-  <target name="timer-jar" depends="generated"
-          description="Builds the jar file for derby-timer">
-      <ant dir="${timer-dir}" target="clean"/>
-      <ant dir="${timer-dir}" target="timer-jar"/>
   </target>
 
 <target name="docker-deps" depends="generated, timer-in-browser"

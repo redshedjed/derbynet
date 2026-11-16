@@ -42,7 +42,6 @@ $(function() { g_page_loaded = Date.now(); });
 <script type="text/javascript" src="js/timer/state_machine.js"></script>
 <script type="text/javascript" src="js/timer/timer_proxy.js"></script>
 <script type="text/javascript" src="js/timer/flags.js"></script>
-<script type="text/javascript" src="js/timer/role_finder.js"></script>
 <script type="text/javascript" src="js/timer/host_poller.js"></script>
 <script type="text/javascript" src="js/timer/logger.js"></script>
 <script type="text/javascript" src="js/timer/prober.js"></script>
@@ -50,39 +49,20 @@ $(function() { g_page_loaded = Date.now(); });
 <script type="text/javascript" src="js/timer/runtime_conditions.js"></script>
 <script type="text/javascript" src="js/timer/gui.js"></script>
 <script type="text/javascript" src="js/timer/main.js"></script>
-@ELECTRON_ONLY_START@
-<script type="text/javascript" src="js/timer/serial_port_event_listener.js"></script>
 <script type="text/javascript">
 
-// g_standalone's 'var' declaration is in main.js.
-//
-// We have to set it to true after it's defined, but before any of
-// the onpageload functions run, especially the one that will try to
-// establish g_host_poller.
-g_standalone = true;
-
-$(function() {
-  $(".host").removeClass('hidden');
-  $("#main-container").addClass('standalone');
+$(window).on("beforeunload", function(event) {
+  if (g_timer_proxy) {
+    // Chrome ignores the prompt and substitutes its own generic message.  Gee, thanks.
+    show_modal("#leaving_modal");
+    setTimeout(function() { close_modal("#leaving_modal"); }, 10000);
+    var prompt =
+        "Leaving this page will disconnect the timer.  Are you sure you want to exit?";
+    event.preventDefault();
+    event.returnValue = prompt;
+    return prompt;
+  }
 });
-</script>
-@ELECTRON_ONLY_END@
-<script type="text/javascript">
-
-if (!g_standalone) {
-  $(window).on("beforeunload", function(event) {
-    if (g_timer_proxy) {
-      // Chrome ignores the prompt and substitutes its own generic message.  Gee, thanks.
-      show_modal("#leaving_modal");
-      setTimeout(function() { close_modal("#leaving_modal"); }, 10000);
-      var prompt =
-          "Leaving this page will disconnect the timer.  Are you sure you want to exit?";
-      event.preventDefault();
-      event.returnValue = prompt;
-      return prompt;
-    }
-  });
-}
 </script>
 </head>
 <body>
@@ -95,20 +75,7 @@ if (!g_standalone) {
 <div id="main-container">
 
   <div id="middle-container">
-    <div id="host-side" class="hidden host">
-      <form id="host-side-form">
-        <label for="host-url">Server URL</label>
-        <input id="host-url" type="text"/>
-
-        <label for="role-select">Role</label>
-        <select id="role-select"></select>
-
-        <label for="host-password">Password</label>
-        <input id="host-password" type="password"/>
-      </form>
-    </div><!-- host-side No gap between inline-block elements
-
-  --><div id="serial-side" class="serial">
+    <div id="serial-side" class="serial">
 
     <div id="ports-div" class="scanlist-div">
       <ul id="ports-list" class="mlistview scanlist">
@@ -135,11 +102,7 @@ if (!g_standalone) {
       <div id="last-reported-lanes"></div>
     </div>
 
-    <div id="connect-button-div" class="block_buttons host hidden">
-      <input id="connect-button" type="submit" form="host-side-form" value="Connect"/>
-    </div><!-- No gap between inline-block elements
-
-  --><p id="scan-message" class="hidden"></p><!-- (scanning gave up; prober.js)
+    <p id="scan-message" class="hidden"></p><!-- (scanning gave up; prober.js)
 
   --><div id="probe-buttons-div" class="block_buttons serial">
       <input id="probe-button" type="button" value="Scan" onclick="on_scan_click()"/>

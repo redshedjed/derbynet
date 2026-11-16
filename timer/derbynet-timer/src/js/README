@@ -25,9 +25,6 @@ clock-worker.js -- See main.js.
 
 result.js -- Times from a single heat get aggregated into a HeatResult object.
 
-serial_port_event_listener.js -- Receives events about serial ports being added
-or dropped (cabling changes).  Only used for standalone?
-
 timer_proxy.js -- Combines a port_wrapper and a profile, and acts as the
 interface to the timer device.  It periodically polls the timer device by
 queuing POLL_TIMER events for itself.

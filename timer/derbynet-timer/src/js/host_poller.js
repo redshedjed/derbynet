@@ -10,7 +10,6 @@ const HEARTBEAT_PACE = 500;
 var g_host_poller;  // See initialization at bottom of file
 
 class HostPoller {
-  // This URL is shared with role_finder.
   static url = 'action.php';
 
   // Set true between the start of an ajax call to the host and its completion.
@@ -234,7 +233,5 @@ class HostPoller {
 
 
 $(function() {
-  if (!g_standalone) {
-    g_host_poller = new HostPoller();
-  }
+  g_host_poller = new HostPoller();
 });

@@ -77,8 +77,8 @@ curl_getj "action.php?query=poll.coordinator" | \
     jq ".[\"current-heat\"] | .[\"now_racing\"] == true and .roundid == 1 and .heat == 1" | \
     expect_eq true
 
-## This script generated from the output of:
-## timer/testing/fake-timer -t -l 4 localhost/xsite
+## This script was generated from the output of upstream DerbyNet's Java
+## timer simulator (fake-timer -t -l 4).
 
 user_login_timer
 curl_post action.php "action=timer-message&message=HELLO" | check_success

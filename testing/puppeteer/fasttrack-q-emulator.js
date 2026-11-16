@@ -8,15 +8,15 @@
 //
 // HOW FAITHFUL THIS IS
 //
-// The sources are the FastTrack profile (FastTrack.java), the commands listed in
-// MicroWizard.java, and a transcript from a real K3 timer
-// (timer/testing/testdata/fasttrack-mark-set.playback).  No Q-series transcript
+// The sources are the FastTrack entry in profiles.js (with its notes on the
+// FastTrack's commands, from upstream DerbyNet), and a transcript from a real
+// K3 timer (testing/data/timer-sessions/fasttrack-mark-set.playback).  No Q-series transcript
 // exists in this repository.  These details are therefore inferred, and should
 // be compared with a real timer's log on first connection:
 //   - The RV banner.  The profile only tells us it contains "Micro Wizard" and a
 //     line matching "Model: Q".
 //   - The result line in N2 mode.  We send the K3 layout with 4 decimal places;
-//     MicroWizard.java describes N2 as "5-digit time", and also as including the
+//     The notes describe N2 as "5-digit time", and also as including the
 //     start switch status, whose format isn't documented here.
 //   - How the timer treats commands it doesn't recognize.  We ignore them.
 //   - Replies to RE, N1 and N2, and how a real timer reports a car that never

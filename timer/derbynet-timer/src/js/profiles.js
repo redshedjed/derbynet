@@ -6,12 +6,11 @@
 // data, not code; prober.js and timer_proxy.js read it.  The fields are
 // described in this directory's README.
 //
-// Edit this file to add or change a timer.  (It used to be generated from the
-// Java timer's profile classes; the notes above each entry came from there.)
+// Edit this file to add or change a timer.  (It used to be generated from
+// upstream DerbyNet's Java timer; the notes above each entry came from there.)
 //
-// The FastTrack K/Q entry always sends N2 (enhanced format) in its set-up; the
-// Java timer could leave it out with -skip-enhanced-format, for old timers
-// that don't support it.
+// The FastTrack K/Q entry always sends N2 (enhanced format) in its set-up; an
+// old timer that doesn't support it would need an entry without it.
 
 var _all_the_timer_profiles = [
   // Pre-probe lets the timer settle
@@ -186,6 +185,25 @@ var _all_the_timer_profiles = [
   },
 
   // From the Micro Wizard himself:
+  //
+  // MicroWizard FastTrack commands (from upstream's MicroWizard.java):
+  //   LG  pulse the laser bit: starts the timer after a brief pause, and
+  //       triggers the automatic gate release, if installed
+  //   LR  reset the laser gate; the real "reset" command for the timer
+  //   M + A..F   mask out a lane (MA = lane 1, ...);  MG clears the mask
+  //   N0  old format:  A=3.001! B=3.002 C=3.003 D=3.004 E=3.005 F=3.006 <LF><CR>
+  //   N1  new format:  A=3.001! B=3.002" C=3.003# D=3.004$ E=3.005% F=3.006& <CR><LF>
+  //   N2  enhanced format: 5-digit times and start switch status (2012 and
+  //       newer timers only)
+  //   RA  force results; reports nothing unless a car has crossed the line,
+  //       but stops the timer
+  //   RE  reset eliminator mode
+  //   RF  return features (see below);  RG  read start switch;  RL + 0-6
+  //       reverse lanes;  RM read mode;  RS read serial number;  RV read
+  //       version
+  //   A K1 timer from 2004 (version 1.09D) reported RF as 0011 1111, and "X"
+  //   (not available) for RG.  Replies may start with '@' or '>', which are
+  //   ignored.
   //
   // The FastTrack timer has 1 pin, 1 bit that is the laser gate bit.  This is
   // connected to a pin on the RJ-11 cable that goes to the start.

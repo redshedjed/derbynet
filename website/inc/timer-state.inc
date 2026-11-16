@@ -5,7 +5,7 @@ require_once('inc/data.inc');
 // TODO Note that coordinator.js also receives these values, but doesn't seem to do anything with them
 
 define('TIMER_NOT_CONNECTED', 1);  // No recent contact from an authenticated timer
-define('TIMER_SEARCHING', 6);  // derby-timer.jar made contact, but timer hasn't been identified
+define('TIMER_SEARCHING', 6);  // the timer interface made contact, but the timer hasn't been identified
 define('TIMER_UNCONFIRMED', 7);  // Timer is identified only by the user's claim, and can only be
                                  // presumed healthy, it's never been heard from.
 define('TIMER_CONNECTED', 2);      // Timer connected, but not doing anything right now
@@ -26,7 +26,7 @@ class TimerState {
   // and the state is NOT_CONNECTED.
   private $state;
   
-  // The time() value when the derby-timer.jar last contacted the server;
+  // The time() value when the timer interface last contacted the server;
   // initially 0.  If set to a value less than zero (for testing), then the
   // check for recency of contact is disabled.
   private $last_contact;

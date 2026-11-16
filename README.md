@@ -76,7 +76,7 @@ more. The Quick Reference is a page in DerbyNet itself.
 
 ## Developing
 
-1. Install [Apache Ant](https://ant.apache.org/), a JDK, and Node. On Windows,
+1. Install [Apache Ant](https://ant.apache.org/) (which brings Java) and Node. On Windows,
    [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) works:
 
    ```bash
@@ -98,7 +98,6 @@ more. The Quick Reference is a page in DerbyNet itself.
 
    The timers it knows are listed in
    [timer/derbynet-timer/src/js/profiles.js](timer/derbynet-timer/src/js/profiles.js).
-   (The Java timer, `derby-timer.jar`, is being phased out.)
 
 4. Run the server image with your local sources mounted in place of the ones
    baked into it. `PATH_TO_YOUR_DATA` is where databases, photos and other data

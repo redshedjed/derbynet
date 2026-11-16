@@ -66,8 +66,8 @@ if (have_permission(TIMER_MESSAGE_PERMISSION)) {
 
   if ($message == 'HELLO') {
     // Timer begins in TIMER_SEARCHING, almost the same as unhealthy, until we
-    // receive confirmation that derby-timer.jar has actually connected to the
-    // timer device.  Otherwise, all we know is that derby-timer.jar is alive
+    // receive confirmation that the timer interface has actually connected to
+    // the timer device.  Otherwise, all we know is that the interface is alive
     // and scanning.
     $timer_state->to_state(TIMER_SEARCHING);
     // Upon getting a new timer connection, choose a new name for server-side

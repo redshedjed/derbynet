@@ -17,11 +17,6 @@ testing/*.curl
 testing/cookies.*
 testing/*.passwords
 
-timer/build/
-timer/out/
-timer/dist/
-timer/.idea/workspace.xml
-timer/.idea/encodings.xml
 
 website/css/timer.css
 

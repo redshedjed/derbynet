@@ -29,7 +29,7 @@ const env = require('./browser-env.js');
 // The timer's scripts, in the order templates/timer.html loads them
 const SCRIPTS = [
   'port_wrapper.js', 'ports.js', 'profiles.js', 'detector.js', 'events.js',
-  'result.js', 'state_machine.js', 'timer_proxy.js', 'flags.js', 'role_finder.js',
+  'result.js', 'state_machine.js', 'timer_proxy.js', 'flags.js',
   'host_poller.js', 'logger.js', 'prober.js', 'remote_start.js',
   'runtime_conditions.js', 'gui.js', 'main.js',
 ];

@@ -9,26 +9,15 @@
   width: 316px;
 }
 
-#main-container.standalone {
-  margin-top: 20px;
-}
-
-#main-container.standalone,
-#messages.standalone {
-  width: 600px;
-}
 
 #messages img {
   margin-right: 5px;
 }
 
-.host, .serial {
+.serial {
   display: inline-block;
   vertical-align: top;
   width: 300px;
-}
-.host.hidden {
-  display: none;
 }
 
 .scanlist li {
