@@ -3,8 +3,8 @@
 # Shows DerbyNet full-screen in Chromium: a kiosk (a TV by the track, the
 # awards screen, ...), a track camera, or a photo stand.  For current Raspberry Pi OS
 # (Bookworm and later, whose desktop is Wayland) as well as the older X11
-# desktop.  Copy the companion kiosk.desktop file into ~/.config/autostart/ to
-# start it when the Pi starts; see ../autostart/00README.
+# desktop.  On a Pi set up by installer/rpi/setup.sh, "derbynet-pi desktop"
+# starts it at desktop login, pointed at the server it finds.
 #
 # Settings come from derbynet.conf -- /etc/derbynet.conf, or on a Pi the copy
 # in the boot partition (/boot/firmware/derbynet.conf, or /boot/derbynet.conf

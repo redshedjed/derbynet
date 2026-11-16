@@ -217,6 +217,8 @@ done
 sudo rm -rf /usr/share/derbynet/scripts/lib /usr/share/derbynet/conf
 sudo rm -f /usr/share/derbynet/scripts/photostand.sh /usr/share/derbynet/scripts/shoot-then-scan.sh \
            /usr/share/derbynet/scripts/*.png
+# ... and from the Java timer and the derbynet-extras package
+sudo rm -rf /usr/share/derbynet/scripts/derby-timer.sh /usr/share/derbynet/autostart
 install_text 755 "$REPO/installer/rpi/derbynet-pi" /usr/local/bin/derbynet-pi
 # Left over from an earlier, kiosk-only version of this script
 sudo rm -f /usr/local/bin/derbynet-kiosk
