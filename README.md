@@ -14,7 +14,7 @@ into **alpha testing with real hardware**. Expect rough edges.
 - **Raspberry Pi deployment.** One script turns a fresh Raspberry Pi OS
   install into a server, a warm standby, a kiosk, a timer host, or any mix of
   them, with automatic server discovery and failover. See
-  [installer/rpi/00README](installer/rpi/00README).
+  [docs/raspberry-pi.md](docs/raspberry-pi.md).
 - **A headless timer.** Plug the track's timer into a Pi (ideally the server)
   and it's found and connected with no screen or browser: the timer page's own
   code, run by Node.js ([timer/headless/](timer/headless/)).
@@ -51,7 +51,7 @@ Two ways are supported: Raspberry Pis, and Docker. Upstream's Mac, Windows
 and Debian installers have been removed.
 
 **On Raspberry Pis** (the intended set-up for events): follow
-[installer/rpi/00README](installer/rpi/00README).
+[docs/raspberry-pi.md](docs/raspberry-pi.md).
 
 **Anywhere else**, build the Docker image from your checkout. The website
 needs some generated files that git doesn't carry, so build those first (see

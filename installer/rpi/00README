@@ -1,117 +1,16 @@
-Utilities for Raspberry Pi
-==========================
+DerbyNet on Raspberry Pi
+========================
 
-About the Boot Partition
-------------------------
+The guide is docs/raspberry-pi.md (at the top of this repository, or on
+GitHub: https://github.com/redshedjed/derbynet/blob/master/docs/raspberry-pi.md).
 
-The Raspberry Pi boots from an SD or micro-SD card.  The card includes a
-small boot partition plus a larger main partition.  While the main partition
-uses one of the Linux-only 'ext' file systems, the boot partition is a vfat
-file system, so it can be read and written by Windows, Mac, and Linux systems.
-On current Raspberry Pi OS it's mounted at /boot/firmware (formerly /boot).
+What's here:
 
-DerbyNet keeps its Pi settings in a derbynet.conf file on the boot partition.
-That makes it possible to change what a Pi does without bringing a keyboard,
-mouse, and monitor: with the Pi powered off, put the SD card in a Windows, Mac,
-or Linux machine, edit derbynet.conf, then put the card back in the Pi and
-power it on.  (Network settings such as WiFi are set in Raspberry Pi Imager
-when the card is written, not here.)
-
-
-Setting Up a Pi for DerbyNet
-----------------------------
-
-setup.sh turns a fresh Raspberry Pi OS install into a DerbyNet Pi that can be
-any combination of:
-
-  server    the DerbyNet web server
-  standby   a warm spare that keeps a copy of the server's data (at most about
-            40 seconds old)
-  kiosk     a full-screen kiosk: a display, a track camera (USB webcam or Pi
-            camera) or a photo stand (camera plus barcode scanner), whichever
-            the Kiosk Dashboard makes it
-  timer     connects the track's timer, plugged into a USB port, to the server
-
-A kiosk needs Raspberry Pi OS with desktop.  Lite is enough
-for a Pi that will only ever be a server, standby or timer, but can't later
-be a kiosk.  On the Pi, as the normal user:
-
-    sudo apt install -y git        # if git isn't already installed
-    git clone https://github.com/redshedjed/derbynet.git
-    bash derbynet/installer/rpi/setup.sh --roles "server timer"
-    sudo reboot
-
-setup.sh installs everything for every role, so changing roles later doesn't
-need re-running it, or internet access: edit ROLES in derbynet.conf on the
-boot partition and reboot (or run "sudo derbynet-pi apply").  The
-derbynet.conf that setup.sh installs documents all the settings.  Re-run
-setup.sh to deploy updated website code from the checkout.
-
-
-Finding the Server
-------------------
-
-The server announces itself on the local network (as a DNS-SD service, like a
-network printer does), and the other Pis find it automatically; nothing needs
-to be configured on them.  The server also publishes an alias, so people's
-laptops and phones can browse to
-
-    http://derbynet.local/derbynet
-
-The server's own hostname isn't changed.  Some Android devices don't resolve
-.local names; use the server's IP address there ("derbynet-pi status" on the
-server shows it).
-
-If the server isn't a Pi set up this way (e.g. it's a laptop), set
-DERBYNET_SERVER in derbynet.conf on each Pi instead.
-
-
-Standby and Failover
---------------------
-
-For a standby, set the same SYNC_PASSWORD in derbynet.conf on both the server
-and the standby; without it, the standby can't copy anything.
-
-If the server fails, power it off, then on the standby run
-
-    sudo derbynet-pi promote
-
-The standby starts announcing itself and takes over the alias.  Kiosks (displays,
-track cameras and photo stands) notice that the old server has stopped answering
-and switch to the new one on their own, within about a minute.  promote
-refuses to run while the old server is still announcing itself.
-
-Before powering the old server back on, change its ROLES (e.g. to standby) so
-the two don't both act as the server.
-
-
-The Timer
----------
-
-Plug the track timer's USB serial cable into a Pi with the timer role --
-ideally the server, so the race times never cross Wi-Fi -- and turn the timer
-on.  The Pi tries each known timer model on each USB serial port until one
-answers, then reports it to the server; the Race Dashboard shows the timer
-as connected.  If the cable comes out, the server shows a timer problem, and
-the Pi finds the timer again when it's plugged back in.  There's no screen and
-nothing to click.
-
-Timer settings (unused lanes, FastTrack automatic gate release, ...) are set
-on the server's Timer page, as for any timer.  To use one serial port only,
-set TIMER_PORT in derbynet.conf.
-
-This is the same timer code as the timer page (timer.php), run by Node.js
-instead of a browser.  Use one or the other: while this Pi's timer is
-connected, the server refuses a second timer interface, such as the timer page
-opened on a laptop.
-
-Its log:   journalctl -u derbynet-timer -f
-
-
-Checking on a Pi
-----------------
-
-    derbynet-pi status     what this Pi is doing, and whether it's healthy
-    derbynet-pi doctor     status, plus hardware checks (cameras, scanners,
-                           the timer's serial port)
-    derbynet-pi servers    DerbyNet servers announced on the network
+  setup.sh          turns a fresh Raspberry Pi OS install into a DerbyNet Pi:
+                      bash installer/rpi/setup.sh --roles "server timer"
+  derbynet-pi       installed as /usr/local/bin/derbynet-pi; manages the roles
+                    (derbynet-pi status, doctor, apply, promote, ...)
+  derbynet-pi.conf  the settings file, installed as derbynet.conf on the SD
+                    card's boot partition; it explains every setting
+  kiosk.sh          the full-screen kiosk browser, started by
+                    "derbynet-pi desktop" at desktop login
